@@ -1,6 +1,12 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
+    id 'com.diffplug.spotless' version '6.12.0'
+    id "io.freefair.lombok" version "8.4"
+    id "com.peterabeles.gversion" version "1.10.2"
+    id 'org.ajoberstar.grgit' version "5.2.1"
 }
 
 java {
@@ -99,3 +105,84 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+
+compileJava.dependsOn spotlessApply
+
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "GVersion"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/New_York"
+    debug        = false
+    language     = "java"
+    explicitType = false
+    indent       = "  "
+    annotate     = false
+}
+
+project.compileJava.dependsOn(createVersionFile)
+
+task commitOnDeploy {
+    description = 'Commits when deployed.'
+    doLast {
+        if (false) {
+            def date = new Date()
+            def sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
+            grgit.add(patterns: [
+                'src/',
+                'vendordeps/',
+                'build.gradle',
+                'logs',
+                'gradle',
+                '.wpilib'
+            ])
+            grgit.commit(message: "Automated commit at " + sdf.format(date), all: true)
+        }
+    }
+}
+
+deployroborio.dependsOn commitOnDeploy
