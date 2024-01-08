@@ -8,3 +8,14 @@
 6. Install Advantage Scope: https://github.com/Mechanical-Advantage/AdvantageScope/releases/latest
 
 THERE WILL BE MORE TO INSTALL, but they're not out yet.
+
+## IP Addresses
+
+This is for reference; you don't need to understand it, but if you want to, WPILib has some good docs here: https://docs.wpilib.org/en/stable/docs/networking/networking-introduction/index.html
+
+* Radio - Static 10.27.13.1
+* Rio - Static 10.27.13.2, subnet mask 255.255.255.0
+* Driver station - Static 10.27.13.5, subnet mask 255.0.0.0, default gateway empty
+* Limelight (1) - Static 10.27.13.11, subnet mask 255.255.255.0
+* Limelight (2) - Static 10.27.13.12, subnet mask 255.255.255.0
+* Limelight (3) - Static 10.27.13.13, subnet mask 255.255.255.0
