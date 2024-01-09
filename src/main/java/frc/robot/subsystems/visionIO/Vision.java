@@ -305,11 +305,11 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     frontIO.updateInputs(frontInputs);
     rearIO.updateInputs(rearInputs);
-    Logger.getInstance().processInputs("Vision/Front", frontInputs);
-    Logger.getInstance().processInputs("Vision/Rear", rearInputs);
+    Logger.processInputs("Vision/Front", frontInputs);
+    Logger.processInputs("Vision/Rear", rearInputs);
 
-    Logger.getInstance().recordOutput("Vision/Front/LL Pose", calculateLLPose(frontInputs));
+    Logger.recordOutput("Vision/Front/LL Pose", calculateLLPose(frontInputs));
 
-    Logger.getInstance().recordOutput("Vision/Rear/LL Pose", calculateLLPose(rearInputs));
+    Logger.recordOutput("Vision/Rear/LL Pose", calculateLLPose(rearInputs));
   }
 }

@@ -37,6 +37,7 @@ import frc.robot.util.RedHawkUtil.ErrHandler;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
 import java.io.File;
+import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -46,7 +47,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   public static Vision vision;
-  //   public static Slapper slapper;
   public static SwerveSubsystem swerveDrive;
   private Command autoCommand;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
@@ -63,7 +63,6 @@ public class Robot extends LoggedRobot {
   DoubleArraySubscriber frontVisionPose;
   DoubleArraySubscriber rearVisionPose;
 
-  Alliance currentAlliance = Alliance.Invalid;
   DoubleArraySubscriber frontCamera2TagPose;
   DoubleArraySubscriber rearCamera2TagPose;
 
@@ -79,19 +78,19 @@ public class Robot extends LoggedRobot {
     rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     rearCamera2TagPose =
         rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
-    Logger.getInstance().recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
-    Logger.getInstance().recordMetadata("GitSHA", GVersion.GIT_SHA);
-    Logger.getInstance().recordMetadata("GitDate", GVersion.GIT_DATE);
-    Logger.getInstance().recordMetadata("GitBranch", GVersion.GIT_BRANCH);
-    Logger.getInstance().recordMetadata("BuildDate", GVersion.BUILD_DATE);
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
+    Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
+    Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
+    Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
+    Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
       File sda1 = new File(Constants.Logging.sda1Dir);
       File sda2 = new File(Constants.Logging.sda2Dir);
 
       if (sda1.exists() && sda1.isDirectory()) {
-        Logger.getInstance().addDataReceiver(new WPILOGWriter(Constants.Logging.sda1Dir));
-        Logger.getInstance().recordOutput("isLoggingToUsb", true);
+        Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda1Dir));
+        Logger.recordOutput("isLoggingToUsb", true);
       } else {
         RedHawkUtil.ErrHandler.getInstance()
             .addError(
@@ -100,19 +99,19 @@ public class Robot extends LoggedRobot {
                     + ", trying "
                     + Constants.Logging.sda2Dir);
         if (sda2.exists() && sda2.isDirectory()) {
-          Logger.getInstance().addDataReceiver(new WPILOGWriter(Constants.Logging.sda2Dir));
-          Logger.getInstance().recordOutput("isLoggingToUsb", true);
+          Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda2Dir));
+          Logger.recordOutput("isLoggingToUsb", true);
         } else {
           RedHawkUtil.ErrHandler.getInstance()
               .addError("Cannot log to " + Constants.Logging.sda2Dir);
-          Logger.getInstance().recordOutput("isLoggingToUsb", false);
+          Logger.recordOutput("isLoggingToUsb", false);
         }
       }
     } else {
-      Logger.getInstance().recordOutput("isLoggingToUsb", false);
+      Logger.recordOutput("isLoggingToUsb", false);
     }
 
-    Logger.getInstance().start();
+    Logger.start();
 
     vision =
         new Vision(
@@ -226,16 +225,12 @@ public class Robot extends LoggedRobot {
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(swerveDrive.getTotalCurrentDraw()));
 
-    Logger.getInstance()
-        .recordOutput(
-            "Filtered CAN Utilization",
-            canUtilizationFilter.calculate(RobotController.getCANStatus().percentBusUtilization));
-    Logger.getInstance()
-        .recordOutput(
-            "Memory Usage",
-            (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
-                / 1024.0
-                / 1024.0);
+    Logger.recordOutput(
+        "Filtered CAN Utilization",
+        canUtilizationFilter.calculate(RobotController.getCANStatus().percentBusUtilization));
+    Logger.recordOutput(
+        "Memory Usage",
+        (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
     TimestampedDoubleArray[] frontfQueue = frontVisionPose.readQueue();
     TimestampedDoubleArray[] frontcQueue = frontCamera2TagPose.readQueue();
@@ -324,32 +319,31 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
+    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     autoChooser.addDefaultOption("Simple", new Simple());
   }
 
   public void checkAlliance() {
-    Alliance checkedAlliance = DriverStation.getAlliance();
-    Logger.getInstance().recordOutput("DS Alliance", currentAlliance.name());
-
-    if (DriverStation.isDSAttached() && checkedAlliance != currentAlliance) {
-      currentAlliance = checkedAlliance;
-
-      // these gyro resets are mostly for ironing out teleop driving issues
-
-      // if we are on blue, we are probably facing towards the blue DS, which is -x.
-      // that corresponds to a 180 deg heading.
-      if (checkedAlliance == Alliance.Blue) {
-        swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-      }
-
-      // if we are on red, we are probably facing towards the red DS, which is +x.
-      // that corresponds to a 0 deg heading.
-      if (checkedAlliance == Alliance.Red) {
-        swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-      }
-
-      buildAutoChooser();
+    Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
+    Logger.recordOutput("DS Alliance has value", checkedAlliance.isPresent());
+    if (checkedAlliance.isPresent()) {
+      Logger.recordOutput("DS Alliance value", checkedAlliance.get());
     }
+
+    // these gyro resets are mostly for ironing out teleop driving issues
+
+    // if we are on blue, we are probably facing towards the blue DS, which is -x.
+    // that corresponds to a 180 deg heading.
+    if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+    }
+
+    // if we are on red, we are probably facing towards the red DS, which is +x.
+    // that corresponds to a 0 deg heading.
+    if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+    }
+
+    buildAutoChooser();
   }
 }

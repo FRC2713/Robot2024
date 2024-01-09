@@ -23,17 +23,13 @@ public class SwerveIOSim implements SwerveIO {
     SwerveModulePosition[] deltas = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
       deltas[i] = RedHawkUtil.moduleDelta(measuredPositions[i], lastPositions[i]);
-      Logger.getInstance().recordOutput("Swerve/Sim/" + i + "-pos", deltas[i].distanceMeters);
-      Logger.getInstance().recordOutput("Swerve/Sim/" + i + "-rot", deltas[i].angle.getDegrees());
-      Logger.getInstance()
-          .recordOutput("Swerve/Sim/" + i + "-last-pos", lastPositions[i].distanceMeters);
-      Logger.getInstance()
-          .recordOutput("Swerve/Sim/" + i + "-last-rot", lastPositions[i].angle.getDegrees());
+      Logger.recordOutput("Swerve/Sim/" + i + "-pos", deltas[i].distanceMeters);
+      Logger.recordOutput("Swerve/Sim/" + i + "-rot", deltas[i].angle.getDegrees());
+      Logger.recordOutput("Swerve/Sim/" + i + "-last-pos", lastPositions[i].distanceMeters);
+      Logger.recordOutput("Swerve/Sim/" + i + "-last-rot", lastPositions[i].angle.getDegrees());
 
-      Logger.getInstance()
-          .recordOutput("Swerve/Sim/" + i + "-meas-pos", measuredPositions[i].distanceMeters);
-      Logger.getInstance()
-          .recordOutput("Swerve/Sim/" + i + "-meas-rot", measuredPositions[i].angle.getDegrees());
+      Logger.recordOutput("Swerve/Sim/" + i + "-meas-pos", measuredPositions[i].distanceMeters);
+      Logger.recordOutput("Swerve/Sim/" + i + "-meas-rot", measuredPositions[i].angle.getDegrees());
     }
 
     currentRotation =

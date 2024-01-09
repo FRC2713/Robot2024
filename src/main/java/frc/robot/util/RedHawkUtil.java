@@ -1,10 +1,9 @@
 package frc.robot.util;
 
-import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
-import com.pathplanner.lib.PathPoint;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Robot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,13 +62,11 @@ public final class RedHawkUtil {
     return Reflections.reflectIfRed(pose.getX()) > (FieldConstants.fieldLength / 2);
   }
 
-  public static PathPoint currentPositionPathPoint(Rotation2d heading) {
-    return new PathPoint(
-        RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
-        heading,
-        Robot.swerveDrive.getUsablePose().getRotation(),
-        Robot.swerveDrive.getAverageVelocity());
-  }
+  // public static PathPoint currentPositionPathPoint(Rotation2d heading) {
+  // return new PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
+  // heading, Robot.swerveDrive.getUsablePose().getRotation(),
+  // Robot.swerveDrive.getAverageVelocity());
+  // }
 
   public static class ErrHandler {
     private static ErrHandler INSTANCE;
@@ -101,7 +97,7 @@ public final class RedHawkUtil {
     }
 
     public void log() {
-      Logger.getInstance().recordOutput("Errors", String.join(" \\\\ ", errors));
+      Logger.recordOutput("Errors", String.join(" \\\\ ", errors));
     }
   }
 
@@ -127,14 +123,16 @@ public final class RedHawkUtil {
 
   public static class Reflections {
     public static Translation2d reflectIfRed(Translation2d old) {
-      if (DriverStation.getAlliance() == Alliance.Red) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Red) {
         return reflect(old);
       }
       return old;
     }
 
     public static Translation2d reflectIfBlue(Translation2d old) {
-      if (DriverStation.getAlliance() == Alliance.Blue) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Blue) {
         return reflect(old);
       }
       return old;
@@ -149,7 +147,8 @@ public final class RedHawkUtil {
     }
 
     public static Rotation2d reflectIfRed(Rotation2d old) {
-      if (DriverStation.getAlliance() == Alliance.Red) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Red) {
         return old.minus(Rotation2d.fromDegrees(180));
       }
       return old;
@@ -161,7 +160,7 @@ public final class RedHawkUtil {
   }
 
   public static void configureCANSparkMAXStatusFrames(
-      HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> config, CANSparkMax... sparks) {
+      HashMap<PeriodicFrame, Integer> config, CANSparkMax... sparks) {
     config.forEach(
         (frame, ms) -> {
           for (CANSparkMax spark : sparks) {
@@ -174,7 +173,7 @@ public final class RedHawkUtil {
       Pigeon2 pigeon, HashMap<PigeonIMU_StatusFrame, Integer> config) {
     config.forEach(
         (frame, ms) -> {
-          pigeon.setStatusFramePeriod(frame, ms);
+          // pigeon.setStatusFramePeriod(frame, ms);
         });
   }
 
