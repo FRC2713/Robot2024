@@ -1,9 +1,5 @@
 package frc.robot.rhr.auto;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.util.RedHawkUtil;
 import java.util.List;
 
@@ -52,19 +48,19 @@ public class RHRTrajectory {
     return states.get(states.size() - 1).timestamp();
   }
 
-  public static RHRTrajectory fromPathPlanner(PathPlannerTrajectory ppTrajectory) {
-    return new RHRTrajectory(
-        ppTrajectory.getStates().stream()
-            .map(state -> (PathPlannerState) state)
-            .map(
-                state ->
-                    new RHRTrajectoryState(
-                        state.timeSeconds,
-                        new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation),
-                        new ChassisSpeeds(
-                            state.velocityMetersPerSecond * state.poseMeters.getRotation().getCos(),
-                            state.velocityMetersPerSecond * state.poseMeters.getRotation().getSin(),
-                            state.holonomicAngularVelocityRadPerSec)))
-            .toList());
-  }
+  // public static RHRTrajectory fromPathPlanner(PathPlannerTrajectory ppTrajectory) {
+  // return new RHRTrajectory(
+  // ppTrajectory.getStates().stream()
+  // .map(state -> (PathPlannerState) state)
+  // .map(
+  // state ->
+  // new RHRTrajectoryState(
+  // state.timeSeconds,
+  // new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation),
+  // new ChassisSpeeds(
+  // state.velocityMetersPerSecond * state.poseMeters.getRotation().getCos(),
+  // state.velocityMetersPerSecond * state.poseMeters.getRotation().getSin(),
+  // state.holonomicAngularVelocityRadPerSec)))
+  // .toList());
+  // }
 }

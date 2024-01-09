@@ -44,7 +44,7 @@ public class SwerveHeadingController {
    */
   public void setSetpoint(Rotation2d setpoint) {
     this.setpoint =
-        DriverStation.getAlliance() == Alliance.Blue
+        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
             ? setpoint
             : Rotation2d.fromDegrees((setpoint.getDegrees() + 180) % 360);
   }
@@ -69,14 +69,13 @@ public class SwerveHeadingController {
               SmartDashboard.getNumber(
                   "Heading Controller/setpoint degrees", setpoint.getDegrees())));
     } else {
-      Logger.getInstance()
-          .recordOutput("Heading Controller/setpoint degrees", setpoint.getDegrees());
+      Logger.recordOutput("Heading Controller/setpoint degrees", setpoint.getDegrees());
     }
 
     SmartDashboard.putBoolean("Heading Controller/at setpoint", controller.atSetpoint());
 
     controller.setSetpoint(setpoint.getDegrees());
-    Logger.getInstance().recordOutput("Heading Controller/setpoint", setpoint.getDegrees());
+    Logger.recordOutput("Heading Controller/setpoint", setpoint.getDegrees());
     double output = 0;
     if (!controller.atSetpoint()) {
       Rotation2d currentHeading = Robot.swerveDrive.getYaw();
@@ -87,13 +86,13 @@ public class SwerveHeadingController {
               -Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC),
               Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
       error = setpoint.getDegrees() - currentHeading.getDegrees();
-      Logger.getInstance().recordOutput("Heading Controller/error", error);
+      Logger.recordOutput("Heading Controller/error", error);
       if ((Math.abs(error) <= 1) || (Math.abs(error) >= 359 && Math.abs(error) <= 360)) {
         return 0;
       }
     }
 
-    Logger.getInstance().recordOutput("Heading Controller/update", output);
+    Logger.recordOutput("Heading Controller/update", output);
     return output;
   }
 }

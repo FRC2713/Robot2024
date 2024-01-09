@@ -1,7 +1,6 @@
 package frc.robot.subsystems.swerveIO;
 
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,10 +47,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
-          DriveConstants.FRONT_LEFT_LOCATION,
-          DriveConstants.FRONT_RIGHT_LOCATION,
-          DriveConstants.BACK_LEFT_LOCATION,
-          DriveConstants.BACK_RIGHT_LOCATION);
+          DriveConstants.FRONT_LEFT_LOCATION, DriveConstants.FRONT_RIGHT_LOCATION,
+          DriveConstants.BACK_LEFT_LOCATION, DriveConstants.BACK_RIGHT_LOCATION);
 
   /**
    * Creates a new SwerveSubsystem (swerve drive) object.
@@ -100,12 +97,11 @@ public class SwerveSubsystem extends SubsystemBase {
               this.backRight.getPosition()
             },
             new Pose2d(),
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.1),
-            new MatBuilder<>(Nat.N3(), Nat.N1())
-                .fill(
-                    Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                    Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                    Constants.LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
+            VecBuilder.fill(0.1, 0.1, 0.1),
+            VecBuilder.fill(
+                Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
+                Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
+                Constants.LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
   }
 
   public void zeroGyro() {
@@ -127,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param pose The desired pose.
    */
   public void resetOdometry(Pose2d pose) {
-    Logger.getInstance().recordOutput("Reset odometry to ", pose);
+    Logger.recordOutput("Reset odometry to ", pose);
     odometry.resetPosition(
         Rotation2d.fromDegrees(inputs.gyroYawPosition),
         new SwerveModulePosition[] {
@@ -187,14 +183,14 @@ public class SwerveSubsystem extends SubsystemBase {
     double[] cVal = cameraPoseArray.value;
     double distCamToTag = Units.metersToInches(Math.abs(cVal[2]));
 
-    Logger.getInstance().recordOutput("Vision/distCamToTag", distCamToTag);
+    Logger.recordOutput("Vision/distCamToTag", distCamToTag);
     Pose2d fPose = new Pose2d(fVal[0], fVal[1], Rotation2d.fromDegrees(fVal[5]));
 
     if (fPose.getX() == 0 && fPose.getY() == 0 && fPose.getRotation().getDegrees() == 0) {
-      Logger.getInstance().recordOutput("Vision/Got empty field pose", true);
+      Logger.recordOutput("Vision/Got empty field pose", true);
       return;
     }
-    Logger.getInstance().recordOutput("Vision/Got empty field pose", false);
+    Logger.recordOutput("Vision/Got empty field pose", false);
 
     double jump_distance =
         Units.metersToInches(
@@ -202,7 +198,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 .getEstimatedPosition()
                 .getTranslation()
                 .getDistance(fPose.getTranslation()));
-    Logger.getInstance().recordOutput("Vision/jump_distance", jump_distance);
+    Logger.recordOutput("Vision/jump_distance", jump_distance);
     if (distCamToTag < Constants.LimeLightConstants.CAMERA_TO_TAG_MAX_DIST_INCHES
         && ((!DriverStation.isEnabled())
             || jump_distance < Constants.LimeLightConstants.MAX_POSE_JUMP_IN_INCHES)) {
@@ -300,7 +296,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs, kinematics, getModulePositions());
-    Logger.getInstance().processInputs("Swerve/Chassis", inputs);
+    Logger.processInputs("Swerve/Chassis", inputs);
     updateOdometry();
 
     switch (motionMode) {
@@ -327,19 +323,16 @@ public class SwerveSubsystem extends SubsystemBase {
           DriverStation.isAutonomous()
               ? DriveConstants.MAX_SWERVE_VEL_AUTO
               : DriveConstants.MAX_SWERVE_VEL);
-      Logger.getInstance().recordOutput("Swerve/Desired Module States", moduleStates);
+      Logger.recordOutput("Swerve/Desired Module States", moduleStates);
       setModuleStates(moduleStates);
     }
 
-    Logger.getInstance().recordOutput("Swerve/Odometry/Wheel-Based", getRegularPose());
-    Logger.getInstance().recordOutput("Swerve/Odometry/KF-Based", getEstimatedPose());
-    Logger.getInstance().recordOutput("Swerve/Odometry/Useable", getUsablePose());
-    Logger.getInstance()
-        .recordOutput("Swerve/Desired speeds/x-mps", desiredSpeeds.vxMetersPerSecond);
-    Logger.getInstance()
-        .recordOutput("Swerve/Desired speeds/y-mps", desiredSpeeds.vxMetersPerSecond);
-    Logger.getInstance()
-        .recordOutput("Swerve/Desired speeds/r-radps", desiredSpeeds.omegaRadiansPerSecond);
+    Logger.recordOutput("Swerve/Odometry/Wheel-Based", getRegularPose());
+    Logger.recordOutput("Swerve/Odometry/KF-Based", getEstimatedPose());
+    Logger.recordOutput("Swerve/Odometry/Useable", getUsablePose());
+    Logger.recordOutput("Swerve/Desired speeds/x-mps", desiredSpeeds.vxMetersPerSecond);
+    Logger.recordOutput("Swerve/Desired speeds/y-mps", desiredSpeeds.vxMetersPerSecond);
+    Logger.recordOutput("Swerve/Desired speeds/r-radps", desiredSpeeds.omegaRadiansPerSecond);
   }
 
   public static class Commands {}

@@ -66,7 +66,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void recordOutput(String key, double value) {
-    Logger.getInstance().recordOutput("Swerve/" + information.getName() + '/' + key, value);
+    Logger.recordOutput("Swerve/" + information.getName() + '/' + key, value);
   }
 
   public SwerveModulePosition getPosition() {
@@ -121,13 +121,13 @@ public class SwerveModule extends SubsystemBase {
     double feedbackVal;
     if (useMotorEncoder) {
       feedbackVal = inputs.aziEncoderPositionDeg;
-      Logger.getInstance().recordOutput("Azimuth feedback source", "motor");
+      Logger.recordOutput("Azimuth feedback source", "motor");
     } else if (useAbsoluteEncoder) {
       feedbackVal = inputs.aziAbsoluteEncoderAdjAngleDeg;
-      Logger.getInstance().recordOutput("Azimuth feedback source", "absolute encoder");
+      Logger.recordOutput("Azimuth feedback source", "absolute encoder");
     } else {
       feedbackVal = inputs.aziEncoderPositionDeg;
-      Logger.getInstance().recordOutput("Azimuth feedback source", "motor backup");
+      Logger.recordOutput("Azimuth feedback source", "motor backup");
     }
 
     final double turnOutput = azimuthController.calculate(feedbackVal, state.angle.getDegrees());
@@ -146,7 +146,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.log(inputs.driveCurrentDrawAmps, inputs.driveOutputVolts);
     update();
 
-    Logger.getInstance().processInputs("Swerve/" + information.getName(), inputs);
+    Logger.processInputs("Swerve/" + information.getName(), inputs);
     recordOutput("Azimuth Error", state.angle.getDegrees() - inputs.aziEncoderPositionDeg);
     recordOutput(
         "Drive Error", state.speedMetersPerSecond - inputs.driveEncoderVelocityMetresPerSecond);
