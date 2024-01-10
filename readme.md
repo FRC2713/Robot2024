@@ -1,3 +1,11 @@
+<div align="center">
+    <h1>FRC 2713 Red Hawk Robotics</h1>
+    <h2>Robot Code 2023</h2>
+    <img src="https://github.com/FRC2713/Robot2024/actions/workflows/gradle.yml/badge.svg" />
+</div>
+
+---
+
 ## Installation
 
 1. Install the FRC Game Tools & WPILib 2024 with the following directions: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/index.html
