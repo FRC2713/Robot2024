@@ -1,7 +1,10 @@
 package frc.robot.util;
 
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -195,5 +198,18 @@ public final class RedHawkUtil {
   public static SwerveModulePosition moduleDelta(
       SwerveModulePosition before, SwerveModulePosition after) {
     return new SwerveModulePosition(after.distanceMeters - before.distanceMeters, after.angle);
+  }
+
+  public static void applyConfigs(TalonFX fx, TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+
+    for (int i = 0; i < 5; ++i) {
+      status = fx.getConfigurator().apply(config);
+      if (status.isOK()) break;
+    }
+
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
   }
 }

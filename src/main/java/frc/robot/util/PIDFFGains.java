@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.rhr.RHRFeedForward;
 import frc.robot.rhr.RHRPIDFFController;
@@ -77,5 +78,13 @@ public class PIDFFGains {
 
   public RHRPIDFFController createRHRController() {
     return new RHRPIDFFController(this);
+  }
+
+  public void applyTo(TalonFXConfiguration config) {
+    config.Slot0.kP = this.kP;
+    config.Slot0.kI = this.kI;
+    config.Slot0.kD = this.kD;
+    config.Slot0.kS = this.kS;
+    config.Slot0.kV = this.kV;
   }
 }
