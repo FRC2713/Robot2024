@@ -50,7 +50,8 @@ public class MotionHandler {
         MathUtil.applyDeadband(-Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
             * speedFactor;
     double rSpeed =
-        MathUtil.applyDeadband(-Robot.driver.getRightX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
+        MathUtil.applyDeadband(
+                Robot.driver.getRightTriggerAxis(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
             * speedFactor;
 
     return ChassisSpeeds.fromFieldRelativeSpeeds(

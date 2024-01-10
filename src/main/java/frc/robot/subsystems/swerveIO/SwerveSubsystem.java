@@ -1,5 +1,10 @@
 package frc.robot.subsystems.swerveIO;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -102,10 +107,56 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
                 Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
                 Constants.LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
+
+    AutoBuilder.configureHolonomic(
+        this::getUsablePose,
+        this::resetOdometry,
+        this::getRobotRelativeSpeeds,
+        (cs) -> {
+          // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs, getYaw()));
+          this.setDesiredChassisSpeeds(cs);
+        },
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(5, 0, 0), new PIDConstants(1, 0, 0), 4.5, 0.4, new ReplanningConfig()),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this);
+
+    PathPlannerLogging.setLogCurrentPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+
+          Logger.recordOutput("PathPlanner/Current Pose", pose);
+        });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+          Logger.recordOutput("PathPlanner/Target Pose", pose);
+        });
   }
 
   public void zeroGyro() {
     io.zeroGyro();
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return kinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
+  public SwerveModuleState[] getSwerveModuleStates() {
+    return new SwerveModuleState[] {
+      frontLeft.getMeasuredState(),
+      frontRight.getMeasuredState(),
+      backLeft.getMeasuredState(),
+      backRight.getMeasuredState()
+    };
   }
 
   /**
@@ -124,6 +175,9 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     Logger.recordOutput("Reset odometry to ", pose);
+
+    // io.resetGyro(pose.getRotation());
+
     odometry.resetPosition(
         Rotation2d.fromDegrees(inputs.gyroYawPosition),
         new SwerveModulePosition[] {
@@ -310,7 +364,7 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStates(MotionHandler.lockdown());
         break;
       case TRAJECTORY:
-        setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
+        // setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
         break;
       default:
         break;
