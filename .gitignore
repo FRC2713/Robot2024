@@ -1,5 +1,7 @@
 src/main/java/frc/robot/GVersion.java
 networktables.json
+simgui.json
+simgui-ds.json
 
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.

@@ -45,4 +45,8 @@ public interface SwerveModuleIO {
   public void setDriveVoltage(double driveVolts);
 
   public void seed();
+
+  public void setAzimuthPositionSetpoint(double setpointDegrees);
+
+  public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts);
 }

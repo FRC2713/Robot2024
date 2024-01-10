@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.rhr.RHRFeedForward;
 import frc.robot.rhr.RHRPIDFFController;
@@ -86,5 +87,19 @@ public class PIDFFGains {
     config.Slot0.kD = this.kD;
     config.Slot0.kS = this.kS;
     config.Slot0.kV = this.kV;
+  }
+
+  public void applyTo(SparkPIDController controller) {
+    controller.setP(kP);
+    controller.setI(kI);
+    controller.setD(kD);
+    controller.setFF(kV);
+
+    if (tunableKS != null) {
+      tunableKP.addHook(x -> controller.setP(x));
+      tunableKI.addHook(x -> controller.setI(x));
+      tunableKD.addHook(x -> controller.setD(x));
+      tunableKV.addHook(x -> controller.setFF(x));
+    }
   }
 }

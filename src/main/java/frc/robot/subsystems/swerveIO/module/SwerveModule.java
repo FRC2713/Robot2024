@@ -132,16 +132,20 @@ public class SwerveModule extends SubsystemBase {
 
     final double turnOutput = azimuthController.calculate(feedbackVal, state.angle.getDegrees());
 
+    io.setAzimuthPositionSetpoint(state.angle.getDegrees());
+    io.setDriveVelocitySetpoint(state.speedMetersPerSecond, information.getDriveGains().getKS());
+
     recordOutput("Desired Drive Volts", driveOutput);
     recordOutput("Desired Azi Volts", turnOutput);
 
-    io.setDriveVoltage(driveOutput);
-    io.setAzimuthVoltage(turnOutput);
+    // io.setDriveVoltage(driveOutput);
+    // io.setAzimuthVoltage(turnOutput);
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+
     azimuthMotor.log(inputs.aziCurrentDrawAmps, inputs.aziOutputVolts);
     driveMotor.log(inputs.driveCurrentDrawAmps, inputs.driveOutputVolts);
     update();

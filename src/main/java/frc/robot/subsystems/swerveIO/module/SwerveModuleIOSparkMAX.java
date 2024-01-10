@@ -2,11 +2,13 @@ package frc.robot.subsystems.swerveIO.module;
 
 import static frc.robot.util.RedHawkUtil.cOk;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
@@ -95,6 +97,12 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
         .checkOK(s -> s.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
         .checkOK(s -> s.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
+    information.getDriveGains().applyTo(driver.getPIDController());
+    information.getAzimuthGains().applyTo(azimuth.getPIDController());
+    azimuth.getPIDController().setPositionPIDWrappingEnabled(true);
+    azimuth.getPIDController().setPositionPIDWrappingMinInput(-180);
+    azimuth.getPIDController().setPositionPIDWrappingMaxInput(180);
+
     for (int i = 0; i < 30; i++) {
       // seed();
     }
@@ -145,5 +153,18 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
   @Override
   public void setDriveVoltage(double driveVolts) {
     driver.setVoltage(driveVolts);
+  }
+
+  @Override
+  public void setAzimuthPositionSetpoint(double setpointDegrees) {
+    azimuth.getPIDController().setReference(setpointDegrees, ControlType.kPosition);
+  }
+
+  @Override
+  public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
+    driver
+        .getPIDController()
+        .setReference(
+            setpointMetersPerSecond, ControlType.kVelocity, 0, staticFFVolts, ArbFFUnits.kVoltage);
   }
 }
