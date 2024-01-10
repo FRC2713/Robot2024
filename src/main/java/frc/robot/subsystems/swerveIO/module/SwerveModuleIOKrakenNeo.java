@@ -45,4 +45,16 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'seed'");
   }
+
+  @Override
+  public void setAzimuthPositionSetpoint(double setpointDegrees) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setAzimuthPositionSetpoint'");
+  }
+
+  @Override
+  public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setDriveVelocitySetpoint'");
+  }
 }
