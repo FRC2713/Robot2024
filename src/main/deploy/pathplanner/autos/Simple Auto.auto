@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.6323495510653314,
-      "y": 6.175750674376421
+      "x": 1.0964509201745676,
+      "y": 2.7519800494146445
     },
     "rotation": -122.79953127261922
   },
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Simple"
+            "pathName": "Simple Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Simple NamedCommand"
           }
         }
       ]
