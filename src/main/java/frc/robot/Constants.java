@@ -103,7 +103,7 @@ public final class Constants {
             .driveCANId(1)
             .aziCANId(2)
             .aziEncoderCANId(0)
-            .offset(0.312)
+            .offset(0.349)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -115,7 +115,7 @@ public final class Constants {
             .driveCANId(3)
             .aziCANId(4)
             .aziEncoderCANId(1)
-            .offset(0.527)
+            .offset(0.337)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -127,7 +127,7 @@ public final class Constants {
             .driveCANId(10)
             .aziCANId(9)
             .aziEncoderCANId(2)
-            .offset(0.857)
+            .offset(0.021)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -139,20 +139,28 @@ public final class Constants {
             .driveCANId(5)
             .aziCANId(6)
             .aziEncoderCANId(3)
-            .offset(0.864)
+            .offset(0.870)
             .location(BACK_RIGHT_LOCATION)
             .build();
 
     @UtilityClass
     public static final class Gains {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Azimuth").kP(0.12).build().buildTunables();
+          PIDFFGains.builder()
+              .name("Swerve/Defaults/Azimuth")
+              // 0.12
+              .kP(0.013)
+              .build()
+              .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
-              .kP(1.0)
-              .kS(0.225)
+              // 1.0
+              .kP(0.0006)
+              // 0.225
+              .kS(0.08)
+              // 2.33
               .kV(2.33)
               .build()
               .buildTunables();
