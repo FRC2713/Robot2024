@@ -41,7 +41,6 @@ import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
@@ -78,12 +77,12 @@ public class Robot extends LoggedRobot {
     rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     rearCamera2TagPose =
         rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    Logger.addDataReceiver(new NT4Publisher());
-    Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
-    Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
-    Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
-    Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
-    Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
+    // Logger.addDataReceiver(new NT4Publisher());
+    // Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
+    // Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
+    // Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
+    // Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
+    // Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
       File sda1 = new File(Constants.Logging.sda1Dir);
       File sda2 = new File(Constants.Logging.sda2Dir);

@@ -47,6 +47,16 @@ public final class Constants {
     public static final int OPERATOR_PORT = 1;
   }
 
+
+  public static final class IntakePivotConstans
+  {
+    public static final double LENGTH_METERS = 0;
+    public static final double MASS_KG = 0;
+    public static final double MAX_ANGLE_DEGREES = 0;
+    public static final double RETRACTED_ANGLE_DEGREES = 0;
+    public static final boolean SIMULATE_GRAVITY = true;
+  }
+
   @UtilityClass
   public static final class DriveConstants {
 
