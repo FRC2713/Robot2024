@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.fullRoutines.RHRNamedCommands;
+import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.Simple;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
@@ -319,8 +321,11 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
+    RHRNamedCommands.registerGenericCommands();
+
     // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
-    autoChooser.addDefaultOption("Simple", new Simple());
+    autoChooser.addDefaultOption("Simple", Simple.getAutonomousCommand());
+    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
   }
 
   public void checkAlliance() {
