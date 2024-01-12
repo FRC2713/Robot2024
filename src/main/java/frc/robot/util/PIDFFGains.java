@@ -78,7 +78,16 @@ public class PIDFFGains {
   }
 
   public RHRPIDFFController createRHRController() {
-    return new RHRPIDFFController(this);
+    RHRPIDFFController controller = new RHRPIDFFController(this);
+
+    if (tunableKP != null) {
+      tunableKP.addHook(x -> controller.setP(x));
+      tunableKI.addHook(x -> controller.setI(x));
+      tunableKD.addHook(x -> controller.setD(x));
+      tunableKS.addHook(x -> controller.getFeedForward().setKS(x));
+      tunableKV.addHook(x -> controller.getFeedForward().setKV(x));
+    }
+    return controller;
   }
 
   public void applyTo(TalonFXConfiguration config) {

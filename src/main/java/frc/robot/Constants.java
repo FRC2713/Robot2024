@@ -93,7 +93,13 @@ public final class Constants {
 
     public static final double HEADING_CONTROLLER_DRIVER_CHANGE_RATE = 4;
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
-        PIDFFGains.builder().name("Heading Controller").kP(12).kD(.35).kS(3).build();
+        PIDFFGains.builder()
+            .name("Heading Controller")
+            .kP(12)
+            .kD(.35)
+            .kS(3)
+            .build()
+            .buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()

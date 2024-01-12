@@ -5,18 +5,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.util.LoggableMotor;
-import frc.robot.util.PIDFFController;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends SubsystemBase {
 
   SwerveModuleIO io;
   public final SwerveModuleInputsAutoLogged inputs = new SwerveModuleInputsAutoLogged();
-
-  private final PIDFFController driveController;
-  private final PIDFFController azimuthController;
 
   SwerveModuleState state;
   public final ModuleInfo information;
@@ -32,14 +27,11 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModule(SwerveModuleIO swerveModuleIO, ModuleInfo information) {
     this.information = information;
-    this.driveController = new PIDFFController(this.information.getDriveGains());
-    this.azimuthController = new PIDFFController(this.information.getAzimuthGains());
 
     io = swerveModuleIO;
     io.updateInputs(inputs);
 
     state = new SwerveModuleState(0, Rotation2d.fromDegrees(inputs.aziEncoderPositionDeg));
-    azimuthController.enableContinuousInput(-180, 180);
 
     azimuthMotor =
         new LoggableMotor("Swerve " + information.getName() + " Azimuth", DCMotor.getNEO(1));
@@ -112,34 +104,8 @@ public class SwerveModule extends SubsystemBase {
    * every code loop, so put it in periodic() for best results.
    */
   public void update() {
-    final double driveOutput =
-        driveController.calculate(
-            inputs.driveEncoderVelocityMetresPerSecond, state.speedMetersPerSecond);
-
-    boolean useMotorEncoder = Math.abs(inputs.aziEncoderPositionDeg) > 0.1 || Robot.isSimulation();
-    boolean useAbsoluteEncoder = Math.abs(inputs.aziAbsoluteEncoderRawVolts) > 0.1;
-    double feedbackVal;
-    if (useMotorEncoder) {
-      feedbackVal = inputs.aziEncoderPositionDeg;
-      Logger.recordOutput("Azimuth feedback source", "motor");
-    } else if (useAbsoluteEncoder) {
-      feedbackVal = inputs.aziAbsoluteEncoderAdjAngleDeg;
-      Logger.recordOutput("Azimuth feedback source", "absolute encoder");
-    } else {
-      feedbackVal = inputs.aziEncoderPositionDeg;
-      Logger.recordOutput("Azimuth feedback source", "motor backup");
-    }
-
-    final double turnOutput = azimuthController.calculate(feedbackVal, state.angle.getDegrees());
-
     io.setAzimuthPositionSetpoint(state.angle.getDegrees());
     io.setDriveVelocitySetpoint(state.speedMetersPerSecond, information.getDriveGains().getKS());
-
-    recordOutput("Desired Drive Volts", driveOutput);
-    recordOutput("Desired Azi Volts", turnOutput);
-
-    // io.setDriveVoltage(driveOutput);
-    // io.setAzimuthVoltage(turnOutput);
   }
 
   @Override
