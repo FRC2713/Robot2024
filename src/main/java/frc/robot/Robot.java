@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.Simple;
+import frc.robot.subsystems.shooterPivot.ShooterPivot;
+import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
+// import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -48,6 +51,7 @@ public class Robot extends LoggedRobot {
   public static Vision vision;
   public static SwerveSubsystem swerveDrive;
   private Command autoCommand;
+  private ShooterPivot shooterPivot;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
   public static final CommandXboxController driver =
@@ -122,6 +126,8 @@ public class Robot extends LoggedRobot {
     // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
     // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
+
+    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
         isSimulation()
