@@ -165,6 +165,10 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
     driver
         .getPIDController()
         .setReference(
-            setpointMetersPerSecond, ControlType.kVelocity, 0, staticFFVolts, ArbFFUnits.kVoltage);
+            setpointMetersPerSecond,
+            ControlType.kVelocity,
+            0,
+            staticFFVolts * Math.signum(setpointMetersPerSecond),
+            ArbFFUnits.kVoltage);
   }
 }

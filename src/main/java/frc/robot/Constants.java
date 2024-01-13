@@ -155,21 +155,21 @@ public final class Constants {
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
               // 0.12
-              .kP(0.013)
-              .build()
-              .buildTunables();
+              .kP(0.012)
+              .build();
+      //   .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
               // 1.0
-              .kP(0.0006)
+              .kP(0.25)
               // 0.225
-              .kS(0.08)
+              .kS(0.225)
               // 2.33
-              .kV(2.33)
-              .build()
-              .buildTunables();
+              .kV(0.2)
+              .build();
+      //   .buildTunables();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(7).build();

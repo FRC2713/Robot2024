@@ -316,14 +316,14 @@ public class SwerveSubsystem extends SubsystemBase {
    * be run in periodic() or during every code loop to maintain accuracy.
    */
   public void updateOdometry() {
-    odometry.update(
-        Rotation2d.fromDegrees(inputs.gyroYawPosition),
-        new SwerveModulePosition[] {
-          frontLeft.getPosition(),
-          frontRight.getPosition(),
-          backLeft.getPosition(),
-          backRight.getPosition()
-        });
+    // odometry.update(
+    // Rotation2d.fromDegrees(inputs.gyroYawPosition),
+    // new SwerveModulePosition[] {
+    //   frontLeft.getPosition(),
+    //   frontRight.getPosition(),
+    //   backLeft.getPosition(),
+    //   backRight.getPosition()
+    // });
 
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(),

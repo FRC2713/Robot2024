@@ -15,41 +15,41 @@ public class PIDFFGains {
   @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV;
 
   public PIDFFGains buildTunables() {
-    tunableKP =
-        new TunableNT4(
-            name + "/kP",
-            kP,
-            x -> {
-              this.kP = x;
-            });
-    tunableKI =
-        new TunableNT4(
-            name + "/kI",
-            kI,
-            x -> {
-              this.kI = x;
-            });
-    tunableKD =
-        new TunableNT4(
-            name + "/kD",
-            kD,
-            x -> {
-              this.kD = x;
-            });
-    tunableKS =
-        new TunableNT4(
-            name + "/kS",
-            kS,
-            x -> {
-              this.kS = x;
-            });
-    tunableKV =
-        new TunableNT4(
-            name + "/kV",
-            kV,
-            x -> {
-              this.kV = x;
-            });
+    // tunableKP =
+    //     new TunableNT4(
+    //         name + "/kP",
+    //         kP,
+    //         x -> {
+    //           this.kP = x;
+    //         });
+    // tunableKI =
+    //     new TunableNT4(
+    //         name + "/kI",
+    //         kI,
+    //         x -> {
+    //           this.kI = x;
+    //         });
+    // tunableKD =
+    //     new TunableNT4(
+    //         name + "/kD",
+    //         kD,
+    //         x -> {
+    //           this.kD = x;
+    //         });
+    // tunableKS =
+    //     new TunableNT4(
+    //         name + "/kS",
+    //         kS,
+    //         x -> {
+    //           this.kS = x;
+    //         });
+    // tunableKV =
+    //     new TunableNT4(
+    //         name + "/kV",
+    //         kV,
+    //         x -> {
+    //           this.kV = x;
+    //         });
 
     return this;
   }

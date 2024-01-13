@@ -15,7 +15,7 @@ public class Simple extends SequentialCommandGroup {
             () -> {
               Logger.recordOutput("DidSOMETHING", true);
             }));
-    return new SequentialCommandGroup(new PathPlannerAuto("Simple Auto"));
+    return new SequentialCommandGroup(new PathPlannerAuto("2 Piece"));
   }
   // public Simple() {
   // addCommands(
