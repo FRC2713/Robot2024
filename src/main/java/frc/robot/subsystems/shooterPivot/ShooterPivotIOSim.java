@@ -13,7 +13,8 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           DCMotor.getNEO(1),
           Constants.ShooterPivotConstants.GEARING,
           SingleJointedArmSim.estimateMOI(
-              Constants.ShooterPivotConstants.LENGTH_METERS, Constants.ShooterPivotConstants.MASS_KG),
+              Constants.ShooterPivotConstants.LENGTH_METERS,
+              Constants.ShooterPivotConstants.MASS_KG),
           Constants.ShooterPivotConstants.LENGTH_METERS,
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES - 10),
           Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES + 10),
