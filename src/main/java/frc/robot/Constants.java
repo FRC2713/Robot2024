@@ -47,6 +47,17 @@ public final class Constants {
     public static final int OPERATOR_PORT = 1;
   }
 
+  public static final class ElevatorConstants {
+    public static final PIDFFGains ELEVATOR_GAINS = PIDFFGains.builder().kP(0.75).kD(0.0).kG(0.85).build();
+    public static final double GEARING = 0;
+    public static final double CARRIAGE_MASS_KG = 0;
+    public static final double DRUM_RADIUS_METERS = 0;
+    public static final double MIN_HEIGHT_METERS = 0;
+    public static final double MAX_HEIGHT_METERS = 0;
+    public static final double STARTING_HEIGHT_METERS = 0;
+    public static final boolean SIMULATE_GRAVITY = true;
+  }
+
   @UtilityClass
   public static final class DriveConstants {
 

@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Builder
 public class PIDFFGains {
-  @Getter private double kP, kI, kD, kS, kV;
+  @Getter private double kP, kI, kD, kS, kV, kG; // TODO: apply kg (or make seperate ElevatorGains class)
   @Getter private String name;
   @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV;
 
