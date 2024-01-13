@@ -323,7 +323,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("DS Alliance has value", checkedAlliance.isPresent());
     if (checkedAlliance.isPresent()) {
       Logger.recordOutput("DS Alliance value", checkedAlliance.get());
-      buildAutoChooser();
+      // buildAutoChooser();
     }
 
     // these gyro resets are mostly for ironing out teleop driving issues

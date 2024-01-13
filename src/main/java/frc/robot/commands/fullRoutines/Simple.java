@@ -2,20 +2,28 @@ package frc.robot.commands.fullRoutines;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class Simple extends SequentialCommandGroup {
   public static Command getAutonomousCommand() {
+    PathPlannerPath p = PathPlannerPath.fromPathFile("First Piece");
     NamedCommands.registerCommand(
         "Simple NamedCommand",
         new InstantCommand(
             () -> {
               Logger.recordOutput("DidSOMETHING", true);
             }));
-    return new SequentialCommandGroup(new PathPlannerAuto("2 Piece"));
+    return new SequentialCommandGroup(
+        new InstantCommand(
+            () -> {
+              Robot.swerveDrive.resetOdometry(p.getPreviewStartingHolonomicPose());
+            }),
+        new PathPlannerAuto("2 Piece"));
   }
   // public Simple() {
   // addCommands(
