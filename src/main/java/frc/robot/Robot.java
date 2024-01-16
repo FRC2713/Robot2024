@@ -27,7 +27,6 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
-import java.io.File;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -77,30 +76,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      File sda1 = new File(Constants.Logging.sda1Dir);
-      File sda2 = new File(Constants.Logging.sda2Dir);
-
-      if (sda1.exists() && sda1.isDirectory()) {
-        Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda1Dir));
-        Logger.recordOutput("isLoggingToUsb", true);
-      } else {
-        RedHawkUtil.ErrHandler.getInstance()
-            .addError(
-                "Cannot log to "
-                    + Constants.Logging.sda1Dir
-                    + ", trying "
-                    + Constants.Logging.sda2Dir);
-        if (sda2.exists() && sda2.isDirectory()) {
-          Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda2Dir));
-          Logger.recordOutput("isLoggingToUsb", true);
-        } else {
-          RedHawkUtil.ErrHandler.getInstance()
-              .addError("Cannot log to " + Constants.Logging.sda2Dir);
-          Logger.recordOutput("isLoggingToUsb", false);
-        }
-      }
-    } else {
-      Logger.recordOutput("isLoggingToUsb", false);
+      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
     }
 
     Logger.start();
