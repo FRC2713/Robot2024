@@ -117,7 +117,7 @@ public class SwerveSubsystem extends SubsystemBase {
           this.setDesiredChassisSpeeds(cs);
         },
         new HolonomicPathFollowerConfig(
-            new PIDConstants(6, 0, 0), new PIDConstants(1, 0, 0), 4.5, 0.4, new ReplanningConfig()),
+            new PIDConstants(3, 0, 0), new PIDConstants(4, 0, 0), 4.5, 0.4, new ReplanningConfig()),
         () -> {
           var alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {

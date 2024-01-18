@@ -26,13 +26,11 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
@@ -75,9 +73,10 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
-    if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
-    }
+    // TODO log to file
+    // if (isReal()) {
+    //   Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+    // }
 
     Logger.start();
 

@@ -1,0 +1,69 @@
+{
+    "version": "v0.2",
+    "robotConfiguration": {
+        "mass": 58.5,
+        "rotationalInertia": 6.067,
+        "motorMaxTorque": 0.9060773480662982,
+        "motorMaxVelocity": 5800,
+        "gearing": 6.12,
+        "wheelbase": 0.5271,
+        "trackWidth": 0.271,
+        "bumperLength": 0.6731,
+        "bumperWidth": 0.6731,
+        "wheelRadius": 0.050799972568014815
+    },
+    "paths": {
+        "New Path": {
+            "waypoints": [
+                {
+                    "x": 2.2946972846984863,
+                    "y": 6.828628063201904,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 11
+                },
+                {
+                    "x": 4.2228217124938965,
+                    "y": 5.918726444244385,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": false,
+                    "controlIntervalCount": 12
+                },
+                {
+                    "x": 5.999295711517334,
+                    "y": 7.33773946762085,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
+                }
+            ],
+            "trajectory": [],
+            "constraints": [
+                {
+                    "scope": [
+                        "first"
+                    ],
+                    "type": "StopPoint",
+                    "uuid": "5afe2c80-1aa9-49d4-acaa-12dc835da475"
+                },
+                {
+                    "scope": [
+                        "last"
+                    ],
+                    "type": "StopPoint",
+                    "uuid": "349e004b-0b82-469e-a314-cd6ff4d3ebd0"
+                }
+            ],
+            "usesControlIntervalGuessing": true,
+            "defaultControlIntervalCount": 40,
+            "usesDefaultFieldObstacles": true,
+            "circleObstacles": []
+        }
+    }
+}
