@@ -10,7 +10,7 @@ import frc.robot.Robot;
 import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import org.littletonrobotics.junction.Logger;
 
-public class Simple extends SequentialCommandGroup {
+public class ThreePiece extends SequentialCommandGroup {
   public static Command getAutonomousCommand() {
     PathPlannerPath p = PathPlannerPath.fromPathFile("First Piece");
     NamedCommands.registerCommand(

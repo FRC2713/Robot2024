@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
-import frc.robot.commands.fullRoutines.Simple;
+import frc.robot.commands.fullRoutines.SimpleChoreo;
+import frc.robot.commands.fullRoutines.ThreePiece;
+import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -289,7 +291,9 @@ public class Robot extends LoggedRobot {
     RHRNamedCommands.registerGenericCommands();
 
     // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
-    autoChooser.addDefaultOption("Simple", Simple.getAutonomousCommand());
+    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
+    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
+    autoChooser.addOption("ThreePieceChoreo", ThreePieceChoreo.getAutonomousCommand());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
   }
 
