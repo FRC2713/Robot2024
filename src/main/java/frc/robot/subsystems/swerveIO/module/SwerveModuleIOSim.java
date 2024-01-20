@@ -8,8 +8,8 @@ import frc.robot.rhr.RHRPIDFFController;
 
 public class SwerveModuleIOSim implements SwerveModuleIO {
 
-  FlywheelSim azimuthSim = new FlywheelSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.004096955);
-  FlywheelSim driveSim = new FlywheelSim(DCMotor.getNEO(1), 6.12, 0.025);
+  FlywheelSim azimuthSim = new FlywheelSim(DCMotor.getNEO(1), 150.0 / 7.0, 0.0004096955);
+  FlywheelSim driveSim = new FlywheelSim(DCMotor.getNEO(1), 6.12, 0.0025);
 
   RHRPIDFFController driveController, azimuthController;
 
@@ -17,17 +17,23 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   double theDriveVolts = 0;
   double driveFFVolts = 0;
 
+  ModuleInfo info;
+
   public SwerveModuleIOSim(ModuleInfo information) {
     driveController = information.getDriveGains().createRHRController();
     azimuthController = information.getAzimuthGains().createRHRController();
     azimuthController.enableContinuousInput(-180, 180);
+    info = information;
   }
 
   @Override
   public void updateInputs(SwerveModuleInputs inputs) {
     setAzimuthVoltage(azimuthController.calculate(inputs.aziEncoderPositionDeg));
     setDriveVoltage(
-        driveController.calculate(inputs.driveEncoderVelocityMetresPerSecond) + driveFFVolts);
+        MathUtil.clamp(
+            driveController.calculate(inputs.driveEncoderVelocityMetresPerSecond) + driveFFVolts,
+            -12,
+            12));
 
     azimuthSim.update(0.02);
     driveSim.update(0.02);
@@ -35,7 +41,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     inputs.aziAbsoluteEncoderRawVolts = 0;
     inputs.aziAbsoluteEncoderAdjVolts = 0;
     inputs.aziAbsoluteEncoderAdjAngleDeg = 0;
-    inputs.aziOutputVolts = MathUtil.clamp(azimuthSim.getOutput(0), -12.0, 12.0);
+    inputs.aziOutputVolts = MathUtil.clamp(theAziVolts, -12.0, 12.0);
     inputs.aziTempCelcius = 0.0;
     inputs.aziCurrentDrawAmps = azimuthSim.getCurrentDrawAmps();
     inputs.aziEncoderPositionDeg +=
@@ -48,7 +54,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
     inputs.driveEncoderVelocityMetresPerSecond =
         driveSim.getAngularVelocityRPM() * Math.PI * Units.inchesToMeters(4) / 60;
-    inputs.driveOutputVolts = MathUtil.clamp(driveSim.getOutput(0), -12.0, 12.0);
+    inputs.driveOutputVolts = MathUtil.clamp(theDriveVolts, -12.0, 12.0);
     inputs.driveCurrentDrawAmps = driveSim.getCurrentDrawAmps();
     inputs.driveTempCelcius = 0.0;
   }
@@ -75,6 +81,6 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   @Override
   public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
     driveController.setSetpoint(setpointMetersPerSecond);
-    driveFFVolts = staticFFVolts;
+    driveFFVolts = 0;
   }
 }

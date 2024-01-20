@@ -106,6 +106,10 @@ public class SwerveModule extends SubsystemBase {
   public void update() {
     io.setAzimuthPositionSetpoint(state.angle.getDegrees());
     io.setDriveVelocitySetpoint(state.speedMetersPerSecond, information.getDriveGains().getKS());
+
+    recordOutput("Azimuth Pos Setpoint", state.angle.getDegrees());
+    recordOutput("Drive Vel Setpoint", state.speedMetersPerSecond);
+    recordOutput("Drive Vel FF", information.getDriveGains().getKS());
   }
 
   @Override

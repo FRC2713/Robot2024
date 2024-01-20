@@ -165,9 +165,9 @@ public final class Constants {
               // 1.0
               .kP(0.25)
               // 0.225
-              .kS(0.225)
+              //   .kS(0.225)
               // 2.33
-              .kV(0.2)
+              //   .kV(0.2)
               .build();
       //   .buildTunables();
 
