@@ -5,6 +5,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.ErrorTracker;
 import org.littletonrobotics.junction.Logger;
@@ -19,7 +20,11 @@ public class RHRPathPlannerAuto extends PathPlannerAuto {
 
   public RHRPathPlannerAuto(String autoName, int errorTrackerSamples) {
     super(autoName);
-    errorTracker = new ErrorTracker(errorTrackerSamples);
+    this.errorTracker =
+        new ErrorTracker(
+            errorTrackerSamples,
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X,
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_ROTATION);
   }
 
   @Override
@@ -46,8 +51,8 @@ public class RHRPathPlannerAuto extends PathPlannerAuto {
                           - currentPose.getRotation().getRadians()));
 
           errorTracker.addObservation(error);
-          Logger.recordOutput("Pathplanner/Target Pose", targetPose);
-          Logger.recordOutput("Pathplanner/Pose Error", error);
+          Logger.recordOutput("PathPlanner/Target Pose", targetPose);
+          Logger.recordOutput("PathPlanner/Pose Error", error);
         });
   }
 }

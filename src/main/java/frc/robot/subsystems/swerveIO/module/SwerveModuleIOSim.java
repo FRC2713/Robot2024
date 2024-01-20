@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Constants;
 import frc.robot.rhr.RHRPIDFFController;
 
 public class SwerveModuleIOSim implements SwerveModuleIO {
@@ -18,8 +19,10 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   double driveFFVolts = 0;
 
   public SwerveModuleIOSim(ModuleInfo information) {
-    driveController = information.getDriveGains().createRHRController();
-    azimuthController = information.getAzimuthGains().createRHRController();
+    driveController =
+        Constants.DriveConstants.Gains.K_DEFAULT_SIM_DRIVING_GAINS.createRHRController();
+    azimuthController =
+        Constants.DriveConstants.Gains.K_DEFAULT_SIM_AZIMUTH_GAINS.createRHRController();
     azimuthController.enableContinuousInput(-180, 180);
   }
 
