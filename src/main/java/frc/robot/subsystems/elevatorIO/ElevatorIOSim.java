@@ -25,6 +25,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
+      // System.out.print("hello");
     }
     sim.update(0.02);
     inputs.outputVoltageLeft = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
@@ -34,6 +35,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.currentDrawAmpsLeft = sim.getCurrentDrawAmps() / 2.0;
     inputs.outputVoltageRight = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
     inputs.heightInchesRight = Units.metersToInches(sim.getPositionMeters());
+    // System.out.println(sim.getPositionMeters());
     inputs.velocityInchesPerSecondRight = Units.metersToInches(sim.getVelocityMetersPerSecond());
     inputs.tempCelsiusRight = 0.0;
     inputs.currentDrawAmpsRight = sim.getCurrentDrawAmps() / 2.0;

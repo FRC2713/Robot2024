@@ -2,7 +2,8 @@ package frc.robot.util;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.revrobotics.SparkPIDController;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.*;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.rhr.RHRFeedForward;
 import frc.robot.rhr.RHRPIDFFController;
 import lombok.Builder;
@@ -10,9 +11,10 @@ import lombok.Getter;
 
 @Builder
 public class PIDFFGains {
-  @Getter private double kP, kI, kD, kS, kV, kG; // TODO: apply kg (or make seperate ElevatorGains class)
+  @Getter
+  private double kP, kI, kD, kS, kV, kG; // TODO: apply kg (or make seperate ElevatorGains class)
   @Getter private String name;
-  @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV;
+  @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV, tunableKG;
 
   public PIDFFGains buildTunables() {
     tunableKP =
@@ -51,6 +53,14 @@ public class PIDFFGains {
               this.kV = x;
             });
 
+    tunableKG =
+        new TunableNT4(
+            name + "/kG",
+            kG,
+            x -> {
+              this.kG = x;
+            });
+
     return this;
   }
 
@@ -66,6 +76,8 @@ public class PIDFFGains {
     return controller;
   }
 
+  // public
+
   public RHRFeedForward createRHRFeedForward() {
     RHRFeedForward ff = RHRFeedForward.builder().kS(kS).kV(kV).build();
 
@@ -75,6 +87,15 @@ public class PIDFFGains {
     }
 
     return ff;
+  }
+
+  public ElevatorFeedforward createElevatorFeedforward() {
+    return new ElevatorFeedforward(kS, kG, kV);
+  }
+
+  public ProfiledPIDController createProfiledPIDController(
+      TrapezoidProfile.Constraints constraints) {
+    return new ProfiledPIDController(kP, kI, kD, constraints);
   }
 
   public RHRPIDFFController createRHRController() {

@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
   public static SwerveSubsystem swerveDrive;
   private Command autoCommand;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
-  public Elevator elevator;
+  public static Elevator elevator;
   public static final CommandXboxController driver =
       new CommandXboxController(Constants.RobotMap.DRIVER_PORT);
   public static final CommandXboxController operator =
@@ -211,6 +211,14 @@ public class Robot extends LoggedRobot {
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    operator
+        .a()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  elevator.setTargetHeight(6);
+                }));
   }
 
   @Override
