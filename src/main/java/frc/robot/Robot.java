@@ -7,8 +7,6 @@ package frc.robot;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -25,6 +23,9 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIOSim;
+import frc.robot.subsystems.visionIO.VisionLimelight;
+import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
@@ -58,16 +59,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    NetworkTable frontTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.FRONT.table);
-    NetworkTable rearTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.REAR.table);
-    frontVisionPose = frontTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    frontCamera2TagPose =
-        frontTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    rearCamera2TagPose =
-        rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
     Logger.addDataReceiver(new NT4Publisher());
     // URCL.start();
     Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
@@ -91,6 +82,15 @@ public class Robot extends LoggedRobot {
     // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
     // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
+
+    VisionManager visionManager =
+        new VisionManager(
+            new Vision(
+                "Front",
+                isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-front")),
+            new Vision(
+                "Rear",
+                isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear")));
 
     swerveDrive =
         isSimulation()
