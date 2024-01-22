@@ -151,13 +151,20 @@ public final class Constants {
 
     @UtilityClass
     public static final class Gains {
+
+      public static final PIDFFGains K_DEFAULT_SIM_DRIVING_GAINS =
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(1.0).kS(0.225).kV(2.33).build();
+
+      public static final PIDFFGains K_DEFAULT_SIM_AZIMUTH_GAINS =
+          PIDFFGains.builder().name("Swerve/Defaults/Azimuth").kP(0.012).build();
+
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
               // 0.12
               .kP(0.012)
               .build();
-      //   .buildTunables();
+      // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
@@ -169,16 +176,16 @@ public final class Constants {
               // 2.33
               .kV(0.2)
               .build();
-      //   .buildTunables();
+      // .buildTunables();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
-          PIDFFGains.builder().name("Trajectory/X").kP(7).build();
+          PIDFFGains.builder().name("Trajectory/X").kP(3).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_Y =
           PIDFFGains.builder().name("Trajectory/Y").kP(7).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_ROTATION =
-          PIDFFGains.builder().name("Trajectory/R").kP(2.5).build();
+          PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
   }
 }

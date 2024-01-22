@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.rhr.RHRFeedForward;
@@ -110,5 +111,13 @@ public class PIDFFGains {
       tunableKD.addHook(x -> controller.setD(x));
       tunableKV.addHook(x -> controller.setFF(x));
     }
+  }
+
+  public String toString() {
+    return String.format("kP = %s / kD = %s", kP, kD);
+  }
+
+  public PIDConstants toPathplannerGains() {
+    return new PIDConstants(kP, kI, kD);
   }
 }
