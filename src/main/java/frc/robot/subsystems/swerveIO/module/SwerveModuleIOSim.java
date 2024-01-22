@@ -5,6 +5,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.rhr.RHRPIDFFController;
+import frc.robot.util.PIDFFGains;
 
 public class SwerveModuleIOSim implements SwerveModuleIO {
 
@@ -20,15 +21,28 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   ModuleInfo info;
 
   public SwerveModuleIOSim(ModuleInfo information) {
-    driveController = information.getDriveGains().createRHRController();
-    azimuthController = information.getAzimuthGains().createRHRController();
+    driveController =
+        PIDFFGains.builder()
+            .name("Swerve/Sim/Driving")
+            .kP(1.2)
+            .kV(2.3)
+            .build()
+            .createRHRController();
+    azimuthController =
+        PIDFFGains.builder()
+            .name("Swerve/Sim/Azimuth")
+            .kP(0.1)
+            // .kS(0.225)
+            .build()
+            .createRHRController();
     azimuthController.enableContinuousInput(-180, 180);
     info = information;
   }
 
   @Override
   public void updateInputs(SwerveModuleInputs inputs) {
-    setAzimuthVoltage(azimuthController.calculate(inputs.aziEncoderPositionDeg));
+    setAzimuthVoltage(
+        MathUtil.clamp(azimuthController.calculate(inputs.aziEncoderPositionDeg), -12, 12));
     setDriveVoltage(
         MathUtil.clamp(
             driveController.calculate(inputs.driveEncoderVelocityMetresPerSecond) + driveFFVolts,
@@ -81,6 +95,6 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   @Override
   public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
     driveController.setSetpoint(setpointMetersPerSecond);
-    driveFFVolts = 0;
+    // driveFFVolts = staticFFVolts;
   }
 }
