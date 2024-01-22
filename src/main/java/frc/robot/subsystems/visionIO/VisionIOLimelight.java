@@ -77,6 +77,17 @@ public class VisionIOLimelight implements VisionIO {
       return new Pair<Pose3d, Double>(new Pose3d(), 0.0);
     }
 
+    if (arr.length == 7) {
+      return new Pair<Pose3d, Double>(
+          new Pose3d(
+              new Translation3d(arr[0], arr[1], arr[2]),
+              new Rotation3d(
+                  Units.degreesToRadians(arr[3]),
+                  Units.degreesToRadians(arr[4]),
+                  Units.degreesToRadians(arr[5]))),
+          arr[6]);
+    }
+
     return new Pair<Pose3d, Double>(
         new Pose3d(
             new Translation3d(arr[0], arr[1], arr[2]),
@@ -84,7 +95,7 @@ public class VisionIOLimelight implements VisionIO {
                 Units.degreesToRadians(arr[3]),
                 Units.degreesToRadians(arr[4]),
                 Units.degreesToRadians(arr[5]))),
-        arr[6]);
+        0.0);
   }
 
   @Override

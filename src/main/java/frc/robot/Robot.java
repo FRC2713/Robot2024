@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -27,17 +27,16 @@ import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   public static SwerveSubsystem swerveDrive;
+  public static VisionManager visionManager;
   private Command autoCommand;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -49,13 +48,6 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  public static double[] poseValue;
-  DoubleArraySubscriber frontVisionPose;
-  DoubleArraySubscriber rearVisionPose;
-
-  DoubleArraySubscriber frontCamera2TagPose;
-  DoubleArraySubscriber rearCamera2TagPose;
-
   @Override
   public void robotInit() {
     Logger.addDataReceiver(new NT4Publisher());
@@ -66,7 +58,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
     }
 
     Logger.start();
@@ -87,18 +79,20 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
 
-    VisionManager visionManager =
+    visionManager =
         new VisionManager(
             new Vision(
                 "Front",
                 isSimulation()
-                    ? new VisionIOSim("limelight-front")
-                    : new VisionIOLimelight("limelight-front")),
+                    ? new VisionIOSim("limelight")
+                    : new VisionIOLimelight("limelight")),
             new Vision(
                 "Rear",
                 isSimulation()
                     ? new VisionIOSim("limelight-rear")
                     : new VisionIOLimelight("limelight-rear")));
+
+
 
     mechManager = new MechanismManager();
 
