@@ -151,13 +151,6 @@ public final class Constants {
 
     @UtilityClass
     public static final class Gains {
-
-      public static final PIDFFGains K_DEFAULT_SIM_DRIVING_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(1.0).kS(0.225).kV(2.33).build();
-
-      public static final PIDFFGains K_DEFAULT_SIM_AZIMUTH_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Azimuth").kP(0.012).build();
-
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
