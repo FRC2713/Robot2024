@@ -6,14 +6,24 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionIO {
   @AutoLog
   public static class VisionInputs {
-    double[] botPose = new double[] {};
-    double[] botPoseBlue = new double[] {};
-    double[] botPoseRed = new double[] {};
-    double[] cameraPoseInTargetSpace = new double[] {};
-    double[] targetPoseInCameraSpace = new double[] {};
-    double[] targetPoseInRobotSpace = new double[] {};
-    double[] botPoseInTargetSpace = new double[] {};
-    double[] cameraPoseInRobotSpace = new double[] {};
+    Pose3d botPose = new Pose3d();
+    Pose3d botPoseBlue = new Pose3d();
+    Pose3d botPoseRed = new Pose3d();
+    Pose3d cameraPoseInTargetSpace = new Pose3d();
+    Pose3d targetPoseInCameraSpace = new Pose3d();
+    Pose3d targetPoseInRobotSpace = new Pose3d();
+    Pose3d botPoseInTargetSpace = new Pose3d();
+    Pose3d cameraPoseInRobotSpace = new Pose3d();
+
+    double botPoseTimestamp = 0;
+    double botPoseBlueTimestamp = 0;
+    double botPoseRedTimestamp = 0;
+    double cameraPoseInTargetSpaceTimestamp = 0;
+    double targetPoseInCameraSpaceTimestamp = 0;
+    double targetPoseInRobotSpaceTimestamp = 0;
+    double botPoseInTargetSpaceTimestamp = 0;
+    double cameraPoseInRobotSpaceTimestamp = 0;
+
     double aprilTagId = 0;
 
     boolean hasValidTarget = false;

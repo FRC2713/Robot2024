@@ -23,8 +23,8 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
-import frc.robot.subsystems.visionIO.VisionLimelight;
 import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
@@ -37,7 +37,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
-  // public static Vision vision;
   public static SwerveSubsystem swerveDrive;
   private Command autoCommand;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
@@ -72,26 +71,6 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    // vision =
-    //     new Vision(
-    //         isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight"),
-    //         isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear"));
-    // slapper = new Slapper(true ? new SlapperIOSim() : new SlapperIOSparks());
-
-    // fourBar = new FourBar(true ? new FourBarIOSim() : new FourBarIOSparks());
-    // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
-    // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
-    // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
-
-    VisionManager visionManager =
-        new VisionManager(
-            new Vision(
-                "Front",
-                isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-front")),
-            new Vision(
-                "Rear",
-                isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear")));
-
     swerveDrive =
         isSimulation()
             // true
@@ -107,6 +86,19 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.FRONT_RIGHT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
+
+    VisionManager visionManager =
+        new VisionManager(
+            new Vision(
+                "Front",
+                isSimulation()
+                    ? new VisionIOSim("limelight-front")
+                    : new VisionIOLimelight("limelight-front")),
+            new Vision(
+                "Rear",
+                isSimulation()
+                    ? new VisionIOSim("limelight-rear")
+                    : new VisionIOLimelight("limelight-rear")));
 
     mechManager = new MechanismManager();
 

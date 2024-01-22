@@ -1,5 +1,10 @@
 package frc.robot.subsystems.visionIO;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -7,7 +12,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class VisionLimelight implements VisionIO {
+public class VisionIOLimelight implements VisionIO {
 
   String name;
   NetworkTable table;
@@ -25,7 +30,7 @@ public class VisionLimelight implements VisionIO {
   IntegerPublisher ledMode, cameraMode, stream, pipeline, snapshot;
   DoubleArrayPublisher crop, cameraPoseRobotSpacePub;
 
-  public VisionLimelight(String name) {
+  public VisionIOLimelight(String name) {
     this.name = name;
     table = NetworkTableInstance.getDefault().getTable(name);
 
@@ -67,16 +72,48 @@ public class VisionLimelight implements VisionIO {
     cameraPoseRobotSpacePub = table.getDoubleArrayTopic("camerapose_robotspace_set").publish();
   }
 
+  private Pair<Pose3d, Double> timestampedPoseFromLLArray(double[] arr) {
+    if (arr.length == 0) {
+      return new Pair<Pose3d, Double>(new Pose3d(), 0.0);
+    }
+
+    return new Pair<Pose3d, Double>(
+        new Pose3d(
+            new Translation3d(arr[0], arr[1], arr[2]),
+            new Rotation3d(
+                Units.degreesToRadians(arr[3]),
+                Units.degreesToRadians(arr[4]),
+                Units.degreesToRadians(arr[5]))),
+        arr[6]);
+  }
+
   @Override
   public void updateInputs(VisionInputs inputs) {
-    inputs.botPose = botPose.get();
-    inputs.botPoseBlue = botPoseWpiBlue.get();
-    inputs.botPoseRed = botPoseWpiRed.get();
-    inputs.cameraPoseInTargetSpace = cameraPoseTargetSpace.get();
-    inputs.targetPoseInCameraSpace = targetPoseCameraSpace.get();
-    inputs.targetPoseInRobotSpace = targetPoseRobotSpace.get();
-    inputs.botPoseInTargetSpace = botPoseTargetSpace.get();
-    inputs.cameraPoseInRobotSpace = cameraPoseRobotSpace.get();
+    var botPosePair = timestampedPoseFromLLArray(botPose.get());
+    var botPoseBluePair = timestampedPoseFromLLArray(botPoseWpiBlue.get());
+    var botPoseRedPair = timestampedPoseFromLLArray(botPoseWpiRed.get());
+    var cameraPoseInTargetSpacePair = timestampedPoseFromLLArray(cameraPoseTargetSpace.get());
+    var targetPoseInCameraSpacePair = timestampedPoseFromLLArray(targetPoseCameraSpace.get());
+    var targetPoseInRobotSpacePair = timestampedPoseFromLLArray(targetPoseRobotSpace.get());
+    var botPoseInTargetSpacePair = timestampedPoseFromLLArray(botPoseTargetSpace.get());
+    var cameraPoseInRobotSpacePair = timestampedPoseFromLLArray(cameraPoseRobotSpace.get());
+
+    inputs.botPose = botPosePair.getFirst();
+    inputs.botPoseBlue = botPoseBluePair.getFirst();
+    inputs.botPoseRed = botPoseRedPair.getFirst();
+    inputs.cameraPoseInTargetSpace = cameraPoseInTargetSpacePair.getFirst();
+    inputs.targetPoseInCameraSpace = targetPoseInCameraSpacePair.getFirst();
+    inputs.targetPoseInRobotSpace = targetPoseInRobotSpacePair.getFirst();
+    inputs.botPoseInTargetSpace = botPoseInTargetSpacePair.getFirst();
+    inputs.cameraPoseInRobotSpace = cameraPoseInRobotSpacePair.getFirst();
+    inputs.botPoseTimestamp = botPosePair.getSecond();
+    inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
+    inputs.botPoseRedTimestamp = botPoseRedPair.getSecond();
+    inputs.cameraPoseInTargetSpaceTimestamp = cameraPoseInTargetSpacePair.getSecond();
+    inputs.targetPoseInCameraSpaceTimestamp = targetPoseInCameraSpacePair.getSecond();
+    inputs.targetPoseInRobotSpaceTimestamp = targetPoseInRobotSpacePair.getSecond();
+    inputs.botPoseInTargetSpaceTimestamp = botPoseInTargetSpacePair.getSecond();
+    inputs.cameraPoseInRobotSpaceTimestamp = cameraPoseInRobotSpacePair.getSecond();
 
     inputs.averageHsvColor = tc.get();
     inputs.aprilTagId = aprilTagId.get();
