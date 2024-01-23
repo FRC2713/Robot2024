@@ -217,8 +217,9 @@ public class Robot extends LoggedRobot {
         .whileTrue(
             new InstantCommand(
                 () -> {
-                  elevator.setTargetHeight(6);
+                  elevator.setTargetHeight(20);
                 }));
+    // operator.a().whileTrue(autoCommand)
   }
 
   @Override

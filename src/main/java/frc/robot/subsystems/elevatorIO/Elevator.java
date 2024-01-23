@@ -40,6 +40,10 @@ public class Elevator extends SubsystemBase {
     this.feedforward = Constants.ElevatorConstants.ELEVATOR_GAINS.createElevatorFeedforward();
     this.inputs = new ElevatorInputsAutoLogged();
     this.IO.updateInputs(inputs);
+    for (int i = 0; i < 20; i++) {
+      System.out.println("hello");
+    }
+    System.out.println(Constants.ElevatorConstants.ELEVATOR_GAINS.toString());
     elevatorController =
         Constants.ElevatorConstants.ELEVATOR_GAINS.createProfiledPIDController(
             new Constraints(100, 200));
