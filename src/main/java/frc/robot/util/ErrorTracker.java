@@ -83,9 +83,6 @@ public class ErrorTracker {
       System.out.println("<empty tracker>");
       return;
     }
-    error_sum /= (double) tracking_error_over_time_.size();
-    return Math.sqrt(error_sum);
-  }
 
     System.out.println("[" + name + "] Error Summary---");
     System.out.println(

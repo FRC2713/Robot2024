@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -90,16 +89,12 @@ public class Robot extends LoggedRobot {
         new VisionManager(
             new Vision(
                 "Front",
-                isSimulation()
-                    ? new VisionIOSim("limelight")
-                    : new VisionIOLimelight("limelight")),
+                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
             new Vision(
                 "Rear",
                 isSimulation()
                     ? new VisionIOSim("limelight-rear")
                     : new VisionIOLimelight("limelight-rear")));
-
-
 
     mechManager = new MechanismManager();
 
