@@ -11,12 +11,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.ErrorTracker;
-import frc.robot.util.RedHawkUtil;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,12 +28,40 @@ public class OTF {
           Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_ROTATION);
 
   Command runningCommand;
+  private final Timer timer;
+
+  public enum OTFOptions {
+    SPEAKER_MOTION(10, 3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+    AMP_STATIC(2, 3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
+    Null(0, 0, 0, 0, 0);
+
+    public int ttl = 0;
+    public double maxVelocityMps;
+    public double maxAccelerationMpsSq;
+    public double maxAngularVelocityRps;
+    public double maxAngularAccelerationRpsSq;
+
+    private OTFOptions(
+        int ttl,
+        double maxVelocityMps,
+        double maxAccelerationMpsSq,
+        double maxAngularVelocityRps,
+        double maxAngularAccelerationRpsSq) {
+      this.ttl = ttl;
+      this.maxVelocityMps = maxVelocityMps;
+      this.maxAccelerationMpsSq = maxAccelerationMpsSq;
+      this.maxAngularVelocityRps = maxAngularVelocityRps;
+      this.maxAngularAccelerationRpsSq = maxAngularAccelerationRpsSq;
+    }
+  }
+
+  public OTFOptions prevOTF = OTFOptions.Null;
 
   public ErrorTracker getTracker() {
     return tracker;
   }
 
-  public Command followPath() {
+  public Command followPath(OTFOptions type) {
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
           Pose2d currentPose = Robot.swerveDrive.getUsablePose();
@@ -51,10 +79,44 @@ public class OTF {
           Logger.recordOutput("PathPlanner/Pose Error", error);
         });
 
-    String autoName = "OTF1";
-    PathPlannerPath path = PathPlannerPath.fromPathFile(autoName);
-    NamedCommands.registerCommand(
-        "FireOuttake", new InstantCommand(() -> Logger.recordOutput("Firing", true)));
+    PathPlannerPath path;
+    PathConstraints constraints =
+        new PathConstraints(
+            type.maxVelocityMps,
+            type.maxAngularAccelerationRpsSq,
+            type.maxAngularVelocityRps,
+            type.maxAngularAccelerationRpsSq);
+    switch (type) {
+      case SPEAKER_MOTION:
+        String autoName = "OTF1";
+        path = PathPlannerPath.fromPathFile(autoName);
+        NamedCommands.registerCommand(
+            "FireOuttake", new InstantCommand(() -> Logger.recordOutput("Firing", true)));
+        break;
+      case AMP_STATIC:
+        List<Translation2d> bezierPoints =
+            PathPlannerPath.bezierFromPoses(
+                Robot.swerveDrive.getUsablePose(),
+                new Pose2d(1.89, 7.67, Rotation2d.fromRadians(-1.58)));
+
+        // Create the path using the bezier points created above
+        path =
+            new PathPlannerPath(
+                bezierPoints,
+                constraints, // The constraints for this path. If using a
+                // differential drivetrain, the angular constraints
+                // have no effect.
+                new GoalEndState(
+                    0.0,
+                    Rotation2d.fromDegrees(
+                        -90)) // Goal end state. You can set a holonomic rotation here. If
+                // using a differential drivetrain, the rotation will have no
+                // effect.
+                );
+        break;
+      default:
+        return new InstantCommand();
+    }
 
     var x = Robot.swerveDrive.getUsablePose().getX();
     var alliance =
@@ -65,8 +127,6 @@ public class OTF {
         || (alliance != DriverStation.Alliance.Blue && x < 10.4)) {
       // Create the constraints to use while pathfinding. The constraints defined in
       // the path will only be used for the path.
-      PathConstraints constraints =
-          new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
       // Since AutoBuilder is configured, we can use it to build pathfinding commands
       Command pathfindingCommand =
@@ -84,35 +144,27 @@ public class OTF {
     return runningCommand;
   }
 
-  public Command followPathAmp() {
-    List<Translation2d> bezierPoints =
-        PathPlannerPath.bezierFromPoses(
-            Robot.swerveDrive.getUsablePose(),
-            RedHawkUtil.Reflections.reflectIfRed(
-                new Pose2d(1.89, 7.67, Rotation2d.fromRadians(-1.58))));
-
-    // Create the path using the bezier points created above
-    PathPlannerPath path =
-        new PathPlannerPath(
-            bezierPoints,
-            new PathConstraints(
-                3.0, 3.0, 2 * Math.PI, 4 * Math.PI), // The constraints for this path. If using a
-            // differential drivetrain, the angular constraints
-            // have no effect.
-            new GoalEndState(
-                0.0,
-                Rotation2d.fromDegrees(
-                    -90)) // Goal end state. You can set a holonomic rotation here. If
-            // using a differential drivetrain, the rotation will have no
-            // effect.
-            );
-    runningCommand = AutoBuilder.followPath(path);
-    return runningCommand;
+  public Command hasElapsed(OTFOptions currentOTF) {
+    Logger.recordOutput("OTF/Timer", timer.get());
+    Logger.recordOutput("OTF/Time to regeneration", (currentOTF.ttl - timer.get()));
+    if (timer.hasElapsed(prevOTF.ttl)) {
+            timer.reset();
+      timer.start();
+      prevOTF = currentOTF;
+      getTracker().reset();
+      return followPath(currentOTF);
+    }
+    return new InstantCommand();
   }
 
   public void cancelCommand() {
-    runningCommand.cancel();
+    timer.reset();
+    if (runningCommand != null) {
+      runningCommand.cancel();
+    }
   }
 
-  public OTF() {}
+  public OTF() {
+    timer = new Timer();
+  }
 }

@@ -150,6 +150,11 @@ public final class Constants {
             .build();
 
     @UtilityClass
+    public static final class FieldTunables {
+      public static final int TIME_BETWEEN_REGERATION_SECONDS = 2;
+    }
+
+    @UtilityClass
     public static final class Gains {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()

@@ -23,6 +23,7 @@ import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
+import frc.robot.commands.otf.OTF.OTFOptions;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -120,13 +121,13 @@ public class Robot extends LoggedRobot {
 
     driver
         .a()
-        .onTrue(
+        .whileTrue(
             new SequentialCommandGroup(
                 new InstantCommand(
                     () -> {
                       otf.getTracker().reset();
                       swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.followPath().schedule();
+                      otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
                     })));
 
     driver
@@ -141,14 +142,12 @@ public class Robot extends LoggedRobot {
 
     driver
         .b()
-        .onTrue(
-            new SequentialCommandGroup(
-                new InstantCommand(
-                    () -> {
-                      otf.getTracker().reset();
-                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.followPathAmp().schedule();
-                    })));
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+                  otf.hasElapsed(OTFOptions.AMP_STATIC).schedule();
+                }));
 
     driver
         .b()
