@@ -2,7 +2,6 @@ package frc.robot.subsystems.swerveIO;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
@@ -117,7 +116,12 @@ public class SwerveSubsystem extends SubsystemBase {
           this.setDesiredChassisSpeeds(cs);
         },
         new HolonomicPathFollowerConfig(
-            new PIDConstants(6, 0, 0), new PIDConstants(1, 0, 0), 4.5, 0.4, new ReplanningConfig()),
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X.toPathplannerGains(),
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_ROTATION
+                .toPathplannerGains(),
+            4.5,
+            0.4,
+            new ReplanningConfig()),
         () -> {
           var alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {
@@ -139,6 +143,11 @@ public class SwerveSubsystem extends SubsystemBase {
         (pose) -> {
           // Do whatever you want with the pose here
           Logger.recordOutput("PathPlanner/Target Pose", pose);
+        });
+
+    PathPlannerLogging.setLogActivePathCallback(
+        path -> {
+          Logger.recordOutput("PathPlanner/Active Path", path.toArray(Pose2d[]::new));
         });
   }
 
@@ -349,6 +358,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Swerve/MotionMode", motionMode);
     io.updateInputs(inputs, kinematics, getModulePositions());
     Logger.processInputs("Swerve/Chassis", inputs);
     updateOdometry();

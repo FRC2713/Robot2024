@@ -157,7 +157,7 @@ public final class Constants {
               // 0.12
               .kP(0.012)
               .build();
-      //   .buildTunables();
+      // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
@@ -169,16 +169,16 @@ public final class Constants {
               // 2.33
               .kV(0.2)
               .build();
-      //   .buildTunables();
+      // .buildTunables();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
-          PIDFFGains.builder().name("Trajectory/X").kP(7).build();
+          PIDFFGains.builder().name("Trajectory/X").kP(3).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_Y =
           PIDFFGains.builder().name("Trajectory/Y").kP(7).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_ROTATION =
-          PIDFFGains.builder().name("Trajectory/R").kP(2.5).build();
+          PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
   }
 }

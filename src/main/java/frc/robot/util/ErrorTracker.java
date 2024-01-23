@@ -9,10 +9,14 @@ import java.util.List;
 public class ErrorTracker {
   List<Pose2d> tracking_error_over_time_;
   int max_num_samples_;
+  PIDFFGains translationGains, rotationGains;
 
-  public ErrorTracker(int max_num_samples) {
+  public ErrorTracker(int max_num_samples, PIDFFGains translationGains, PIDFFGains rotationGains) {
     max_num_samples_ = max_num_samples;
     tracking_error_over_time_ = new ArrayList<Pose2d>(max_num_samples);
+
+    this.translationGains = translationGains;
+    this.rotationGains = rotationGains;
   }
 
   public void addObservation(Pose2d error) {
@@ -76,12 +80,28 @@ public class ErrorTracker {
 
   public void printSummary(String name) {
     if (tracking_error_over_time_.isEmpty()) {
+      System.out.println("<empty tracker>");
       return;
     }
+    error_sum /= (double) tracking_error_over_time_.size();
+    return Math.sqrt(error_sum);
+  }
 
     System.out.println("[" + name + "] Error Summary---");
     System.out.println(
         "Translation: RMSE " + getTranslationRMSE() + ", Max: " + getMaxTranslationError());
     System.out.println("Rotation: RMSE " + getRotationRMSE() + ", Max: " + getMaxRotationError());
+
+    System.out.println("Rotation RMSE;Rotation MAX;Translation RMSE;Translation MAX");
+    System.out.println(
+        String.format(
+            "%f,%f,%f,%s,%f,%s,%f",
+            translationGains.getKP(),
+            translationGains.getKD(),
+            getRotationRMSE(),
+            getMaxRotationError().getDegrees(),
+            getTranslationRMSE(),
+            getMaxTranslationError().getX(),
+            getMaxTranslationError().getY()));
   }
 }

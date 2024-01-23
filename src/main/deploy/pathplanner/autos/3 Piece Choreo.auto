@@ -2,25 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7233010829658023,
-      "y": 6.698039577897338
+      "x": 0.6782838702201843,
+      "y": 6.76167106628418
     },
-    "rotation": 59.98163257239095
+    "rotation": 59.42075327154984
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "First Piece"
+            "pathName": "3 Piece Choreo.1"
           }
         },
         {
@@ -32,18 +26,24 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Second Piece"
+            "pathName": "3 Piece Choreo.2"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3 Piece Choreo.3"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }
