@@ -138,6 +138,27 @@ public class Robot extends LoggedRobot {
                   otf.getTracker().printSummary("OTF");
                   otf.cancelCommand();
                 }));
+
+    driver
+        .b()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () -> {
+                      otf.getTracker().reset();
+                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+                      otf.followPathAmp().schedule();
+                    })));
+
+    driver
+        .b()
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                  otf.getTracker().printSummary("OTF");
+                  otf.cancelCommand();
+                }));
     // driver
     // .povUp()
     // .onTrue(

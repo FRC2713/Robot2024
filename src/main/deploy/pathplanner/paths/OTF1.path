@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.538719628423157,
-        "y": 0.9692550333222316
+        "x": 4.08164961784469,
+        "y": 2.080310342438867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.402475350402921,
-        "y": 0.904888355232616
+        "x": 1.7121481515690302,
+        "y": 2.2855427529036882
       },
       "isLocked": false,
       "linkedName": null
@@ -28,12 +28,23 @@
       "linkedName": "OTF1Score"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": -18.122945515026863,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": -15.184921710116503,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Score",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.55,
       "command": {
         "type": "sequential",
         "data": {
