@@ -23,6 +23,8 @@ import frc.robot.commands.fullRoutines.Simple;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 // import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
+import frc.robot.subsystems.elevatorIO.Elevator;
+import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -53,7 +55,7 @@ public class Robot extends LoggedRobot {
   private Command autoCommand;
   private ShooterPivot shooterPivot;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
-
+  public static Elevator elevator;
   public static final CommandXboxController driver =
       new CommandXboxController(Constants.RobotMap.DRIVER_PORT);
   public static final CommandXboxController operator =
@@ -126,6 +128,7 @@ public class Robot extends LoggedRobot {
     // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
     // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
 
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
@@ -213,6 +216,15 @@ public class Robot extends LoggedRobot {
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    operator
+        .a()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  elevator.setTargetHeight(20);
+                }));
+    // operator.a().whileTrue(autoCommand)
   }
 
   @Override
