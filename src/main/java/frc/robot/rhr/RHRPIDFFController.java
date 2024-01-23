@@ -21,4 +21,8 @@ public class RHRPIDFFController extends PIDController {
   public double calculate(double measurement) {
     return super.calculate(measurement) + feedforward.calculate(getSetpoint());
   }
+
+  public RHRFeedForward getFeedForward() {
+    return feedforward;
+  }
 }

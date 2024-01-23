@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.rhr.RHRFeedForward;
@@ -15,41 +16,41 @@ public class PIDFFGains {
   @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV;
 
   public PIDFFGains buildTunables() {
-    tunableKP =
-        new TunableNT4(
-            name + "/kP",
-            kP,
-            x -> {
-              this.kP = x;
-            });
-    tunableKI =
-        new TunableNT4(
-            name + "/kI",
-            kI,
-            x -> {
-              this.kI = x;
-            });
-    tunableKD =
-        new TunableNT4(
-            name + "/kD",
-            kD,
-            x -> {
-              this.kD = x;
-            });
-    tunableKS =
-        new TunableNT4(
-            name + "/kS",
-            kS,
-            x -> {
-              this.kS = x;
-            });
-    tunableKV =
-        new TunableNT4(
-            name + "/kV",
-            kV,
-            x -> {
-              this.kV = x;
-            });
+    // tunableKP =
+    //     new TunableNT4(
+    //         name + "/kP",
+    //         kP,
+    //         x -> {
+    //           this.kP = x;
+    //         });
+    // tunableKI =
+    //     new TunableNT4(
+    //         name + "/kI",
+    //         kI,
+    //         x -> {
+    //           this.kI = x;
+    //         });
+    // tunableKD =
+    //     new TunableNT4(
+    //         name + "/kD",
+    //         kD,
+    //         x -> {
+    //           this.kD = x;
+    //         });
+    // tunableKS =
+    //     new TunableNT4(
+    //         name + "/kS",
+    //         kS,
+    //         x -> {
+    //           this.kS = x;
+    //         });
+    // tunableKV =
+    //     new TunableNT4(
+    //         name + "/kV",
+    //         kV,
+    //         x -> {
+    //           this.kV = x;
+    //         });
 
     return this;
   }
@@ -78,7 +79,16 @@ public class PIDFFGains {
   }
 
   public RHRPIDFFController createRHRController() {
-    return new RHRPIDFFController(this);
+    RHRPIDFFController controller = new RHRPIDFFController(this);
+
+    if (tunableKP != null) {
+      tunableKP.addHook(x -> controller.setP(x));
+      tunableKI.addHook(x -> controller.setI(x));
+      tunableKD.addHook(x -> controller.setD(x));
+      tunableKS.addHook(x -> controller.getFeedForward().setKS(x));
+      tunableKV.addHook(x -> controller.getFeedForward().setKV(x));
+    }
+    return controller;
   }
 
   public void applyTo(TalonFXConfiguration config) {
@@ -101,5 +111,13 @@ public class PIDFFGains {
       tunableKD.addHook(x -> controller.setD(x));
       tunableKV.addHook(x -> controller.setFF(x));
     }
+  }
+
+  public String toString() {
+    return String.format("kP = %s / kD = %s", kP, kD);
+  }
+
+  public PIDConstants toPathplannerGains() {
+    return new PIDConstants(kP, kI, kD);
   }
 }

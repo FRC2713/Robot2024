@@ -33,7 +33,7 @@ public class SwerveIOSim implements SwerveIO {
     }
 
     currentRotation =
-        currentRotation.plus(Rotation2d.fromRadians(kinematics.toTwist2d(deltas).dtheta));
+        currentRotation.minus(Rotation2d.fromRadians(kinematics.toTwist2d(deltas).dtheta));
 
     lastPositions = measuredPositions;
 

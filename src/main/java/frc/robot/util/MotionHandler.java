@@ -52,7 +52,6 @@ public class MotionHandler {
     double rSpeed =
         MathUtil.applyDeadband(-Robot.driver.getRightX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
             * speedFactor;
-
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         xSpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,
         ySpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,
