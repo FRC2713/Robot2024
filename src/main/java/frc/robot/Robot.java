@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
@@ -121,13 +121,17 @@ public class Robot extends LoggedRobot {
 
     driver
         .a()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
+                }))
         .whileTrue(
-            new SequentialCommandGroup(
+            new RepeatCommand(
                 new InstantCommand(
                     () -> {
-                      otf.getTracker().reset();
                       swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
+                      otf.regenerateTraj().schedule();
                     })));
 
     driver
@@ -136,18 +140,24 @@ public class Robot extends LoggedRobot {
             new InstantCommand(
                 () -> {
                   swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.getTracker().printSummary("OTF");
+                  otf.printErrorSummary();
                   otf.cancelCommand();
                 }));
 
     driver
         .b()
-        .whileTrue(
+        .onTrue(
             new InstantCommand(
                 () -> {
-                  swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                  otf.hasElapsed(OTFOptions.AMP_STATIC).schedule();
-                }));
+                  otf.followPath(OTFOptions.AMP_STATIC).schedule();
+                }))
+        .whileTrue(
+            new RepeatCommand(
+                new InstantCommand(
+                    () -> {
+                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+                      otf.regenerateTraj().schedule();
+                    })));
 
     driver
         .b()
@@ -155,7 +165,7 @@ public class Robot extends LoggedRobot {
             new InstantCommand(
                 () -> {
                   swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.getTracker().printSummary("OTF");
+                  otf.printErrorSummary();
                   otf.cancelCommand();
                 }));
     // driver
@@ -342,7 +352,7 @@ public class Robot extends LoggedRobot {
     // ? -1 : 1;
     autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
     autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
-    autoChooser.addOption("ThreePieceChoreo", ThreePieceChoreo.getAutonomousCommand());
+    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
   }
 

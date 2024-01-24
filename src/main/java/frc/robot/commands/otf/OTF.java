@@ -27,8 +27,15 @@ public class OTF {
           Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X,
           Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_ROTATION);
 
-  Command runningCommand;
-  private final Timer timer;
+  public ErrorTracker getTracker() {
+    return tracker;
+  }
+
+  public OTF() {}
+
+  public Command runningCommand;
+  public OTFOptions runningOTF;
+  public Timer timer = new Timer();
 
   public enum OTFOptions {
     SPEAKER_MOTION(10, 3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720)),
@@ -55,13 +62,26 @@ public class OTF {
     }
   }
 
-  public OTFOptions prevOTF = OTFOptions.Null;
-
-  public ErrorTracker getTracker() {
-    return tracker;
-  }
-
   public Command followPath(OTFOptions type) {
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Pose2d currentPose = Robot.swerveDrive.getUsablePose();
+          var error =
+              new Pose2d(
+                  new Translation2d(
+                      targetPose.getX() - currentPose.getX(),
+                      targetPose.getY() - currentPose.getY()),
+                  Rotation2d.fromRadians(
+                      targetPose.getRotation().getRadians()
+                          - currentPose.getRotation().getRadians()));
+
+          tracker.addObservation(error);
+          Logger.recordOutput("PathPlanner/Target Pose", targetPose);
+          Logger.recordOutput("PathPlanner/Pose Error", error);
+        });
+
+    timer.reset();
+    timer.start();
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
           Pose2d currentPose = Robot.swerveDrive.getUsablePose();
@@ -88,16 +108,13 @@ public class OTF {
             type.maxAngularAccelerationRpsSq);
     switch (type) {
       case SPEAKER_MOTION:
-        String autoName = "OTF1";
-        path = PathPlannerPath.fromPathFile(autoName);
-        NamedCommands.registerCommand(
-            "FireOuttake", new InstantCommand(() -> Logger.recordOutput("Firing", true)));
+        path = getSpeakerMotionPath(Robot.swerveDrive.getUsablePose());
         break;
       case AMP_STATIC:
         List<Translation2d> bezierPoints =
             PathPlannerPath.bezierFromPoses(
                 Robot.swerveDrive.getUsablePose(),
-                new Pose2d(1.89, 7.67, Rotation2d.fromRadians(-1.58)));
+                new Pose2d(1.89, 7.67, Rotation2d.fromRadians(1.58)));
 
         // Create the path using the bezier points created above
         path =
@@ -123,8 +140,12 @@ public class OTF {
         DriverStation.getAlliance().isPresent()
             ? DriverStation.getAlliance().get()
             : DriverStation.Alliance.Blue;
-    if ((alliance == DriverStation.Alliance.Blue && x > 5.9)
-        || (alliance != DriverStation.Alliance.Blue && x < 10.4)) {
+
+    boolean usePathfinding =
+        (alliance == DriverStation.Alliance.Blue && x > 5.9)
+            || (alliance != DriverStation.Alliance.Blue && x < 10.4);
+    Logger.recordOutput("OTF/UsingPathFinding", usePathfinding);
+    if (usePathfinding) {
       // Create the constraints to use while pathfinding. The constraints defined in
       // the path will only be used for the path.
 
@@ -141,18 +162,39 @@ public class OTF {
     } else {
       runningCommand = AutoBuilder.followPath(path);
     }
+    runningOTF = type;
     return runningCommand;
   }
 
-  public Command hasElapsed(OTFOptions currentOTF) {
-    Logger.recordOutput("OTF/Timer", timer.get());
-    Logger.recordOutput("OTF/Time to regeneration", (currentOTF.ttl - timer.get()));
-    if (timer.hasElapsed(prevOTF.ttl)) {
-            timer.reset();
-      timer.start();
-      prevOTF = currentOTF;
-      getTracker().reset();
-      return followPath(currentOTF);
+  private PathPlannerPath getSpeakerMotionPath(Pose2d usablePose) {
+    var firstPath = PathPlannerPath.fromPathFile("OTF_SPEAKER_MOTION_1");
+    var secondPath = PathPlannerPath.fromPathFile("OTF_SPEAKER_MOTION_2");
+
+    NamedCommands.registerCommand(
+        "FireOuttake", new InstantCommand(() -> Logger.recordOutput("Firing", true)));
+
+    var distToFirst =
+        usablePose
+            .getTranslation()
+            .getDistance(firstPath.getPreviewStartingHolonomicPose().getTranslation());
+    var distToSecond =
+        usablePose
+            .getTranslation()
+            .getDistance(secondPath.getPreviewStartingHolonomicPose().getTranslation());
+
+    if (Math.abs(distToFirst) > Math.abs(distToSecond)) {
+      return secondPath;
+    } else {
+      return firstPath;
+    }
+  }
+
+  public Command regenerateTraj() {
+    Logger.recordOutput("OTF/TimerSeconds", timer.get());
+    Logger.recordOutput("OTF/TimeToRegeneration", runningOTF.ttl - timer.get());
+    Logger.recordOutput("OTF/CurrentOTF", runningOTF);
+    if (timer.hasElapsed(runningOTF.ttl)) {
+      return followPath(runningOTF);
     }
     return new InstantCommand();
   }
@@ -164,7 +206,7 @@ public class OTF {
     }
   }
 
-  public OTF() {
-    timer = new Timer();
+  public void printErrorSummary() {
+    getTracker().printSummary("OTF/" + runningOTF);
   }
 }
