@@ -6,9 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -30,6 +27,9 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOSim;
+import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -42,6 +42,7 @@ public class Robot extends LoggedRobot {
   private OTF otf = new OTF();
   // public static Vision vision;
   public static SwerveSubsystem swerveDrive;
+  public static VisionManager visionManager;
   private Command autoCommand;
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -53,25 +54,8 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  public static double[] poseValue;
-  DoubleArraySubscriber frontVisionPose;
-  DoubleArraySubscriber rearVisionPose;
-
-  DoubleArraySubscriber frontCamera2TagPose;
-  DoubleArraySubscriber rearCamera2TagPose;
-
   @Override
   public void robotInit() {
-    NetworkTable frontTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.FRONT.table);
-    NetworkTable rearTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.REAR.table);
-    frontVisionPose = frontTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    frontCamera2TagPose =
-        frontTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    rearCamera2TagPose =
-        rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
     Logger.addDataReceiver(new NT4Publisher());
     // URCL.start();
     Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
@@ -79,23 +63,11 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
-    // TODO log to file
-    // if (isReal()) {
-    // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
-    // }
+    if (isReal()) {
+      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+    }
 
     Logger.start();
-
-    // vision =
-    // new Vision(
-    // isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight"),
-    // isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear"));
-    // slapper = new Slapper(true ? new SlapperIOSim() : new SlapperIOSparks());
-
-    // fourBar = new FourBar(true ? new FourBarIOSim() : new FourBarIOSparks());
-    // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
-    // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
-    // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
 
     swerveDrive =
         isSimulation()
@@ -112,6 +84,17 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.FRONT_RIGHT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
+
+    visionManager =
+        new VisionManager(
+            new Vision(
+                "Front",
+                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
+            new Vision(
+                "Rear",
+                isSimulation()
+                    ? new VisionIOSim("limelight-rear")
+                    : new VisionIOLimelight("limelight-rear")));
 
     mechManager = new MechanismManager();
 
