@@ -49,17 +49,20 @@ public final class Constants {
     public static final int OPERATOR_PORT = 1;
   }
 
-public static final class ShooterPivotConstants
-{
-    public static final double LENGTH_METERS = 0;
-    public static final double MASS_KG = 0;
-    public static final double MAX_ANGLE_DEGREES = 0;
+  public static final class ShooterPivotConstants {
+    public static final double LENGTH_METERS = Units.metersToInches(20);
+    public static final double MASS_KG = 10;
+    public static final double MAX_ANGLE_DEGREES = 90;
     public static final double RETRACTED_ANGLE_DEGREES = 0;
     public static final boolean SIMULATE_GRAVITY = true;
-    public static final double GEARING = 0;
-    public static final double STARTING_ANGLE_RADS = 0;
-}
+    public static final double GEARING = 5;
+    public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(45);
+    public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
+    public static final PIDFFGains SHOOTER_PIVOT_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.75).kD(0).kG(0.85).build();
+  }
 
+<<<<<<< Updated upstream
 public static final class ElevatorConstants {
   public static final PIDFFGains ELEVATOR_GAINS =
       PIDFFGains.builder().name("Elevator Controller").kP(0.75).kD(0.0).kG(0.85).build();
@@ -72,6 +75,19 @@ public static final class ElevatorConstants {
   public static final boolean SIMULATE_GRAVITY = true;
   public static final int ELEVATOR_CURRENT_LIMIT = 30;
 }
+=======
+  public static final class ElevatorConstants {
+    public static final PIDFFGains ELEVATOR_GAINS =
+        PIDFFGains.builder().name("Elevator Controller").kP(0.75).kD(0.0).kG(0.85).build();
+    public static final double GEARING = 5.0;
+    public static final double CARRIAGE_MASS_KG = 0.3;
+    public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
+    public static final double MIN_HEIGHT_METERS = 0;
+    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(50);
+    public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
+    public static final boolean SIMULATE_GRAVITY = true;
+  }
+>>>>>>> Stashed changes
 
   @UtilityClass
   public static final class DriveConstants {

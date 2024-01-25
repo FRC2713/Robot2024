@@ -98,6 +98,10 @@ public class PIDFFGains {
     return new ProfiledPIDController(kP, kI, kD, constraints);
   }
 
+  public ArmFeedforward createArmFeedForward() {
+    return new ArmFeedforward(kS, kG, kV);
+  }
+
   public RHRPIDFFController createRHRController() {
     return new RHRPIDFFController(this);
   }

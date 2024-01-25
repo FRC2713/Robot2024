@@ -1,8 +1,10 @@
 package frc.robot.subsystems.shooterPivot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
@@ -45,5 +47,33 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs) {}
+  public void updateInputs(ShooterPivotInputs inputs) {
+    if (DriverStation.isDisabled()) {
+      sim.setInputVoltage(0.0);
+    }
+
+    sim.update(0.02);
+
+    inputs.outputVoltage = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
+
+    inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+    // inputs.angleDegreesTwo = Units.radiansToDegrees(sim.getAngleRads());
+    inputs.angleDegreesRange = 0.0;
+
+    inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
+
+    inputs.velocityDegreesPerSecondOne = Units.radiansToDegrees(sim.getVelocityRadPerSec());
+    inputs.velocityDegreesPerSecondTwo = Units.radiansToDegrees(sim.getVelocityRadPerSec());
+    inputs.velocityDegreesPerSecondRange = 0.0;
+
+    inputs.tempCelciusOne = 0.0;
+    inputs.tempCelciusTwo = 0.0;
+
+    inputs.currentDrawOne = sim.getCurrentDrawAmps();
+    inputs.currentDrawTwo = sim.getCurrentDrawAmps();
+
+    inputs.limSwitch =
+        Units.radiansToDegrees(sim.getAngleRads())
+            >= Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES;
+  }
 }

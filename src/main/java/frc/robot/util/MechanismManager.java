@@ -40,7 +40,6 @@ public class MechanismManager {
         shooterPivot.append(
             new MechanismLigament2d("Shooter", 0.5, 10, 20, new Color8Bit(0, 0, 255)));
 
-
     SmartDashboard.putData("Mech2d", mech);
   }
 
