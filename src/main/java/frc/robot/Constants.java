@@ -42,6 +42,8 @@ public final class Constants {
   @UtilityClass
   public static final class RobotMap {
     public static final int PIGEON_CAN_ID = 20;
+    public static final int LEFT_ELEVATOR_CAN_ID = 3;
+    public static final int RIGHT_ELEVATOR_CAN_ID = 4;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
@@ -68,6 +70,7 @@ public static final class ElevatorConstants {
   public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(50);
   public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
   public static final boolean SIMULATE_GRAVITY = true;
+  public static final int ELEVATOR_CURRENT_LIMIT = 30;
 }
 
   @UtilityClass
