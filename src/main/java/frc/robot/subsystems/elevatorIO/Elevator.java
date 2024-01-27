@@ -2,12 +2,8 @@ package frc.robot.subsystems.elevatorIO;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +21,6 @@ public class Elevator extends SubsystemBase {
   private final ProfiledPIDController elevatorController;
   private final ElevatorInputsAutoLogged inputs;
   private double targetHeight = 0;*/
-
 
   @Getter private final ElevatorInputsAutoLogged inputs;
   @Getter private final ElevatorIO IO;
@@ -70,12 +65,15 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
 
     IO.updateInputs(inputs);
-    //Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
+    // Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
     Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
     Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
     Logger.recordOutput("Elevator/heightInchesLeft", inputs.heightInchesLeft);
     Logger.recordOutput("Elevator/heightInchesRight", inputs.heightInchesRight);
-
+    Logger.recordOutput("Elevator/LeftVoltage", inputs.outputVoltageLeft);
+    Logger.recordOutput("Elevator/RightVoltage", inputs.outputVoltageRight);
+    Logger.recordOutput("Elevator/LeftCurrent", inputs.currentDrawAmpsLeft);
+    Logger.recordOutput("Elevator/RightCurrent", inputs.currentDrawAmpsRight);
     Logger.processInputs("Elevator", inputs);
   }
 

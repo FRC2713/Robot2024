@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.Simple;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 // import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
@@ -46,6 +47,7 @@ import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
@@ -83,12 +85,12 @@ public class Robot extends LoggedRobot {
     rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     rearCamera2TagPose =
         rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    // Logger.addDataReceiver(new NT4Publisher());
-    // Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
-    // Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
-    // Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
-    // Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
-    // Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
+    Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
+    Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
+    Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
+    Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
       File sda1 = new File(Constants.Logging.sda1Dir);
       File sda2 = new File(Constants.Logging.sda2Dir);
@@ -128,13 +130,12 @@ public class Robot extends LoggedRobot {
     // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
     // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
-    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : new ElevatorIOSparks());
 
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
         isSimulation()
-            // true
             ? new SwerveSubsystem(
                 new SwerveIOSim(),
                 new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),
@@ -219,6 +220,14 @@ public class Robot extends LoggedRobot {
 
     operator
         .a()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  elevator.setTargetHeight(10);
+                }));
+
+    operator
+        .y()
         .whileTrue(
             new InstantCommand(
                 () -> {

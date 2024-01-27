@@ -6,11 +6,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.rhr.RHRPIDFFController;
 
 public class ElevatorIOSim implements ElevatorIO {
   RHRPIDFFController heightcontrollerleft;
   RHRPIDFFController heightcontrollerright;
+
+  public ElevatorIOSim() {
+    heightcontrollerright = ElevatorConstants.ELEVATOR_GAINS.createRHRController();
+    heightcontrollerleft = ElevatorConstants.ELEVATOR_GAINS.createRHRController();
+  }
 
   private final ElevatorSim sim =
       new ElevatorSim(
@@ -65,8 +71,6 @@ public class ElevatorIOSim implements ElevatorIO {
   public void setTargetHeight(double heightInches) {
     heightcontrollerright.setSetpoint(heightInches);
     heightcontrollerleft.setSetpoint(heightInches);
-    //left is un-utilized
+    // left is un-utilized
   }
-
-  
 }
