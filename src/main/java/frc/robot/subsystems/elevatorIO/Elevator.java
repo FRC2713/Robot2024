@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorInputsAutoLogged inputs;
   private double targetHeight = 0;*/
 
-  @Getter private final ProfiledPIDController elevatorController;
+
   @Getter private final ElevatorInputsAutoLogged inputs;
   @Getter private final ElevatorIO IO;
   @Getter private double targetHeight = 0.0;
@@ -42,10 +42,7 @@ public class Elevator extends SubsystemBase {
     this.inputs = new ElevatorInputsAutoLogged();
     this.IO.updateInputs(inputs);
     System.out.println(Constants.ElevatorConstants.ELEVATOR_GAINS.toString());
-    elevatorController =
-        Constants.ElevatorConstants.ELEVATOR_GAINS.createProfiledPIDController(
-            new Constraints(100, 200));
-    SmartDashboard.putData("Elevator PID", elevatorController);
+
     this.leftMotor = new LoggableMotor("Elevator Left", DCMotor.getNEO(1));
     this.rightMotor = new LoggableMotor("Elevator Right", DCMotor.getNEO(1));
     this.accelCalc = new AccelerationCalc(5);
@@ -62,31 +59,19 @@ public class Elevator extends SubsystemBase {
       return;
     }
     this.targetHeight = targetHeightInches;
+    IO.setTargetHeight(this.targetHeight);
   }
 
   public void resetController() {
-    elevatorController.reset(inputs.heightInchesRight, inputs.velocityInchesPerSecondRight);
+    IO.reset();
   }
 
   @Override
   public void periodic() {
 
     IO.updateInputs(inputs);
-    double effortLeft = elevatorController.calculate(inputs.heightInchesRight, targetHeight);
-
-    State state = elevatorController.getSetpoint();
-    if (IO.shouldApplyFF()) {
-      effortLeft += feedforward.calculate(state.position, state.velocity);
-    }
-
-    if (manualControl) {
-      effortLeft = -1 * Robot.operator.getLeftY();
-    }
-
-    effortLeft = MathUtil.clamp(effortLeft, -12, 12);
-    Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
-    Logger.recordOutput("Elevator/Setpoint Position", state.position);
-    IO.setVoltage(effortLeft);
+    //Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
+    Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
     Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
     Logger.recordOutput("Elevator/heightInchesLeft", inputs.heightInchesLeft);
     Logger.recordOutput("Elevator/heightInchesRight", inputs.heightInchesRight);

@@ -1,6 +1,9 @@
 package frc.robot.subsystems.elevatorIO;
 import frc.robot.Constants;
+import frc.robot.rhr.RHRPIDFFController;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.ControlType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
@@ -37,7 +40,7 @@ public class ElevatorIOSparks implements ElevatorIO{
     }
 
     @Override
-    public void resetEncoders() {
+    public void reset() {
         left.getEncoder().setPosition(0);
         right.getEncoder().setPosition(0);;
     }
@@ -51,6 +54,13 @@ public class ElevatorIOSparks implements ElevatorIO{
     public void setVoltage(double volts) {
         left.setVoltage(volts);
         right.setVoltage(volts);;
+    }
+
+
+    @Override
+    public void setTargetHeight(double heightInches) {
+        left.getPIDController().setReference(heightInches, ControlType.kPosition);
+        right.getPIDController().setReference(heightInches, ControlType.kPosition);
     }
     
 }

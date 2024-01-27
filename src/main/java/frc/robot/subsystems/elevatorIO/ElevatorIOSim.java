@@ -6,8 +6,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
+import frc.robot.rhr.RHRPIDFFController;
 
 public class ElevatorIOSim implements ElevatorIO {
+  RHRPIDFFController heightcontrollerleft;
+  RHRPIDFFController heightcontrollerright;
 
   private final ElevatorSim sim =
       new ElevatorSim(
@@ -22,7 +25,9 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorInputs inputs) {
-
+    double desiredvoltageleft = heightcontrollerleft.calculate(inputs.heightInchesLeft);
+    double desiredvoltageright = heightcontrollerright.calculate(inputs.heightInchesRight);
+    sim.setInputVoltage(desiredvoltageright);
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
       // System.out.print("hello");
@@ -42,7 +47,9 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void resetEncoders() {}
+  public void reset() {
+    heightcontrollerright.reset();
+  }
 
   @Override
   public boolean shouldApplyFF() {
@@ -53,4 +60,13 @@ public class ElevatorIOSim implements ElevatorIO {
   public void setVoltage(double volts) {
     sim.setInputVoltage(volts);
   }
+
+  @Override
+  public void setTargetHeight(double heightInches) {
+    heightcontrollerright.setSetpoint(heightInches);
+    heightcontrollerleft.setSetpoint(heightInches);
+    //left is un-utilized
+  }
+
+  
 }
