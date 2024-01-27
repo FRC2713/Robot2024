@@ -132,10 +132,11 @@ public class Robot extends LoggedRobot {
     // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
     elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : new ElevatorIOSparks());
 
-    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
+    shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
-        isSimulation()
+        // isSimulation()
+        true
             ? new SwerveSubsystem(
                 new SwerveIOSim(),
                 new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),
