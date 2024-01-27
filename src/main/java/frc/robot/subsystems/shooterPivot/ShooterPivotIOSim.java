@@ -18,8 +18,8 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
               Constants.ShooterPivotConstants.LENGTH_METERS,
               Constants.ShooterPivotConstants.MASS_KG),
           Constants.ShooterPivotConstants.LENGTH_METERS,
-          Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES - 10),
-          Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES + 10),
+          Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES),
+          Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
           Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
 
@@ -53,11 +53,9 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     }
 
     sim.update(0.02);
-
     inputs.outputVoltage = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
 
     inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
-    // inputs.angleDegreesTwo = Units.radiansToDegrees(sim.getAngleRads());
     inputs.angleDegreesRange = 0.0;
 
     inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
