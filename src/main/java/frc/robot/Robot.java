@@ -6,25 +6,24 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.fullRoutines.Simple;
+import frc.robot.commands.fullRoutines.RHRNamedCommands;
+import frc.robot.commands.fullRoutines.SelfishAuto;
+import frc.robot.commands.fullRoutines.SimpleChoreo;
+import frc.robot.commands.fullRoutines.ThreePiece;
+import frc.robot.commands.fullRoutines.ThreePieceChoreo;
+import frc.robot.commands.otf.OTF;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
-// import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -32,107 +31,53 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.Vision.Limelights;
-import frc.robot.subsystems.visionIO.Vision.SnapshotMode;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
-import frc.robot.subsystems.visionIO.VisionLimelight;
+import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.RedHawkUtil;
-import frc.robot.util.RedHawkUtil.ErrHandler;
-import frc.robot.util.RumbleManager;
-import frc.robot.util.SwerveHeadingController;
-import java.io.File;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
-  public static Vision vision;
+  private OTF otf = new OTF();
+  public static VisionManager visionManager;
+  // public static Vision vision;
+
   public static SwerveSubsystem swerveDrive;
-  private Command autoCommand;
   private ShooterPivot shooterPivot;
-  private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
   public static Elevator elevator;
+
+  private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
+
   public static final CommandXboxController driver =
       new CommandXboxController(Constants.RobotMap.DRIVER_PORT);
   public static final CommandXboxController operator =
       new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
 
+  private Command autoCommand;
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  // private final LoggedDashboardChooser<Command>
-
-  public static double[] poseValue;
-  DoubleArraySubscriber frontVisionPose;
-  DoubleArraySubscriber rearVisionPose;
-
-  DoubleArraySubscriber frontCamera2TagPose;
-  DoubleArraySubscriber rearCamera2TagPose;
-
   @Override
   public void robotInit() {
-    NetworkTable frontTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.FRONT.table);
-    NetworkTable rearTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.REAR.table);
-    frontVisionPose = frontTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    frontCamera2TagPose =
-        frontTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    rearCamera2TagPose =
-        rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
     Logger.addDataReceiver(new NT4Publisher());
-    // Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
-    // Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
-    // Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
-    // Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
-    // Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
+    // URCL.start();
+    Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
+    Logger.recordMetadata("GitSHA", GVersion.GIT_SHA);
+    Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
+    Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
+    Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      File sda1 = new File(Constants.Logging.sda1Dir);
-      File sda2 = new File(Constants.Logging.sda2Dir);
-
-      if (sda1.exists() && sda1.isDirectory()) {
-        Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda1Dir));
-        Logger.recordOutput("isLoggingToUsb", true);
-      } else {
-        RedHawkUtil.ErrHandler.getInstance()
-            .addError(
-                "Cannot log to "
-                    + Constants.Logging.sda1Dir
-                    + ", trying "
-                    + Constants.Logging.sda2Dir);
-        if (sda2.exists() && sda2.isDirectory()) {
-          Logger.addDataReceiver(new WPILOGWriter(Constants.Logging.sda2Dir));
-          Logger.recordOutput("isLoggingToUsb", true);
-        } else {
-          RedHawkUtil.ErrHandler.getInstance()
-              .addError("Cannot log to " + Constants.Logging.sda2Dir);
-          Logger.recordOutput("isLoggingToUsb", false);
-        }
-      }
-    } else {
-      Logger.recordOutput("isLoggingToUsb", false);
+      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
     }
 
     Logger.start();
 
-    vision =
-        new Vision(
-            isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight"),
-            isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear"));
-    // slapper = new Slapper(true ? new SlapperIOSim() : new SlapperIOSparks());
-
-    // fourBar = new FourBar(true ? new FourBarIOSim() : new FourBarIOSparks());
-    // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
-    // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
-    // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
     elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
-
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
@@ -151,70 +96,122 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
 
+    visionManager =
+        new VisionManager(
+            new Vision(
+                "Front",
+                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
+            new Vision(
+                "Rear",
+                isSimulation()
+                    ? new VisionIOSim("limelight-rear")
+                    : new VisionIOLimelight("limelight-rear")));
+
     mechManager = new MechanismManager();
 
     checkAlliance();
     buildAutoChooser();
 
     driver
-        .povUp()
+        .a()
         .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () -> {
+                      otf.getTracker().reset();
+                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+                      otf.followPath().schedule();
+                    })));
+
+    driver
+        .a()
+        .onFalse(
             new InstantCommand(
                 () -> {
-                  swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                  SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(0));
+                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                  otf.getTracker().printSummary("OTF");
+                  otf.cancelCommand();
                 }));
 
     driver
-        .povLeft()
+        .b()
         .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                  SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(90));
-                }));
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () -> {
+                      otf.getTracker().reset();
+                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+                      otf.followPathAmp().schedule();
+                    })));
 
     driver
-        .povDown()
-        .onTrue(
+        .b()
+        .onFalse(
             new InstantCommand(
                 () -> {
-                  swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                  SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(180));
+                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                  otf.getTracker().printSummary("OTF");
+                  otf.cancelCommand();
                 }));
+    // driver
+    // .povUp()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(0));
+    // }));
 
-    driver
-        .povRight()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                  SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(270));
-                }));
+    // driver
+    // .povLeft()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(90));
+    // }));
 
-    driver
-        .x()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
-                }));
+    // driver
+    // .povDown()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(180));
+    // }));
 
-    driver
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-                }));
+    // driver
+    // .povRight()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(270));
+    // }));
 
-    driver
-        .back()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-                }));
+    // driver
+    // .x()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
+    // }));
+
+    // driver
+    // .start()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+    // }));
+
+    // driver
+    // .back()
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+    // }));
 
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -235,8 +232,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    ErrHandler.getInstance().log();
-    RumbleManager.getInstance().periodic();
+    // ErrHandler.getInstance().log();
+    // RumbleManager.getInstance().periodic();
     mechManager.periodic();
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
@@ -244,8 +241,8 @@ public class Robot extends LoggedRobot {
 
     // swerveDrive.seed();
 
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(swerveDrive.getTotalCurrentDraw()));
+    // RoboRioSim.setVInVoltage(
+    // BatterySim.calculateDefaultBatteryLoadedVoltage(swerveDrive.getTotalCurrentDraw()));
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
@@ -254,25 +251,29 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    TimestampedDoubleArray[] frontfQueue = frontVisionPose.readQueue();
-    TimestampedDoubleArray[] frontcQueue = frontCamera2TagPose.readQueue();
+    // TimestampedDoubleArray[] frontfQueue = frontVisionPose.readQueue();
+    // TimestampedDoubleArray[] frontcQueue = frontCamera2TagPose.readQueue();
 
-    TimestampedDoubleArray[] rearfQueue = rearVisionPose.readQueue();
-    TimestampedDoubleArray[] rearcQueue = rearCamera2TagPose.readQueue();
+    // TimestampedDoubleArray[] rearfQueue = rearVisionPose.readQueue();
+    // TimestampedDoubleArray[] rearcQueue = rearCamera2TagPose.readQueue();
 
-    if (frontfQueue.length > 0
-        && frontcQueue.length > 0
-        && vision.hasMultipleTargets(Limelights.FRONT)) {
-      TimestampedDoubleArray fLastCameraReading = frontfQueue[frontfQueue.length - 1];
-      TimestampedDoubleArray cLastCameraReading = frontcQueue[frontcQueue.length - 1];
-      swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
-    } else if (rearfQueue.length > 0
-        && rearcQueue.length > 0
-        && vision.hasMultipleTargets(Limelights.REAR)) {
-      TimestampedDoubleArray fLastCameraReading = rearfQueue[rearfQueue.length - 1];
-      TimestampedDoubleArray cLastCameraReading = rearcQueue[rearcQueue.length - 1];
-      swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
-    }
+    // if (frontfQueue.length > 0
+    // && frontcQueue.length > 0
+    // && vision.hasMultipleTargets(Limelights.FRONT)) {
+    // TimestampedDoubleArray fLastCameraReading = frontfQueue[frontfQueue.length -
+    // 1];
+    // TimestampedDoubleArray cLastCameraReading = frontcQueue[frontcQueue.length -
+    // 1];
+    // swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
+    // } else if (rearfQueue.length > 0
+    // && rearcQueue.length > 0
+    // && vision.hasMultipleTargets(Limelights.REAR)) {
+    // TimestampedDoubleArray fLastCameraReading = rearfQueue[rearfQueue.length -
+    // 1];
+    // TimestampedDoubleArray cLastCameraReading = rearcQueue[rearcQueue.length -
+    // 1];
+    // swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
+    // }
   }
 
   @Override
@@ -282,7 +283,7 @@ public class Robot extends LoggedRobot {
     }
     swerveDrive.seed();
     swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
-    vision.setCurrentSnapshotMode(SnapshotMode.OFF);
+    // vision.setCurrentSnapshotMode(SnapshotMode.OFF);
   }
 
   @Override
@@ -319,7 +320,7 @@ public class Robot extends LoggedRobot {
     }
     swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
 
-    vision.setCurrentSnapshotMode(SnapshotMode.TWO_PER_SECOND);
+    // vision.setCurrentSnapshotMode(SnapshotMode.TWO_PER_SECOND);
   }
 
   @Override
@@ -341,8 +342,14 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
-    autoChooser.addDefaultOption("Simple", new Simple());
+    RHRNamedCommands.registerGenericCommands();
+
+    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red
+    // ? -1 : 1;
+    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
+    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
+    autoChooser.addOption("ThreePieceChoreo", ThreePieceChoreo.getAutonomousCommand());
+    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
   }
 
   public void checkAlliance() {
@@ -350,6 +357,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("DS Alliance has value", checkedAlliance.isPresent());
     if (checkedAlliance.isPresent()) {
       Logger.recordOutput("DS Alliance value", checkedAlliance.get());
+      // buildAutoChooser();
     }
 
     // these gyro resets are mostly for ironing out teleop driving issues
@@ -365,7 +373,5 @@ public class Robot extends LoggedRobot {
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
       swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
     }
-
-    buildAutoChooser();
   }
 }

@@ -16,7 +16,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import lombok.NonNull;
@@ -211,5 +214,11 @@ public final class RedHawkUtil {
     if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
+  }
+
+  public static String getLogDirectory() {
+    Date now = Date.from(Instant.now());
+    String dateFormat = new SimpleDateFormat("MM/dd").format(now);
+    return String.format("/U/%s/", dateFormat);
   }
 }
