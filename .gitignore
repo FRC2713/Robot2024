@@ -1,4 +1,5 @@
 src/main/java/frc/robot/GVersion.java
+src/main/java/frc/robot/subsystems/ShooterPivot*
 networktables.json
 simgui.json
 simgui-ds.json
