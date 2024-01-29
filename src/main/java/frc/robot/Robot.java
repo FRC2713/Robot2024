@@ -20,6 +20,10 @@ import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
+import frc.robot.subsystems.elevatorIO.Elevator;
+import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.shooterPivot.ShooterPivot;
+import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -40,10 +44,13 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
-  // public static Vision vision;
-  public static SwerveSubsystem swerveDrive;
   public static VisionManager visionManager;
-  private Command autoCommand;
+  // public static Vision vision;
+
+  public static SwerveSubsystem swerveDrive;
+  private ShooterPivot shooterPivot;
+  public static Elevator elevator;
+
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
   public static final CommandXboxController driver =
@@ -51,6 +58,7 @@ public class Robot extends LoggedRobot {
   public static final CommandXboxController operator =
       new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
 
+  private Command autoCommand;
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
@@ -68,6 +76,9 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.start();
+
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
+    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
         isSimulation()
@@ -205,6 +216,17 @@ public class Robot extends LoggedRobot {
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    operator
+        .a()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  elevator.setTargetHeight(20);
+                }));
+    // operator.a().whileTrue(autoCommand)
+
+    // shooterPivot.setGoal(10);
   }
 
   @Override
@@ -212,7 +234,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // ErrHandler.getInstance().log();
     // RumbleManager.getInstance().periodic();
-    // mechManager.periodic();
+    mechManager.periodic();
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
