@@ -6,9 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -24,6 +21,10 @@ import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.OTF.OTFOptions;
+import frc.robot.subsystems.elevatorIO.Elevator;
+import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.shooterPivot.ShooterPivot;
+import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -31,6 +32,9 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOSim;
+import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -41,9 +45,13 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
+  public static VisionManager visionManager;
   // public static Vision vision;
+
   public static SwerveSubsystem swerveDrive;
-  private Command autoCommand;
+  private ShooterPivot shooterPivot;
+  public static Elevator elevator;
+
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
   public static final CommandXboxController driver =
@@ -51,28 +59,12 @@ public class Robot extends LoggedRobot {
   public static final CommandXboxController operator =
       new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
 
+  private Command autoCommand;
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  public static double[] poseValue;
-  DoubleArraySubscriber frontVisionPose;
-  DoubleArraySubscriber rearVisionPose;
-
-  DoubleArraySubscriber frontCamera2TagPose;
-  DoubleArraySubscriber rearCamera2TagPose;
-
   @Override
   public void robotInit() {
-    NetworkTable frontTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.FRONT.table);
-    NetworkTable rearTable =
-        NetworkTableInstance.getDefault().getTable(Vision.Limelights.REAR.table);
-    frontVisionPose = frontTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    frontCamera2TagPose =
-        frontTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    rearVisionPose = rearTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    rearCamera2TagPose =
-        rearTable.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
     Logger.addDataReceiver(new NT4Publisher());
     // URCL.start();
     Logger.recordMetadata("GitRevision", Integer.toString(GVersion.GIT_REVISION));
@@ -80,23 +72,14 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitDate", GVersion.GIT_DATE);
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
-    // TODO log to file
-    // if (isReal()) {
-    // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
-    // }
+    if (isReal()) {
+      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+    }
 
     Logger.start();
 
-    // vision =
-    // new Vision(
-    // isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight"),
-    // isSimulation() ? new VisionIOSim() : new VisionLimelight("limelight-rear"));
-    // slapper = new Slapper(true ? new SlapperIOSim() : new SlapperIOSparks());
-
-    // fourBar = new FourBar(true ? new FourBarIOSim() : new FourBarIOSparks());
-    // elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
-    // intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
-    // vision = new Vision(true ? new VisionIOSim() : new VisionLimelight());
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
+    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
         isSimulation()
@@ -113,6 +96,17 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.FRONT_RIGHT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
+
+    visionManager =
+        new VisionManager(
+            new Vision(
+                "Front",
+                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
+            new Vision(
+                "Rear",
+                isSimulation()
+                    ? new VisionIOSim("limelight-rear")
+                    : new VisionIOLimelight("limelight-rear")));
 
     mechManager = new MechanismManager();
 
@@ -231,6 +225,17 @@ public class Robot extends LoggedRobot {
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    operator
+        .a()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  elevator.setTargetHeight(20);
+                }));
+    // operator.a().whileTrue(autoCommand)
+
+    // shooterPivot.setGoal(10);
   }
 
   @Override
@@ -238,7 +243,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // ErrHandler.getInstance().log();
     // RumbleManager.getInstance().periodic();
-    // mechManager.periodic();
+    mechManager.periodic();
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
