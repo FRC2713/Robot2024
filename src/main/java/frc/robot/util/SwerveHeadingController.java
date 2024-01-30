@@ -6,21 +6,28 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.rhr.RHRPIDFFController;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveHeadingController {
   private static SwerveHeadingController instance;
   private Rotation2d setpoint;
-  private PIDFFController controller;
+  private RHRPIDFFController controller;
   private double error;
+  private TunableNT4 tunableSetpoint;
 
   private SwerveHeadingController() {
-    controller = new PIDFFController(DriveConstants.K_HEADING_CONTROLLER_GAINS);
+    controller = DriveConstants.K_HEADING_CONTROLLER_GAINS.createRHRController();
     controller.enableContinuousInput(0, 360);
+
     setpoint = Robot.swerveDrive.getUsablePose().getRotation();
+    tunableSetpoint = new TunableNT4("Heading Controller/Setpoint", setpoint.getDegrees());
+    tunableSetpoint.addHook(
+        x -> {
+          setSetpoint(Rotation2d.fromDegrees(x));
+        });
   }
 
   /**
@@ -63,19 +70,12 @@ public class SwerveHeadingController {
    * @return The speed, in degrees per second, of rotation.
    */
   public double update() {
-    if (Constants.TUNING_MODE) {
-      setSetpoint(
-          Rotation2d.fromDegrees(
-              SmartDashboard.getNumber(
-                  "Heading Controller/setpoint degrees", setpoint.getDegrees())));
-    } else {
-      Logger.recordOutput("Heading Controller/setpoint degrees", setpoint.getDegrees());
-    }
-
+    Logger.recordOutput("Heading Controller/setpoint degrees", setpoint.getDegrees());
     SmartDashboard.putBoolean("Heading Controller/at setpoint", controller.atSetpoint());
 
     controller.setSetpoint(setpoint.getDegrees());
     Logger.recordOutput("Heading Controller/setpoint", setpoint.getDegrees());
+
     double output = 0;
     if (!controller.atSetpoint()) {
       Rotation2d currentHeading = Robot.swerveDrive.getYaw();
@@ -87,9 +87,10 @@ public class SwerveHeadingController {
               Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
       error = setpoint.getDegrees() - currentHeading.getDegrees();
       Logger.recordOutput("Heading Controller/error", error);
-      if ((Math.abs(error) <= 1) || (Math.abs(error) >= 359 && Math.abs(error) <= 360)) {
-        return 0;
-      }
+
+      // if ((Math.abs(error) <= 1) || (Math.abs(error) >= 359 && Math.abs(error) <= 360)) {
+      // return 0;
+      // }
     }
 
     Logger.recordOutput("Heading Controller/update", output);

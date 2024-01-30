@@ -25,7 +25,7 @@ public class ShooterPivot extends SubsystemBase {
   public final ShooterPivotInputsAutoLogged inputs;
   private final ShooterPivotIO IO;
   private final ArmFeedforward ff;
-  private double targetDegs = Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES;
+  private double targetDegs = 20;
   private LoggableMotor motor = new LoggableMotor("ShooterPivot", DCMotor.getNEO(1));
 
   public ShooterPivot(ShooterPivotIO IO) {
@@ -41,59 +41,73 @@ public class ShooterPivot extends SubsystemBase {
   }
 
   public void periodic() {
-    IO.updateInputs(inputs);
-    Logger.processInputs("4Bar", inputs);
     motor.log(inputs.currentDrawOne, inputs.outputVoltage);
-
+    Logger.processInputs("ShooterPivot", inputs);
     double voltage = 0;
+
+    Logger.recordOutput("ShooterPivot/Mode", mode);
     switch (mode) {
       case CLOSED_LOOP:
-        {
-          boolean shouldReset =
-              Math.abs(inputs.absoluteEncoderAdjustedAngle - inputs.angleDegreesOne) > 3;
-          if (shouldReset) {
-            // reseed();
-          }
-          double effort =
-              ShooterPivotController.calculate(
-                  // absoluteEncoderAdjustedAngle, angleDegreesOne
-                  Units.degreesToRadians(inputs.absoluteEncoderAdjustedAngle),
-                  Units.degreesToRadians(targetDegs));
-
-          var goal = ShooterPivotController.getGoal();
-          var setpoint = ShooterPivotController.getSetpoint();
-
-          Logger.recordOutput("4Bar/Goal/Position", Units.radiansToDegrees(goal.position));
-          Logger.recordOutput("4Bar/Goal/Velocity", Units.radiansToDegrees(goal.velocity));
-          Logger.recordOutput("4Bar/Setpoint/Position", Units.radiansToDegrees(setpoint.position));
-          Logger.recordOutput("4Bar/Setpoint/Velocity", Units.radiansToDegrees(setpoint.velocity));
-
-          Logger.recordOutput("4Bar/Should Reseed", shouldReset);
-
-          Logger.recordOutput("4Bar/Control Effort", effort);
-
-          double ffEffort = ff.calculate(setpoint.position, setpoint.velocity);
-          Logger.recordOutput("4Bar/FF Effort", ffEffort);
-
-          effort += ffEffort;
-          effort = MathUtil.clamp(effort, -12, 12);
-          Logger.recordOutput("4Bar/Total Effort", effort);
-
-          voltage = effort;
-
-          double current = ShooterPivotConstants.SHOOTER_PIVOT_MAX_CURRENT;
-          // MathUtil.clamp(
-          //     Math.abs(currentController.calculate(inputs.angleDegreesOne, targetDegs))
-          //         + ShooterPivotConstants.FOUR_BAR_BASE_CURRENT,
-          //     0,
-          //     ShooterPivotConstants.FOUR_BAR_MAX_CURRENT);
-          IO.setCurrentLimit((int) current);
-          Logger.recordOutput("4Bar/Current Limit", current);
+        boolean shouldReset =
+            Math.abs(inputs.absoluteEncoderAdjustedAngle - inputs.angleDegreesOne) > 3;
+        if (shouldReset) {
+          // reseed();
         }
+
+        double effort =
+            ShooterPivotController.calculate(
+                Units.degreesToRadians(inputs.absoluteEncoderAdjustedAngle),
+                Units.degreesToRadians(targetDegs));
+
+        var goal = ShooterPivotController.getGoal();
+        var setpoint = ShooterPivotController.getSetpoint();
+
+        Logger.recordOutput("ShooterPivot/Goal/Position", Units.radiansToDegrees(goal.position));
+        Logger.recordOutput("ShooterPivot/Goal/Velocity", Units.radiansToDegrees(goal.velocity));
+        Logger.recordOutput(
+            "ShooterPivot/Setpoint/Position", Units.radiansToDegrees(setpoint.position));
+        Logger.recordOutput(
+            "ShooterPivot/Setpoint/Velocity", Units.radiansToDegrees(setpoint.velocity));
+
+        Logger.recordOutput("ShooterPivot/Should Reseed", shouldReset);
+
+        Logger.recordOutput("ShooterPivot/Control Effort", effort);
+
+        double ffEffort = ff.calculate(setpoint.position, setpoint.velocity);
+        Logger.recordOutput("ShooterPivot/FF Effort", ffEffort);
+
+        effort += ffEffort;
+        effort = MathUtil.clamp(effort, -12, 12);
+        voltage = effort;
+        Logger.recordOutput("ShooterPivot/Total Effort", effort);
+
+        double current = ShooterPivotConstants.SHOOTER_PIVOT_MAX_CURRENT;
+        // MathUtil.clamp(
+        //     Math.abs(currentController.calculate(inputs.angleDegreesOne, targetDegs))
+        //         + ShooterPivotConstants.FOUR_BAR_BASE_CURRENT,
+        //     0,
+        //     ShooterPivotConstants.FOUR_BAR_MAX_CURRENT);
+        IO.setCurrentLimit((int) current);
+        // Logger.recordOutput("ShooterPivot/Current Limit", current);
         break;
       case OPEN_LOOP:
-        voltage = -1 * Robot.operator.getLeftX();
+        // System.out.println(Robot.operator.getLeftX());
+        // double deltaDegrees = Robot.operator.getLeftX();
+        // this.targetDegs += deltaDegrees;
+        voltage = -1 * Robot.operator.getLeftX() * ShooterPivotConstants.MAX_DEGREES_PER_SECOND;
         break;
     }
+
+    IO.setVoltage(voltage);
+    IO.updateInputs(inputs);
+  }
+
+  public double getAngleDegrees() {
+    return this.IO.getAngleDegrees();
+  }
+
+  public void setGoal(double goal) {
+    targetDegs = goal;
+    this.IO.setPosition(goal);
   }
 }

@@ -1,5 +1,9 @@
 package frc.robot.subsystems.swerveIO;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -102,10 +106,66 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
                 Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
                 Constants.LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
+
+    AutoBuilder.configureHolonomic(
+        this::getUsablePose,
+        this::resetOdometry,
+        this::getRobotRelativeSpeeds,
+        (cs) -> {
+          // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs, getYaw()));
+          this.setDesiredChassisSpeeds(cs);
+        },
+        new HolonomicPathFollowerConfig(
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X.toPathplannerGains(),
+            Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_ROTATION
+                .toPathplannerGains(),
+            4.5,
+            0.4,
+            new ReplanningConfig()),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this);
+
+    PathPlannerLogging.setLogCurrentPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+
+          Logger.recordOutput("PathPlanner/Current Pose", pose);
+        });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (pose) -> {
+          // Do whatever you want with the pose here
+          Logger.recordOutput("PathPlanner/Target Pose", pose);
+        });
+
+    PathPlannerLogging.setLogActivePathCallback(
+        path -> {
+          Logger.recordOutput("PathPlanner/Active Path", path.toArray(Pose2d[]::new));
+        });
   }
 
   public void zeroGyro() {
     io.zeroGyro();
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return kinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
+  public SwerveModuleState[] getSwerveModuleStates() {
+    return new SwerveModuleState[] {
+      frontLeft.getMeasuredState(),
+      frontRight.getMeasuredState(),
+      backLeft.getMeasuredState(),
+      backRight.getMeasuredState()
+    };
   }
 
   /**
@@ -124,6 +184,9 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     Logger.recordOutput("Reset odometry to ", pose);
+
+    // io.resetGyro(pose.getRotation());
+
     odometry.resetPosition(
         Rotation2d.fromDegrees(inputs.gyroYawPosition),
         new SwerveModulePosition[] {
@@ -262,14 +325,14 @@ public class SwerveSubsystem extends SubsystemBase {
    * be run in periodic() or during every code loop to maintain accuracy.
    */
   public void updateOdometry() {
-    odometry.update(
-        Rotation2d.fromDegrees(inputs.gyroYawPosition),
-        new SwerveModulePosition[] {
-          frontLeft.getPosition(),
-          frontRight.getPosition(),
-          backLeft.getPosition(),
-          backRight.getPosition()
-        });
+    // odometry.update(
+    // Rotation2d.fromDegrees(inputs.gyroYawPosition),
+    // new SwerveModulePosition[] {
+    //   frontLeft.getPosition(),
+    //   frontRight.getPosition(),
+    //   backLeft.getPosition(),
+    //   backRight.getPosition()
+    // });
 
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(),
@@ -295,6 +358,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Swerve/MotionMode", motionMode);
     io.updateInputs(inputs, kinematics, getModulePositions());
     Logger.processInputs("Swerve/Chassis", inputs);
     updateOdometry();
@@ -310,7 +374,7 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStates(MotionHandler.lockdown());
         break;
       case TRAJECTORY:
-        setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
+        // setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
         break;
       default:
         break;

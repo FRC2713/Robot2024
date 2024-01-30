@@ -50,16 +50,17 @@ public final class Constants {
   }
 
   public static final class ShooterPivotConstants {
-    public static final double LENGTH_METERS = Units.metersToInches(20);
-    public static final double MASS_KG = 10;
+    public static final double LENGTH_METERS = Units.inchesToMeters(18);
+    public static final double MASS_KG = 6.80389;
     public static final double MAX_ANGLE_DEGREES = 90;
     public static final double RETRACTED_ANGLE_DEGREES = 0;
     public static final boolean SIMULATE_GRAVITY = true;
-    public static final double GEARING = 5;
+    public static final double GEARING = 100;
     public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(45);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
+    public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.75).kD(0).kG(0.85).build();
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(20).kD(0).kG(0.85).build();
   }
 
   public static final class ElevatorConstants {
@@ -121,7 +122,13 @@ public final class Constants {
 
     public static final double HEADING_CONTROLLER_DRIVER_CHANGE_RATE = 4;
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
-        PIDFFGains.builder().name("Heading Controller").kP(12).kD(.35).kS(3).build();
+        PIDFFGains.builder()
+            .name("Heading Controller")
+            .kP(12)
+            .kD(.35)
+            .kS(3)
+            .build()
+            .buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()
@@ -131,7 +138,7 @@ public final class Constants {
             .driveCANId(1)
             .aziCANId(2)
             .aziEncoderCANId(0)
-            .offset(0.312)
+            .offset(0.349)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -143,7 +150,7 @@ public final class Constants {
             .driveCANId(3)
             .aziCANId(4)
             .aziEncoderCANId(1)
-            .offset(0.527)
+            .offset(0.337)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -155,7 +162,7 @@ public final class Constants {
             .driveCANId(10)
             .aziCANId(9)
             .aziEncoderCANId(2)
-            .offset(0.857)
+            .offset(0.021)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -167,32 +174,40 @@ public final class Constants {
             .driveCANId(5)
             .aziCANId(6)
             .aziEncoderCANId(3)
-            .offset(0.864)
+            .offset(0.870)
             .location(BACK_RIGHT_LOCATION)
             .build();
 
     @UtilityClass
     public static final class Gains {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Azimuth").kP(0.12).build().buildTunables();
+          PIDFFGains.builder()
+              .name("Swerve/Defaults/Azimuth")
+              // 0.12
+              .kP(0.012)
+              .build();
+      // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
-              .kP(1.0)
+              // 1.0
+              .kP(0.25)
+              // 0.225
               .kS(0.225)
-              .kV(2.33)
-              .build()
-              .buildTunables();
+              // 2.33
+              .kV(0.2)
+              .build();
+      // .buildTunables();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
-          PIDFFGains.builder().name("Trajectory/X").kP(7).build();
+          PIDFFGains.builder().name("Trajectory/X").kP(3).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_Y =
           PIDFFGains.builder().name("Trajectory/Y").kP(7).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_ROTATION =
-          PIDFFGains.builder().name("Trajectory/R").kP(2.5).build();
+          PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
   }
 }

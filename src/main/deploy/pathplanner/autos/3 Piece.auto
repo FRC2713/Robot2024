@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7233010829658023,
+      "y": 6.698039577897338
+    },
+    "rotation": 59.98163257239095
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "FireSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "First Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Second Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireSpeaker"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
