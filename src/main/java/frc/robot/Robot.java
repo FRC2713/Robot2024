@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
@@ -100,13 +101,13 @@ public class Robot extends LoggedRobot {
     visionManager =
         new VisionManager(
             new Vision(
-                "Front",
-                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
-            new Vision(
-                "Rear",
                 isSimulation()
-                    ? new VisionIOSim("limelight-rear")
-                    : new VisionIOLimelight("limelight-rear")));
+                    ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                    : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
+            new Vision(
+                isSimulation()
+                    ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+                    : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
 
     mechManager = new MechanismManager();
 
