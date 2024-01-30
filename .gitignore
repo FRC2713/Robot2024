@@ -1,8 +1,11 @@
 src/main/java/frc/robot/GVersion.java
+src/main/java/frc/robot/subsystems/ShooterPivot*
 networktables.json
 simgui.json
 simgui-ds.json
 .glass/glass.json
+.Glass/glass.json
+
 
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
