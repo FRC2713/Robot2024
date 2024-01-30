@@ -21,10 +21,8 @@ public class RotateScore extends SequentialCommandGroup {
           new Translation2d(
               FieldConstants.fieldLength - supposedSpeakerLoc.getX(), supposedSpeakerLoc.getY());
     }
-
     var distance = position.getTranslation().getDistance(speakerLoc);
-    /*var optimalAngle =
-    Math.atan2((speakerLoc.getY() - position.getY()), (speakerLoc.getX() - position.getX()));*/
+
     var optimalAngle = Math.acos((position.getX() - speakerLoc.getX()) / distance);
     if (position.getY() < speakerLoc.getY()) {
       optimalAngle *= -1;
