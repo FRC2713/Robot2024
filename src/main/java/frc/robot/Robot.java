@@ -20,6 +20,7 @@ import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
+import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
@@ -48,7 +49,7 @@ public class Robot extends LoggedRobot {
   // public static Vision vision;
 
   public static SwerveSubsystem swerveDrive;
-  private ShooterPivot shooterPivot;
+  public static ShooterPivot shooterPivot;
   public static Elevator elevator;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
@@ -153,6 +154,21 @@ public class Robot extends LoggedRobot {
                   otf.getTracker().printSummary("OTF");
                   otf.cancelCommand();
                 }));
+
+    driver
+        .y()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
+                RotateScore.goOptimalAngle()));
+
+    driver
+        .y()
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                }));
     // driver
     // .povUp()
     // .onTrue(
@@ -224,6 +240,8 @@ public class Robot extends LoggedRobot {
                 () -> {
                   elevator.setTargetHeight(20);
                 }));
+
+    // operator.y
     // operator.a().whileTrue(autoCommand)
 
     // shooterPivot.setGoal(10);
@@ -324,7 +342,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+  }
 
   @Override
   public void teleopExit() {}
