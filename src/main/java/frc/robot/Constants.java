@@ -93,6 +93,8 @@ public final class Constants {
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
   }
 
+  public static final class SuperStructure {}
+
   @UtilityClass
   public static final class DriveConstants {
 

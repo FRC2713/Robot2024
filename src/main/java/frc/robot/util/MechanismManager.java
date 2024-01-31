@@ -38,13 +38,19 @@ public class MechanismManager {
 
     shooter =
         shooterPivot.append(
-            new MechanismLigament2d("Shooter", 0.5, 10, 20, new Color8Bit(0, 0, 255)));
+            new MechanismLigament2d(
+                "Shooter",
+                0.5,
+                Robot.shooterPivot.getCurrentAngle(),
+                20,
+                new Color8Bit(0, 0, 255)));
 
     SmartDashboard.putData("Mech2d", mech);
   }
 
   public void periodic() {
     shooterPivot.setPosition(5, 5 + Units.inchesToMeters(Robot.elevator.getCurrentHeight()));
+    shooter.setAngle(Robot.shooterPivot.getCurrentAngle());
   }
 }
 
