@@ -233,16 +233,10 @@ public class Robot extends LoggedRobot {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    operator
-        .a()
-        .whileTrue(
-            new InstantCommand(
-                () -> {
-                  elevator.setTargetHeight(20);
-                }));
-
-    // operator.y
-    // operator.a().whileTrue(autoCommand)
+    operator.a().whileTrue(Constants.SuperStructure.SCORE_LOW.run());
+    operator.y().whileTrue(Constants.SuperStructure.SCORE_HIGH.run());
+    operator.x().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
+    operator.b().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
 
     // shooterPivot.setGoal(10);
   }

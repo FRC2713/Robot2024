@@ -57,6 +57,7 @@ public class ShooterPivot extends SubsystemBase {
     this.targetDegs = angleInDegrees;
   }
 
+  @Override
   public void periodic() {
     motor.log(inputs.currentDrawOne, inputs.outputVoltage);
     Logger.processInputs("ShooterPivot", inputs);

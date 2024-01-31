@@ -20,3 +20,11 @@ public class SuperStructureBuilder extends SequentialCommandGroup {
     return this;
   }
 }
+
+/*
+
+driver.A().onTrue(SuperStructureBuilder.builder().elevatorHeight(123)....)
+
+
+
+*/
