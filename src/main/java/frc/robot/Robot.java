@@ -26,6 +26,8 @@ import frc.robot.commands.otf.RotateScore;
 import frc.robot.commands.otf.OTF.OTFOptions;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.intakeIO.Intake;
+import frc.robot.subsystems.intakeIO.IntakeIOSparks;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
@@ -35,6 +37,7 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIO;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.subsystems.visionIO.VisionManager;
@@ -54,6 +57,7 @@ public class Robot extends LoggedRobot {
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
+  public static Intake intake;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -83,6 +87,7 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
+    intake = new Intake(isSimulation()?null:new IntakeIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -104,7 +109,7 @@ public class Robot extends LoggedRobot {
         new VisionManager(
             new Vision(
                 isSimulation()
-                    ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                    ? new VisionIOSim(VisionIO)
                     : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
             new Vision(
                 isSimulation()

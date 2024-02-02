@@ -64,6 +64,17 @@ public final class Constants {
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
+    public static final int INTAKE_TOF_SENSOR_ID = 71;
+    public static final int INTAKE_MOTOR_CAN_ID = 5;
+  }
+
+  public static final class IntakeConstants
+  {
+
+    public static final double SENSOR_THRESHOLD = 10;
+    public static final double MAX_BOTTOM_RPM = 0;
+    public static final double MAX_RPM = 0;
+
   }
 
   public static final class ShooterPivotConstants {
