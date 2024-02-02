@@ -58,7 +58,7 @@ public final class Constants {
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 20;
+    public static final int PIGEON_CAN_ID = 60;
     public static final int LEFT_ELEVATOR_CAN_ID = 3;
     public static final int RIGHT_ELEVATOR_CAN_ID = 4;
 
@@ -154,8 +154,8 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(1)
-            .aziCANId(2)
+            .driveCANId(41)
+            .aziCANId(1)
             .aziEncoderCANId(0)
             .offset(0.349)
             .location(FRONT_LEFT_LOCATION)
@@ -166,8 +166,8 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(3)
-            .aziCANId(4)
+            .driveCANId(42)
+            .aziCANId(2)
             .aziEncoderCANId(1)
             .offset(0.337)
             .location(FRONT_RIGHT_LOCATION)
@@ -178,8 +178,8 @@ public final class Constants {
             .name(SwerveModuleName.BACK_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(10)
-            .aziCANId(9)
+            .driveCANId(43)
+            .aziCANId(3)
             .aziEncoderCANId(2)
             .offset(0.021)
             .location(BACK_LEFT_LOCATION)
@@ -190,8 +190,8 @@ public final class Constants {
             .name(SwerveModuleName.BACK_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(5)
-            .aziCANId(6)
+            .driveCANId(44)
+            .aziCANId(4)
             .aziEncoderCANId(3)
             .offset(0.870)
             .location(BACK_RIGHT_LOCATION)
@@ -215,12 +215,12 @@ public final class Constants {
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
-              // 1.0
-              .kP(0.25)
+              // 0.25
+              .kP(0.0)
               // 0.225
-              .kS(0.225)
-              // 2.33
-              .kV(0.2)
+              .kS(0)
+              // 0.2
+              .kV(0.114)
               .build();
       // .buildTunables();
 

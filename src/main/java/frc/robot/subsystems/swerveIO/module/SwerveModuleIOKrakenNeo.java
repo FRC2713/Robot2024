@@ -104,8 +104,10 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
   @Override
   public void updateInputs(SwerveModuleInputs inputs) {
     inputs.driveCurrentDrawAmps = drive.getStatorCurrent().getValue();
-    inputs.driveEncoderPositionMetres = drive.getPosition().getValue();
-    inputs.driveEncoderVelocityMetresPerSecond = drive.getVelocity().getValue();
+    inputs.driveEncoderPositionMetres =
+        drive.getPosition().getValue() * Constants.DriveConstants.DIST_PER_PULSE;
+    inputs.driveEncoderVelocityMetresPerSecond =
+        drive.getVelocity().getValue() * Constants.DriveConstants.DIST_PER_PULSE;
     inputs.driveOutputVolts = drive.getMotorVoltage().getValue();
     inputs.driveTempCelcius = drive.getDeviceTemp().getValue();
   }
@@ -132,9 +134,15 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
 
   @Override
   public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
-    final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
+    var desiredRotationsPerSecond =
+        setpointMetersPerSecond / Constants.DriveConstants.DIST_PER_PULSE;
+    final VelocityVoltage m_request = new VelocityVoltage(desiredRotationsPerSecond).withSlot(0);
     double ffVolts = ff.calculate(setpointMetersPerSecond);
+    Logger.recordOutput(
+        "Swerve/" + info.getName() + "/Drive Setpoint MPS", setpointMetersPerSecond);
+    Logger.recordOutput(
+        "Swerve/" + info.getName() + "/Drive Setpoint RPS", desiredRotationsPerSecond);
     Logger.recordOutput("Swerve/" + info.getName() + "/Drive kV and kS", ffVolts);
-    drive.setControl(m_request.withVelocity(setpointMetersPerSecond).withFeedForward(ffVolts));
+    drive.setControl(m_request.withFeedForward(ffVolts));
   }
 }
