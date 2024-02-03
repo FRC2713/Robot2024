@@ -7,25 +7,29 @@ public interface IntakeIO
     @AutoLog
     public static class IntakeInputs
     {
-        public double outputVoltage = 0.0;
-        public boolean isOn = false;
-        public double velocityRPM = 0.0;
-        public double tempCelcius = 0.0;
-        public double currentAmps = 0.0;
+        public double leftOutputVoltage = 0.0;
+        public boolean leftIsOn = false;
+        public double leftVelocityRPM = 0.0;
+        public double leftTempCelcius = 0.0;
+        public double leftCurrentAmps = 0.0;
+        public double leftPositionRad = 0.0;
 
-        public double positionRad = 0.0;
+        public double rightOutputVoltage = 0.0;
+        public boolean rightIsOn = false;
+        public double rightVelocityRPM = 0.0;
+        public double rightTempCelcius = 0.0;
+        public double rightCurrentAmps = 0.0;
+        public double rightPositionRad = 0.0;
+
         public double sensorRange = 0.0;
         public String sensorStatus = "";
     }  
 
-    public void setCurrentLimit(int currentLimit);
-
     public void updateInputs(IntakeInputs inputs);
-    
-    public void setTopVoltage(double volts);
 
-    public void setBottomVoltage(double volts);
+    public void setCurrentLimit(int currentLimit);
+    
+    public void setVoltage(double leftVolts, double rightVolts);
 
     public boolean hasGamepiece();
-
 }

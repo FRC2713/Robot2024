@@ -27,3 +27,4 @@ This is for reference; you don't need to understand it, but if you want to, WPIL
 * Limelight (1) - Static 10.27.13.11, subnet mask 255.255.255.0
 * Limelight (2) - Static 10.27.13.12, subnet mask 255.255.255.0
 * Limelight (3) - Static 10.27.13.13, subnet mask 255.255.255.0
+* PlayingWithFusion Interface = 10.27.13.2:5812 (rio ip address at port 5812)

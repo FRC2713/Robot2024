@@ -7,6 +7,8 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -19,83 +21,62 @@ import frc.robot.util.LoggableMotor;
 
 public class Intake extends SubsystemBase
 {
-    private final IntakeIO IO;
+  private final IntakeIO IO;
   private final IntakeInputsAutoLogged inputs;
-  private double targetRPM = 0.0;
-  private double cubeDetectionThreshold = 0.4;
-  private double coneDetectionThreshold = 0.25;
-  private double filteredVoltageCube = 0, filteredVoltageCone;
-  public boolean scoring = false;
-  private boolean previouslyHadGamePiece = false;
+  private double leftTargetRPM, rightTargetRPM = 0.0;
 
-  private Timer timer = new Timer();
-  //private Debouncer debouncer = new Debouncer(0.1);
-  //private LinearFilter analogVoltageFilterRight = LinearFilter.singlePoleIIR(0.04, 0.02);
-  //private LinearFilter analogVoltageFilterLeft = LinearFilter.singlePoleIIR(0.04, 0.02);
-  private LoggableMotor motor;
+  private LoggableMotor leftMotor, rightMotor;
 
   public Intake(IntakeIO IO) {
     this.inputs = new IntakeInputsAutoLogged();
     IO.updateInputs(inputs);
     this.IO = IO;
-    motor = new LoggableMotor("Intake Roller", DCMotor.getNeo550(1));
+    leftMotor = new LoggableMotor("Intake Roller", DCMotor.getNeo550(1));
   }
 
-  public boolean isAtTarget() {
-    return Math.abs(inputs.velocityRPM - targetRPM) < 0.5;
+  public boolean leftIsAtTarget() {
+    return Math.abs(inputs.leftVelocityRPM - leftTargetRPM) < 0.5;
   }
 
-  public void setRPM(double rpm) {
-    Logger.recordOutput("Intake/Applied Volts", rpm / (Constants.IntakeConstants.MAX_RPM) * 12);
-    IO.setBottomVoltage(rpm / (Constants.IntakeConstants.MAX_RPM) * 12); // PLACEHOLDER VALUE
+    public boolean rightIsAtTarget() {
+    return Math.abs(inputs.rightVelocityRPM - rightTargetRPM) < 0.5;
   }
 
-  public double getCurrentDraw() {
-    return inputs.currentAmps;
+  public void setRPM(double leftRpm, double rightRPM) {
+    this.leftTargetRPM = leftRpm;
+    this.rightTargetRPM = rightRPM;
+
+    double lDesiredVoltage = leftRpm / (Constants.IntakeConstants.MAX_RPM) * RobotController.getBatteryVoltage(); // is this what we want to do?
+    double rDesiredVoltage = rightRPM / (Constants.IntakeConstants.MAX_RPM) * RobotController.getBatteryVoltage();
+
+    Logger.recordOutput("Intake/Left Applied Volts", lDesiredVoltage);
+    Logger.recordOutput("Intake/Right Applied Volts", rDesiredVoltage);
+    IO.setVoltage(lDesiredVoltage, rDesiredVoltage);
   }
 
   public boolean hasGamepiece() {
-    //if (Robot.gamePieceMode == GamePieceMode.CUBE) {
     return IO.hasGamepiece();
-    //} else {
-      //return debouncer.calculate(filteredVoltageCone > coneDetectionThreshold) && !scoring;
-    //}
-  }
-
-  public void setScoring(boolean scoring) {
-    this.scoring = scoring;
   }
 
   public void periodic() {
     IO.updateInputs(inputs);
-    motor.log(inputs.currentAmps, inputs.outputVoltage);
-    //bottomRollerMotor.log(inputs.bottomCurrentAmps, inputs.bottomOutputVoltage);
+    leftMotor.log(inputs.leftCurrentAmps, inputs.leftOutputVoltage);
+    rightMotor.log(inputs.rightCurrentAmps, inputs.rightOutputVoltage);
 
+    boolean hasGamepiece = hasGamepiece();
+    boolean leftIsAtTarget = leftIsAtTarget();
+    boolean rightIsAtTarget = rightIsAtTarget();
 
     Logger.recordOutput("Intake/Sensor Range",this.inputs.sensorRange);
-    //Logger.recordOutput("Intake/Filtered Sensor Cone", filteredVoltageCone);
 
-    Logger.recordOutput("Intake/Target RPM", targetRPM);
-    Logger.recordOutput("Intake/Has reached target", isAtTarget());
+    Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
+    Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);
+
+    Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
+    Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
     Logger.processInputs("Intake", inputs);
-    Logger.recordOutput("Intake/Scoring", scoring);
-    Logger.recordOutput("Intake/Has gamepiece", hasGamepiece());
-
-
-    /*if (hasGamepiece() && !previouslyHadGamePiece) {
-      timer.restart();
-      previouslyHadGamePiece = true;
-      // RumbleManager.getInstance().setDriver(1.0, 2.0);
-      if (timer.get() <= 2.0) {
-        Robot.lights.setColorPattern(Pattern.DarkGreen);
-      }
-    }*/
-
-    if (!hasGamepiece()) {
-        //is this a troll?
-      previouslyHadGamePiece = !true;
-    }
+    Logger.recordOutput("Intake/Has gamepiece",hasGamepiece);
   }
 
   public void setCurrentLimit(int currentLimit) {
@@ -106,11 +87,15 @@ public class Intake extends SubsystemBase
 
     public static Command setVelocityRPM(double targetRPM)
     {
-        return new InstantCommand(()-> Robot.intake.setRPM(targetRPM));
+        return new InstantCommand(()-> Robot.intake.setRPM(targetRPM, targetRPM));
     }
 
-    public static Command setTopVelocityRPM(double targetRPM) {
-      return setVelocityRPM(targetRPM).repeatedly().until(() -> Robot.intake.isAtTarget());
+    public static Command setVelocityRPMAndWait(double targetRPM) {
+      return setVelocityRPM(targetRPM).repeatedly().until(() -> Robot.intake.leftIsAtTarget() && Robot.intake.rightIsAtTarget());
+    }
+
+    public static Command setVelocityRPMUntilGP(double targetRPM) {
+      return setVelocityRPM(targetRPM).repeatedly().until(() -> Robot.intake.hasGamepiece());
     }
   }    
 }
