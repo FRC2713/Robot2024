@@ -119,12 +119,13 @@ public class ShooterPivot extends SubsystemBase {
     IO.updateInputs(inputs);
   }
 
-  public void setGoal(double goal) {
-    this.IO.setPosition(goal);
-  }
-
   public double getCurrentAngle() {
     return this.inputs.absoluteEncoderAdjustedAngle;
+  }
+
+  public void setGoal(double goal) {
+    this.targetDegs = goal;
+    this.IO.setPosition(goal);
   }
 
   public static class Commands {

@@ -22,8 +22,8 @@ import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
-import frc.robot.commands.otf.RotateScore;
 import frc.robot.commands.otf.OTF.OTFOptions;
+import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
@@ -85,8 +85,8 @@ public class Robot extends LoggedRobot {
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
 
     swerveDrive =
-        isSimulation()
-            // true
+        // isSimulation()
+        true
             ? new SwerveSubsystem(
                 new SwerveIOSim(),
                 new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),
@@ -249,10 +249,19 @@ public class Robot extends LoggedRobot {
         .whileTrue(
             new InstantCommand(
                 () -> {
+                  shooterPivot.setGoal(0);
+                  elevator.setTargetHeight(0);
+                }));
+
+    operator
+        .y()
+        .whileTrue(
+            new InstantCommand(
+                () -> {
+                  shooterPivot.setGoal(20);
                   elevator.setTargetHeight(20);
                 }));
 
-    // operator.y
     // operator.a().whileTrue(autoCommand)
 
     // shooterPivot.setGoal(10);

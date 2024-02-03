@@ -59,8 +59,8 @@ public final class Constants {
   @UtilityClass
   public static final class RobotMap {
     public static final int PIGEON_CAN_ID = 20;
-    public static final int LEFT_ELEVATOR_CAN_ID = 3;
-    public static final int RIGHT_ELEVATOR_CAN_ID = 4;
+    public static final int LEFT_ELEVATOR_CAN_ID = 7;
+    public static final int RIGHT_ELEVATOR_CAN_ID = 8;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
@@ -82,7 +82,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final PIDFFGains ELEVATOR_GAINS =
-        PIDFFGains.builder().name("Elevator Controller").kP(0.75).kD(0.0).kG(0.85).build();
+        PIDFFGains.builder().name("Elevator Controller").kP(0.14).kD(0.0).kG(0.31).build();
     public static final double GEARING = 5.0;
     public static final double CARRIAGE_MASS_KG = 0.3;
     public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
