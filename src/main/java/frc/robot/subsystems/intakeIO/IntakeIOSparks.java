@@ -44,8 +44,7 @@ public class IntakeIOSparks implements IntakeIO {
     inputs.leftVelocityRPM = leftMotor.getEncoder().getVelocity();
     inputs.leftTempCelcius = leftMotor.getMotorTemperature();
     inputs.leftCurrentAmps = leftMotor.getOutputCurrent();
-    inputs.leftPositionRad =
-        Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getPosition());
+    inputs.leftPositionRad = leftMotor.getEncoder().getPosition()*Math.PI*2;
 
     inputs.rightOutputVoltage = MathUtil.clamp(rightMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.rightIsOn =
@@ -53,8 +52,7 @@ public class IntakeIOSparks implements IntakeIO {
     inputs.rightVelocityRPM = rightMotor.getEncoder().getVelocity();
     inputs.rightTempCelcius = rightMotor.getMotorTemperature();
     inputs.rightCurrentAmps = rightMotor.getOutputCurrent();
-    inputs.rightPositionRad =
-        Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getPosition());
+    inputs.rightPositionRad = leftMotor.getEncoder().getPosition()*Math.PI*2;
 
     inputs.sensorRange = sensor.getRange();
     inputs.sensorStatus = sensor.getStatus().toString();
