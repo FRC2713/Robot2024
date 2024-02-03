@@ -23,7 +23,6 @@ public class Intake extends SubsystemBase {
 
     leftMotor = new LoggableMotor("Left intake Roller", DCMotor.getNEO(1));
     rightMotor = new LoggableMotor("Right intake Roller", DCMotor.getNEO(1));
-
   }
 
   public boolean leftIsAtTarget() {

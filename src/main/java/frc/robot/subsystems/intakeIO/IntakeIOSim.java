@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -37,14 +38,14 @@ public class IntakeIOSim implements IntakeIO {
     simLeft.update(0.02);
     simRight.update(0.02);
 
-    inputs.leftOutputVoltage = simLeft.getOutput(0);
+    inputs.leftOutputVoltage = MathUtil.clamp(simLeft.getOutput(0), -12, 12);
     inputs.leftIsOn = simLeft.getAngularVelocityRPM() > 0.005;
     inputs.leftVelocityRPM = simLeft.getAngularVelocityRPM();
     inputs.leftTempCelcius = 0.0;
     inputs.leftCurrentAmps = simLeft.getCurrentDrawAmps();
     inputs.leftPositionRad = simLeft.getAngularPositionRad();
 
-    inputs.rightOutputVoltage = simRight.getOutput(0);
+    inputs.rightOutputVoltage = MathUtil.clamp(simRight.getOutput(0), -12, 12);
     inputs.rightIsOn = simRight.getAngularVelocityRPM() > 0.005;
     inputs.rightVelocityRPM = simRight.getAngularVelocityRPM();
     inputs.rightTempCelcius = 0.0;
@@ -83,6 +84,5 @@ public class IntakeIOSim implements IntakeIO {
 
     simLeft.setInputVoltage(leftVolts);
     simRight.setInputVoltage(-rightVolts);
-
   }
 }
