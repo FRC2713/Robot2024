@@ -157,7 +157,7 @@ public final class Constants {
             .driveCANId(41)
             .aziCANId(1)
             .aziEncoderCANId(0)
-            .offset(0.349)
+            .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -169,7 +169,7 @@ public final class Constants {
             .driveCANId(42)
             .aziCANId(2)
             .aziEncoderCANId(1)
-            .offset(0.337)
+            .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -181,7 +181,7 @@ public final class Constants {
             .driveCANId(43)
             .aziCANId(3)
             .aziEncoderCANId(2)
-            .offset(0.021)
+            .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -193,7 +193,7 @@ public final class Constants {
             .driveCANId(44)
             .aziCANId(4)
             .aziEncoderCANId(3)
-            .offset(0.870)
+            .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
             .build();
 
