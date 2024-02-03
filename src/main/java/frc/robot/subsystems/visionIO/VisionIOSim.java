@@ -19,39 +19,32 @@ public class VisionIOSim implements VisionIO {
   VisionSystemSim visionSim;
   PhotonCamera cameraHw;
   PhotonCameraSim cameraSim;
+  String name;
 
   AprilTagFieldLayout layout;
-  VisionInfo info;
 
   @SneakyThrows
-  public VisionIOSim(VisionInfo info) {
-    this.info = info;
-    visionSim = new VisionSystemSim(info.getNtTableName());
+  public VisionIOSim(String name) {
+    this.name = name;
+    visionSim = new VisionSystemSim(name);
     layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
     visionSim.addAprilTags(layout);
 
     SimCameraProperties cameraProperties = new SimCameraProperties();
-    cameraProperties.setCalibration(
-        960,
-        720,
-        Rotation2d.fromDegrees(
-            Math.hypot(
-                info.getMountingDirection().getHorizontalFOV(),
-                info.getMountingDirection().getVerticalFOV())));
-
+    cameraProperties.setCalibration(960, 720, Rotation2d.fromDegrees(Math.hypot(63.3, 49.7)));
     cameraProperties.setCalibError(.25, .08);
     cameraProperties.setFPS(20);
     cameraProperties.setAvgLatencyMs(35);
     cameraProperties.setLatencyStdDevMs(5);
 
-    cameraHw = new PhotonCamera(info.getNtTableName());
+    cameraHw = new PhotonCamera(name);
     cameraSim = new PhotonCameraSim(cameraHw, cameraProperties);
-    visionSim.addCamera(cameraSim, info.getLocation());
+    visionSim.addCamera(cameraSim, new Transform3d());
     SmartDashboard.putData(visionSim.getDebugField());
   }
 
-  public VisionInfo getName() {
-    return info;
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -119,10 +112,5 @@ public class VisionIOSim implements VisionIO {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException(
         "Unimplemented method 'setCameraPoseInRobotSpaceInternal'");
-  }
-
-  @Override
-  public VisionInfo getInfo() {
-    return info;
   }
 }

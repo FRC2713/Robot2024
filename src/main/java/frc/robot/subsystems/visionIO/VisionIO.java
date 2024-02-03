@@ -44,7 +44,7 @@ public interface VisionIO {
 
   public void updateInputs(VisionInputs inputs);
 
-  public VisionInfo getInfo();
+  public String getName();
 
   public enum LEDMode {
     PIPELINE,

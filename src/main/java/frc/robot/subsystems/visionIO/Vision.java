@@ -8,9 +8,9 @@ public class Vision extends SubsystemBase {
   private final VisionInputsAutoLogged inputs;
   private final String key;
 
-  public Vision(VisionIO io) {
+  public Vision(String key, VisionIO io) {
     this.io = io;
-    this.key = String.format("Vision/%s", io.getInfo().getNtTableName());
+    this.key = String.format("Vision/%s", key);
     inputs = new VisionInputsAutoLogged();
     io.updateInputs(inputs);
   }

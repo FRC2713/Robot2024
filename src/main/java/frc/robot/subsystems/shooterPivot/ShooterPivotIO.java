@@ -37,4 +37,6 @@ public interface ShooterPivotIO {
   public void setPosition(double angleDeg);
 
   public void setCurrentLimit(int currentLimit);
+
+  public double getAngleDegrees();
 }

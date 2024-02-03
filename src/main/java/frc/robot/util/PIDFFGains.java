@@ -145,12 +145,4 @@ public class PIDFFGains {
   public PIDConstants toPathplannerGains() {
     return new PIDConstants(kP, kI, kD);
   }
-
-  public static PIDFFGains fromPIDGains(PIDController controller) {
-    return PIDFFGains.builder()
-        .kP(controller.getP())
-        .kI(controller.getI())
-        .kD(controller.getD())
-        .build();
-  }
 }

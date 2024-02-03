@@ -47,6 +47,11 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
+  public double getAngleDegrees() {
+    return Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+  }
+
+  @Override
   public void updateInputs(ShooterPivotInputs inputs) {
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
