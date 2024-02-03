@@ -87,9 +87,9 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     SparkConfigurator azimuthConfigurator = new SparkConfigurator(azimuth);
     azimuthConfigurator
         .setInverted(true)
-        .checkOK(s -> s.setIdleMode(IdleMode.kCoast))
+        .checkOK(s -> s.setIdleMode(IdleMode.kBrake))
         .checkOKAndReadBackValue(
-            s -> s.setIdleMode(IdleMode.kCoast), s -> s.getIdleMode() == IdleMode.kCoast)
+            s -> s.setIdleMode(IdleMode.kBrake), s -> s.getIdleMode() == IdleMode.kBrake)
         .checkOK(s -> s.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
         .checkOK(s -> s.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 

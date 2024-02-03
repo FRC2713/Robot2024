@@ -232,8 +232,8 @@ public final class Constants {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
-              // 0.12
-              .kP(0.012)
+              // 0.012
+              .kP(0.01)
               .build();
       // .buildTunables();
 
@@ -241,11 +241,11 @@ public final class Constants {
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
               // 0.25
-              .kP(0.0)
+              .kP(0.01)
               // 0.225
               .kS(0)
-              // 0.2
-              .kV(0.114)
+              // 0.114
+              .kV(0.11)
               .build();
       // .buildTunables();
 

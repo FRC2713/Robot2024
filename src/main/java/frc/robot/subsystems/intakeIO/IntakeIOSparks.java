@@ -21,6 +21,12 @@ public class IntakeIOSparks implements IntakeIO {
     this.rightMotor =
         new CANSparkMax(Constants.RobotMap.INTAKE_RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
 
+    leftMotor.restoreFactoryDefaults();
+    rightMotor.restoreFactoryDefaults();
+
+    leftMotor.setSmartCurrentLimit(40);
+    rightMotor.setSmartCurrentLimit(40);
+
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
   }

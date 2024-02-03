@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
@@ -21,7 +20,6 @@ import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
-import frc.robot.commands.otf.OTF.OTFOptions;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
@@ -85,7 +83,7 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
-    intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
+    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -119,55 +117,55 @@ public class Robot extends LoggedRobot {
     checkAlliance();
     buildAutoChooser();
 
-    driver
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
-                }))
-        .whileTrue(
-            new RepeatCommand(
-                new InstantCommand(
-                    () -> {
-                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.regenerateTraj().schedule();
-                    })));
+    // driver
+    //     .a()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
+    //             }))
+    //     .whileTrue(
+    //         new RepeatCommand(
+    //             new InstantCommand(
+    //                 () -> {
+    //                   swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+    //                   otf.regenerateTraj().schedule();
+    //                 })));
 
-    driver
-        .a()
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.printErrorSummary();
-                  otf.cancelCommand();
-                }));
+    // driver
+    //     .a()
+    //     .onFalse(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+    //               otf.printErrorSummary();
+    //               otf.cancelCommand();
+    //             }));
 
-    driver
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  otf.followPath(OTFOptions.AMP_STATIC).schedule();
-                }))
-        .whileTrue(
-            new RepeatCommand(
-                new InstantCommand(
-                    () -> {
-                      swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.regenerateTraj().schedule();
-                    })));
+    // driver
+    //     .b()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               otf.followPath(OTFOptions.AMP_STATIC).schedule();
+    //             }))
+    //     .whileTrue(
+    //         new RepeatCommand(
+    //             new InstantCommand(
+    //                 () -> {
+    //                   swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
+    //                   otf.regenerateTraj().schedule();
+    //                 })));
 
-    driver
-        .b()
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.printErrorSummary();
-                  otf.cancelCommand();
-                }));
+    // driver
+    //     .b()
+    //     .onFalse(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+    //               otf.printErrorSummary();
+    //               otf.cancelCommand();
+    //             }));
 
     driver
         .y()
@@ -247,17 +245,23 @@ public class Robot extends LoggedRobot {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    operator
-        .a()
-        .whileTrue(
-            new InstantCommand(
-                () -> {
-                  elevator.setTargetHeight(20);
-                }));
+    // operator
+    //     .a()
+    //     .whileTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               elevator.setTargetHeight(20);
+    //             }));
 
-    driver.leftBumper().whileTrue(Intake.Commands.setVelocityRPM(1000));
+    driver
+        .leftBumper()
+        .onTrue(Intake.Commands.setVelocityRPM(5000))
+        .onFalse(Intake.Commands.setVelocityRPM(0));
 
-    driver.rightBumper().whileTrue(Intake.Commands.setVelocityRPM(-1000));
+    driver
+        .rightBumper()
+        .onTrue(Intake.Commands.setVelocityRPM(-5000))
+        .onFalse(Intake.Commands.setVelocityRPM(0));
 
     // operator.y
     // operator.a().whileTrue(autoCommand)
