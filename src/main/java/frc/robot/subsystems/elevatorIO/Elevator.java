@@ -12,6 +12,7 @@ import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
 import frc.robot.util.LoggableMotor;
 import frc.robot.util.RedHawkUtil;
+import frc.robot.util.SuperStructureBuilder;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -95,6 +96,11 @@ public class Elevator extends SubsystemBase {
 
     public static Command setToHeight(double height) {
       return new InstantCommand(() -> Robot.elevator.setTargetHeight(height), Robot.elevator);
+    }
+
+    public static Command toHeight(SuperStructureBuilder structure) {
+      return new InstantCommand(
+          () -> Robot.elevator.setTargetHeight(structure.getElevatorHeight()));
     }
   }
 }

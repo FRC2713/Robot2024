@@ -12,19 +12,32 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
+import frc.robot.util.ErrorTracker;
+import frc.robot.util.PIDFFGains;
 import org.littletonrobotics.junction.Logger;
 
-public class ThreePieceChoreo {
+public class ThreePieceChoreo extends SequentialCommandGroup {
+  public ErrorTracker errorTracker;
 
-  public static ChoreoControlFunction modifiedChoreoSwerveController(
+  public ChoreoControlFunction modifiedChoreoSwerveController(
       PIDController xController, PIDController yController, PIDController rotationController) {
     rotationController.enableContinuousInput(-Math.PI, Math.PI);
+    errorTracker =
+        new ErrorTracker(
+            10, PIDFFGains.fromPIDGains(xController), PIDFFGains.fromPIDGains(rotationController));
     return (pose, referenceState) -> {
       Logger.recordOutput(
           "Choreo/Target Pose",
           new Pose2d(
               new Translation2d(referenceState.x, referenceState.y),
               Rotation2d.fromRadians(referenceState.heading)));
+
+      var error =
+          new Pose2d(
+              new Translation2d(referenceState.x - pose.getX(), referenceState.y - pose.getY()),
+              Rotation2d.fromRadians(referenceState.heading - pose.getRotation().getRadians()));
+
+      errorTracker.addObservation(error);
       double xFF = referenceState.velocityX;
       double yFF = referenceState.velocityY;
       double rotationFF = referenceState.angularVelocity;
@@ -39,7 +52,7 @@ public class ThreePieceChoreo {
     };
   }
 
-  public static Command choreoCommandBuilder(ChoreoTrajectory traj) {
+  public Command choreoCommandBuilder(ChoreoTrajectory traj) {
     var alliance = DriverStation.getAlliance();
     boolean useAllianceColour = false;
     if (alliance.isPresent()) {
@@ -63,20 +76,12 @@ public class ThreePieceChoreo {
         new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));
   }
 
-  public static Command getAutonomousCommand() {
-    // PathPlannerPath p = PathPlannerPath.fromChoreoTrajectory("3 Piece Choreo");
-    // return new SequentialCommandGroup(
-    //     new InstantCommand(
-    //         () -> {
-    //           Robot.swerveDrive.resetOdometry(p.getPreviewStartingHolonomicPose());
-    //         }),
-    //     new RHRPathPlannerAuto("3 Piece Choreo"));
-
+  public ThreePieceChoreo() {
     ChoreoTrajectory firstTraj = Choreo.getTrajectory("3 Piece Choreo.1"); //
     ChoreoTrajectory secondTraj = Choreo.getTrajectory("3 Piece Choreo.2");
     ChoreoTrajectory thirdTraj = Choreo.getTrajectory("3 Piece Choreo.3");
     //
-    return new SequentialCommandGroup(
+    addCommands(
         new InstantCommand(
             () -> {
               Robot.swerveDrive.resetOdometry(firstTraj.getInitialPose());
@@ -85,6 +90,10 @@ public class ThreePieceChoreo {
         new WaitCommand(1),
         choreoCommandBuilder(secondTraj),
         new WaitCommand(1),
-        choreoCommandBuilder(thirdTraj));
+        choreoCommandBuilder(thirdTraj),
+        new InstantCommand(
+            () -> {
+              errorTracker.printSummary("ThreePieceChoreo");
+            }));
   }
 }

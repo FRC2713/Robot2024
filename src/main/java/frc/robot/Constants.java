@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
+import frc.robot.subsystems.visionIO.VisionInfo;
+import frc.robot.subsystems.visionIO.VisionInfo.MountingDirection;
 import frc.robot.util.PIDFFGains;
 import lombok.experimental.UtilityClass;
 
@@ -37,6 +41,19 @@ public final class Constants {
     public static double VISION_STD_DEVI_POSITION_IN_METERS = 0.9;
     public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5);
     public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+
+    public static VisionInfo FRONT_LIMELIGHT_INFO =
+        VisionInfo.builder()
+            .ntTableName("limelight")
+            .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
+            .mountingDirection(MountingDirection.HORIZONTAL_LL3)
+            .build();
+    public static VisionInfo REAR_LIMELIGHT_INFO =
+        VisionInfo.builder()
+            .ntTableName("limelight-rear")
+            .location(new Transform3d())
+            .mountingDirection(MountingDirection.VERTICAL_LL3)
+            .build();
   }
 
   @UtilityClass
@@ -75,6 +92,8 @@ public final class Constants {
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
   }
+
+  public static final class SuperStructure {}
 
   @UtilityClass
   public static final class DriveConstants {
@@ -177,6 +196,11 @@ public final class Constants {
             .offset(0.870)
             .location(BACK_RIGHT_LOCATION)
             .build();
+
+    @UtilityClass
+    public static final class FieldTunables {
+      public static final int TIME_BETWEEN_REGERATION_SECONDS = 2;
+    }
 
     @UtilityClass
     public static final class Gains {

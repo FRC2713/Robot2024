@@ -12,14 +12,18 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
+import frc.robot.commands.otf.RotateScore;
+import frc.robot.commands.otf.OTF.OTFOptions;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
@@ -99,13 +103,13 @@ public class Robot extends LoggedRobot {
     visionManager =
         new VisionManager(
             new Vision(
-                "Front",
-                isSimulation() ? new VisionIOSim("limelight") : new VisionIOLimelight("limelight")),
-            new Vision(
-                "Rear",
                 isSimulation()
-                    ? new VisionIOSim("limelight-rear")
-                    : new VisionIOLimelight("limelight-rear")));
+                    ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                    : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
+            new Vision(
+                isSimulation()
+                    ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+                    : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
 
     mechManager = new MechanismManager();
 
@@ -115,12 +119,16 @@ public class Robot extends LoggedRobot {
     driver
         .a()
         .onTrue(
-            new SequentialCommandGroup(
+            new InstantCommand(
+                () -> {
+                  otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
+                }))
+        .whileTrue(
+            new RepeatCommand(
                 new InstantCommand(
                     () -> {
-                      otf.getTracker().reset();
                       swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.followPath().schedule();
+                      otf.regenerateTraj().schedule();
                     })));
 
     driver
@@ -129,19 +137,23 @@ public class Robot extends LoggedRobot {
             new InstantCommand(
                 () -> {
                   swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.getTracker().printSummary("OTF");
+                  otf.printErrorSummary();
                   otf.cancelCommand();
                 }));
 
     driver
         .b()
         .onTrue(
-            new SequentialCommandGroup(
+            new InstantCommand(
+                () -> {
+                  otf.followPath(OTFOptions.AMP_STATIC).schedule();
+                }))
+        .whileTrue(
+            new RepeatCommand(
                 new InstantCommand(
                     () -> {
-                      otf.getTracker().reset();
                       swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-                      otf.followPathAmp().schedule();
+                      otf.regenerateTraj().schedule();
                     })));
 
     driver
@@ -150,8 +162,23 @@ public class Robot extends LoggedRobot {
             new InstantCommand(
                 () -> {
                   swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                  otf.getTracker().printSummary("OTF");
+                  otf.printErrorSummary();
                   otf.cancelCommand();
+                }));
+
+    driver
+        .y()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
+                RotateScore.goOptimalAngle()));
+
+    driver
+        .y()
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
                 }));
     // driver
     // .povUp()
@@ -335,7 +362,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+  }
 
   @Override
   public void teleopExit() {}
@@ -359,7 +388,7 @@ public class Robot extends LoggedRobot {
     // ? -1 : 1;
     autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
     autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
-    autoChooser.addOption("ThreePieceChoreo", ThreePieceChoreo.getAutonomousCommand());
+    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
   }
 
