@@ -50,6 +50,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     config.CurrentLimits.SupplyCurrentLimit = 60;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
     RedHawkUtil.applyConfigs(drive, config);
 
     azimuthEncoder = new OffsetAbsoluteAnalogEncoder(info.getAziEncoderCANId(), info.getOffset());

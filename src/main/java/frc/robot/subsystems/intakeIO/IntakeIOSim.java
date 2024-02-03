@@ -59,6 +59,7 @@ public class IntakeIOSim implements IntakeIO {
   public boolean hasGamepiece() {
     if (intakeHasStarted && intakeIsRunning.hasElapsed(numSecToObtain)) {
       intakeIsRunning.stop();
+
       return true;
     }
 
@@ -67,6 +68,7 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
+
     if (!intakeHasStarted && leftVolts > 0) {
       // start intaking
       intakeIsRunning.restart();
@@ -81,5 +83,6 @@ public class IntakeIOSim implements IntakeIO {
 
     simLeft.setInputVoltage(leftVolts);
     simRight.setInputVoltage(-rightVolts);
+
   }
 }

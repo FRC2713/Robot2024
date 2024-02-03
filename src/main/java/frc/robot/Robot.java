@@ -85,7 +85,7 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -254,7 +254,6 @@ public class Robot extends LoggedRobot {
                 () -> {
                   elevator.setTargetHeight(20);
                 }));
-
     driver
         .leftBumper()
         .whileTrue(Intake.Commands.setVelocityRPM(1000))

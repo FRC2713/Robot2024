@@ -20,8 +20,10 @@ public class Intake extends SubsystemBase {
     this.inputs = new IntakeInputsAutoLogged();
     IO.updateInputs(inputs);
     this.IO = IO;
+
     leftMotor = new LoggableMotor("Left intake Roller", DCMotor.getNEO(1));
     rightMotor = new LoggableMotor("Right intake Roller", DCMotor.getNEO(1));
+
   }
 
   public boolean leftIsAtTarget() {
