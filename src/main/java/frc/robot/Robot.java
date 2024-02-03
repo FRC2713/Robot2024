@@ -15,15 +15,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
-import frc.robot.commands.otf.RotateScore;
 import frc.robot.commands.otf.OTF.OTFOptions;
+import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.intakeIO.Intake;
@@ -34,6 +33,7 @@ import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
+import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
 import frc.robot.subsystems.visionIO.Vision;
@@ -70,6 +70,8 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
+  // TimeOfFlight tof = new TimeOfFlight(70);
+
   @Override
   public void robotInit() {
     Logger.addDataReceiver(new NT4Publisher());
@@ -85,9 +87,9 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
-    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
-    intake = new Intake(isSimulation()?null:new IntakeIOSparks());
+    elevator = new Elevator(true ? new ElevatorIOSim() : null);
+    shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
+    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -100,21 +102,21 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOSim(Constants.DriveConstants.BACK_RIGHT))
             : new SwerveSubsystem(
                 new SwerveIOPigeon2(),
-                new SwerveModuleIOSparkMAX(Constants.DriveConstants.FRONT_LEFT),
-                new SwerveModuleIOSparkMAX(Constants.DriveConstants.FRONT_RIGHT),
-                new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_LEFT),
-                new SwerveModuleIOSparkMAX(Constants.DriveConstants.BACK_RIGHT));
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_LEFT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_RIGHT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionManager =
-        new VisionManager(
-            new Vision(
-                isSimulation()
-                    ? new VisionIOSim(VisionIO)
-                    : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
-            new Vision(
-                isSimulation()
-                    ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-                    : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
+    // visionManager =
+    //     new VisionManager(
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
 
     mechManager = new MechanismManager();
 
@@ -229,21 +231,21 @@ public class Robot extends LoggedRobot {
     // swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
     // }));
 
-    // driver
-    // .start()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-    // }));
+    driver
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+                }));
 
-    // driver
-    // .back()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-    // }));
+    driver
+        .back()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+                }));
 
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -280,6 +282,8 @@ public class Robot extends LoggedRobot {
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
+
+    // Logger.recordOutput("Tof", tof.getRange());
 
     // swerveDrive.seed();
 
