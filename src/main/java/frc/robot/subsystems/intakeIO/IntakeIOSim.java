@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -7,11 +8,11 @@ import frc.robot.Constants;
 
 public class IntakeIOSim implements IntakeIO {
 
-  private final DCMotorSim simLeftRollers =
+  private final DCMotorSim simLeft =
       new DCMotorSim(
           DCMotor.getNEO(1), Constants.IntakeConstants.LEFT_GEARING, Constants.IntakeConstants.MOI);
 
-  private final DCMotorSim simRightRollers =
+  private final DCMotorSim simRight =
       new DCMotorSim(
           DCMotor.getNEO(1),
           Constants.IntakeConstants.RIGHT_GEARING,
@@ -33,19 +34,23 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeInputs inputs) {
-    inputs.leftOutputVoltage = simLeftRollers.getOutput(0);
-    inputs.leftIsOn = simLeftRollers.getAngularVelocityRPM() > 0.005;
-    inputs.leftVelocityRPM = simLeftRollers.getAngularVelocityRPM();
-    inputs.leftTempCelcius = 0.0;
-    inputs.leftCurrentAmps = simLeftRollers.getCurrentDrawAmps();
-    inputs.leftPositionRad = simLeftRollers.getAngularPositionRad();
 
-    inputs.rightOutputVoltage = simRightRollers.getOutput(0);
-    inputs.rightIsOn = simRightRollers.getAngularVelocityRPM() > 0.005;
-    inputs.rightVelocityRPM = simRightRollers.getAngularVelocityRPM();
+    simLeft.update(0.02);
+    simRight.update(0.02);
+
+    inputs.leftOutputVoltage = MathUtil.clamp(simLeft.getOutput(0), -12, 12);
+    inputs.leftIsOn = simLeft.getAngularVelocityRPM() > 0.005;
+    inputs.leftVelocityRPM = simLeft.getAngularVelocityRPM();
+    inputs.leftTempCelcius = 0.0;
+    inputs.leftCurrentAmps = simLeft.getCurrentDrawAmps();
+    inputs.leftPositionRad = simLeft.getAngularPositionRad();
+
+    inputs.rightOutputVoltage = MathUtil.clamp(simRight.getOutput(0), -12, 12);
+    inputs.rightIsOn = simRight.getAngularVelocityRPM() > 0.005;
+    inputs.rightVelocityRPM = simRight.getAngularVelocityRPM();
     inputs.rightTempCelcius = 0.0;
-    inputs.rightCurrentAmps = simRightRollers.getCurrentDrawAmps();
-    inputs.rightPositionRad = simRightRollers.getAngularPositionRad();
+    inputs.rightCurrentAmps = simRight.getCurrentDrawAmps();
+    inputs.rightPositionRad = simRight.getAngularPositionRad();
 
     inputs.sensorRange = 0.0;
     inputs.sensorStatus = "Short";
@@ -55,7 +60,7 @@ public class IntakeIOSim implements IntakeIO {
   public boolean hasGamepiece() {
     if (intakeHasStarted && intakeIsRunning.hasElapsed(numSecToObtain)) {
       intakeIsRunning.stop();
-      intakeHasStarted = false;
+
       return true;
     }
 
@@ -64,12 +69,20 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-    if (!intakeHasStarted && leftVolts > 0 || rightVolts > 0) {
+
+    if (!intakeHasStarted && leftVolts > 0) {
+      // start intaking
       intakeIsRunning.restart();
       intakeHasStarted = true;
     }
 
-    simLeftRollers.setInputVoltage(leftVolts);
-    simRightRollers.setInputVoltage(rightVolts);
+    if (leftVolts < 0) {
+      // outtaking immediately removes the gamepiece
+      intakeHasStarted = false;
+      intakeIsRunning.stop();
+    }
+
+    simLeft.setInputVoltage(leftVolts);
+    simRight.setInputVoltage(-rightVolts);
   }
 }

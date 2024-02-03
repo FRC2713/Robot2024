@@ -254,10 +254,15 @@ public class Robot extends LoggedRobot {
                 () -> {
                   elevator.setTargetHeight(20);
                 }));
+    driver
+        .leftBumper()
+        .whileTrue(Intake.Commands.setVelocityRPM(1000))
+        .onFalse(Intake.Commands.setVelocityRPM(0));
 
-    driver.leftBumper().whileTrue(Intake.Commands.setVelocityRPM(1000));
-
-    driver.rightBumper().whileTrue(Intake.Commands.setVelocityRPM(-1000));
+    driver
+        .rightBumper()
+        .whileTrue(Intake.Commands.setVelocityRPM(-1000))
+        .onFalse(Intake.Commands.setVelocityRPM(0));
 
     // operator.y
     // operator.a().whileTrue(autoCommand)
