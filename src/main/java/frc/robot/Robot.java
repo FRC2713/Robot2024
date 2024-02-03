@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
@@ -35,9 +33,6 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
-import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIOLimelight;
-import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
@@ -67,7 +62,7 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  TimeOfFlight tof = new TimeOfFlight(70);
+  // TimeOfFlight tof = new TimeOfFlight(70);
 
   @Override
   public void robotInit() {
@@ -103,16 +98,16 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionManager =
-        new VisionManager(
-            new Vision(
-                true
-                    ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-                    : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
-            new Vision(
-                true
-                    ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-                    : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
+    // visionManager =
+    //     new VisionManager(
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
 
     mechManager = new MechanismManager();
 
@@ -227,21 +222,21 @@ public class Robot extends LoggedRobot {
     // swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
     // }));
 
-    // driver
-    // .start()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-    // }));
+    driver
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+                }));
 
-    // driver
-    // .back()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-    // }));
+    driver
+        .back()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+                }));
 
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -271,7 +266,7 @@ public class Robot extends LoggedRobot {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
-    Logger.recordOutput("Tof", tof.getRange());
+    // Logger.recordOutput("Tof", tof.getRange());
 
     // swerveDrive.seed();
 

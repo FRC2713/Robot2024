@@ -6,12 +6,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.rhr.RHRFeedForward;
 import frc.robot.util.OffsetAbsoluteAnalogEncoder;
@@ -44,8 +47,9 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     info.getDriveGains().applyTo(config);
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
-    config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
+    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     RedHawkUtil.applyConfigs(drive, config);
 
     azimuthEncoder = new OffsetAbsoluteAnalogEncoder(info.getAziEncoderCANId(), info.getOffset());
@@ -81,9 +85,9 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     SparkConfigurator azimuthConfigurator = new SparkConfigurator(azimuth);
     azimuthConfigurator
         .setInverted(true)
-        .checkOK(s -> s.setIdleMode(IdleMode.kBrake))
+        .checkOK(s -> s.setIdleMode(IdleMode.kCoast))
         .checkOKAndReadBackValue(
-            s -> s.setIdleMode(IdleMode.kBrake), s -> s.getIdleMode() == IdleMode.kBrake)
+            s -> s.setIdleMode(IdleMode.kCoast), s -> s.getIdleMode() == IdleMode.kCoast)
         .checkOK(s -> s.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
         .checkOK(s -> s.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
@@ -110,6 +114,20 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
         drive.getVelocity().getValue() * Constants.DriveConstants.DIST_PER_PULSE;
     inputs.driveOutputVolts = drive.getMotorVoltage().getValue();
     inputs.driveTempCelcius = drive.getDeviceTemp().getValue();
+
+    inputs.aziAbsoluteEncoderRawVolts = azimuthEncoder.getUnadjustedVoltage();
+    inputs.aziAbsoluteEncoderAdjVolts = azimuthEncoder.getAdjustedVoltage();
+    inputs.aziAbsoluteEncoderAdjAngleDeg = azimuthEncoder.getAdjustedRotation2d().getDegrees();
+
+    inputs.aziOutputVolts = azimuth.getAppliedOutput() * RobotController.getBatteryVoltage();
+    inputs.aziTempCelcius = azimuth.getMotorTemperature();
+    inputs.aziCurrentDrawAmps = azimuth.getOutputCurrent();
+    inputs.aziEncoderPositionDeg = getAziEncoder().getPosition();
+    inputs.aziEncoderVelocityDegPerSecond = getAziEncoder().getVelocity();
+    inputs.aziEncoderSimplifiedPositionDeg =
+        OffsetAbsoluteAnalogEncoder.simplifyRotation2d(
+                Rotation2d.fromDegrees(getAziEncoder().getPosition()))
+            .getDegrees();
   }
 
   @Override
