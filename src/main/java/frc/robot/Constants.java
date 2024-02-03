@@ -58,12 +58,37 @@ public final class Constants {
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 20;
-    public static final int LEFT_ELEVATOR_CAN_ID = 7;
-    public static final int RIGHT_ELEVATOR_CAN_ID = 8;
+    public static final int PIGEON_CAN_ID = 60;
+    public static final int LEFT_ELEVATOR_CAN_ID = 3;
+    public static final int RIGHT_ELEVATOR_CAN_ID = 4;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
+
+    public static final int INTAKE_TOF_SENSOR_ID = 70;
+    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
+    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
+
+    public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
+    public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
+
+    public static final int FRONT_RIGHT_DRIVE_CAN_ID = 42;
+    public static final int FRONT_RIGHT_AZIMUTH_CAN_ID = 2;
+
+    public static final int BACK_LEFT_DRIVE_CAN_ID = 43;
+    public static final int BACK_LEFT_AZIMUTH_CAN_ID = 3;
+
+    public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
+    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
+  }
+
+  public static final class IntakeConstants {
+    public static final double MOI = 0.0005;
+    public static final double LEFT_GEARING = 5.0;
+    public static final double RIGHT_GEARING = 5.0;
+
+    public static final double SENSOR_THRESHOLD = 10;
+    public static final double MAX_RPM = 5000;
   }
 
   public static final class ShooterPivotConstants {
@@ -154,10 +179,10 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(1)
-            .aziCANId(2)
+            .driveCANId(RobotMap.FRONT_LEFT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.FRONT_LEFT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(0)
-            .offset(0.349)
+            .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -166,10 +191,10 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(3)
-            .aziCANId(4)
+            .driveCANId(RobotMap.FRONT_RIGHT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.FRONT_RIGHT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(1)
-            .offset(0.337)
+            .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -178,10 +203,10 @@ public final class Constants {
             .name(SwerveModuleName.BACK_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(10)
-            .aziCANId(9)
+            .driveCANId(RobotMap.BACK_LEFT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.BACK_LEFT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(2)
-            .offset(0.021)
+            .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -190,10 +215,10 @@ public final class Constants {
             .name(SwerveModuleName.BACK_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(5)
-            .aziCANId(6)
+            .driveCANId(RobotMap.BACK_RIGHT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.BACK_RIGHT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(3)
-            .offset(0.870)
+            .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
             .build();
 
@@ -207,20 +232,20 @@ public final class Constants {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
-              // 0.12
-              .kP(0.012)
+              // 0.012
+              .kP(0.01)
               .build();
       // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
-              // 1.0
-              .kP(0.25)
+              // 0.25
+              .kP(0.01)
               // 0.225
-              .kS(0.225)
-              // 2.33
-              .kV(0.2)
+              .kS(0)
+              // 0.114
+              .kV(0.11)
               .build();
       // .buildTunables();
 
