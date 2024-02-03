@@ -128,10 +128,6 @@ public class ShooterPivot extends SubsystemBase {
     this.IO.setPosition(goal);
   }
 
-  public double getCurrentAngle() {
-    return this.inputs.absoluteEncoderAdjustedAngle;
-  }
-
   public static class Commands {
     public static Command setTargetAngle(SuperStructureBuilder structure) {
       return new InstantCommand(
