@@ -68,24 +68,21 @@ public final class Constants {
     public static final int INTAKE_TOF_SENSOR_ID = 70;
     public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
     public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
-    
+
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
 
     public static final int FRONT_RIGHT_DRIVE_CAN_ID = 42;
     public static final int FRONT_RIGHT_AZIMUTH_CAN_ID = 2;
 
-
     public static final int BACK_LEFT_DRIVE_CAN_ID = 43;
     public static final int BACK_LEFT_AZIMUTH_CAN_ID = 3;
 
-    public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;    
-    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4; 
-
+    public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
+    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
   }
 
-  public static final class IntakeConstants
-  {
+  public static final class IntakeConstants {
     public static final double MOI = 0.0005;
     public static final double LEFT_GEARING = 5.0;
     public static final double RIGHT_GEARING = 5.0;
