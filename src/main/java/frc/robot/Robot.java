@@ -26,6 +26,7 @@ import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.intakeIO.Intake;
+import frc.robot.subsystems.intakeIO.IntakeIOSim;
 import frc.robot.subsystems.intakeIO.IntakeIOSparks;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
@@ -35,11 +36,6 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
-import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSparkMAX;
-import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIO;
-import frc.robot.subsystems.visionIO.VisionIOLimelight;
-import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.subsystems.visionIO.VisionManager;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
@@ -89,7 +85,7 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -259,13 +255,9 @@ public class Robot extends LoggedRobot {
                   elevator.setTargetHeight(20);
                 }));
 
-    driver
-      .leftBumper()
-      .whileTrue(Intake.Commands.setVelocityRPM(1000));
-    
-    driver
-      .rightBumper()
-      .whileTrue(Intake.Commands.setVelocityRPM(-1000));
+    driver.leftBumper().whileTrue(Intake.Commands.setVelocityRPM(1000));
+
+    driver.rightBumper().whileTrue(Intake.Commands.setVelocityRPM(-1000));
 
     // operator.y
     // operator.a().whileTrue(autoCommand)
