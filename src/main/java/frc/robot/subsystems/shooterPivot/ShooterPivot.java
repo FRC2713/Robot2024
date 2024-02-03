@@ -6,11 +6,15 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.Robot;
 import frc.robot.util.LoggableMotor;
+import frc.robot.util.RedHawkUtil;
+import frc.robot.util.SuperStructureBuilder;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivot extends SubsystemBase {
@@ -40,6 +44,19 @@ public class ShooterPivot extends SubsystemBase {
     mode = FourBarMode.CLOSED_LOOP;
   }
 
+  public void setTargetAngle(double angleInDegrees) {
+    if (angleInDegrees > Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES) {
+      RedHawkUtil.ErrHandler.getInstance().addError("targetToHeight");
+      this.targetDegs =
+          MathUtil.clamp(
+              angleInDegrees,
+              Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES,
+              Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES);
+      return;
+    }
+    this.targetDegs = angleInDegrees;
+  }
+
   public void periodic() {
     motor.log(inputs.currentDrawOne, inputs.outputVoltage);
     Logger.processInputs("ShooterPivot", inputs);
@@ -48,11 +65,11 @@ public class ShooterPivot extends SubsystemBase {
     Logger.recordOutput("ShooterPivot/Mode", mode);
     switch (mode) {
       case CLOSED_LOOP:
-        boolean shouldReset =
+        /*boolean shouldReset =
             Math.abs(inputs.absoluteEncoderAdjustedAngle - inputs.angleDegreesOne) > 3;
         if (shouldReset) {
           // reseed();
-        }
+        }*/
 
         double effort =
             ShooterPivotController.calculate(
@@ -69,7 +86,7 @@ public class ShooterPivot extends SubsystemBase {
         Logger.recordOutput(
             "ShooterPivot/Setpoint/Velocity", Units.radiansToDegrees(setpoint.velocity));
 
-        Logger.recordOutput("ShooterPivot/Should Reseed", shouldReset);
+        // Logger.recordOutput("ShooterPivot/Should Reseed", shouldReset);
 
         Logger.recordOutput("ShooterPivot/Control Effort", effort);
 
@@ -109,5 +126,21 @@ public class ShooterPivot extends SubsystemBase {
   public void setGoal(double goal) {
     this.targetDegs = goal;
     this.IO.setPosition(goal);
+  }
+
+  public double getCurrentAngle() {
+    return this.inputs.absoluteEncoderAdjustedAngle;
+  }
+
+  public static class Commands {
+    public static Command setTargetAngle(SuperStructureBuilder structure) {
+      return new InstantCommand(
+          () -> {
+            Robot.shooterPivot.setTargetAngle(structure.getShooterPivotAngleDegrees());
+          });
+      // if()
+      // Robot.elevator.s
+
+    }
   }
 }
