@@ -2,12 +2,8 @@ package frc.robot.subsystems.elevatorIO;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,7 +23,6 @@ public class Elevator extends SubsystemBase {
   private final ElevatorInputsAutoLogged inputs;
   private double targetHeight = 0;*/
 
-  @Getter private final ProfiledPIDController elevatorController;
   @Getter private final ElevatorInputsAutoLogged inputs;
   @Getter private final ElevatorIO IO;
   @Getter private double targetHeight = 0.0;
@@ -43,16 +38,14 @@ public class Elevator extends SubsystemBase {
     this.inputs = new ElevatorInputsAutoLogged();
     this.IO.updateInputs(inputs);
     System.out.println(Constants.ElevatorConstants.ELEVATOR_GAINS.toString());
-    elevatorController =
-        Constants.ElevatorConstants.ELEVATOR_GAINS.createProfiledPIDController(
-            new Constraints(100, 200));
-    SmartDashboard.putData("Elevator PID", elevatorController);
+
     this.leftMotor = new LoggableMotor("Elevator Left", DCMotor.getNEO(1));
     this.rightMotor = new LoggableMotor("Elevator Right", DCMotor.getNEO(1));
     this.accelCalc = new AccelerationCalc(5);
   }
 
   public void setTargetHeight(double targetHeightInches) {
+    this.targetHeight = targetHeightInches;
     if (targetHeightInches > Units.metersToInches(Constants.ElevatorConstants.MAX_HEIGHT_METERS)) {
       RedHawkUtil.ErrHandler.getInstance().addError("Target height too high");
       this.targetHeight =
@@ -60,38 +53,27 @@ public class Elevator extends SubsystemBase {
               targetHeightInches,
               0,
               Units.metersToInches(Constants.ElevatorConstants.MAX_HEIGHT_METERS));
-      return;
     }
-    this.targetHeight = targetHeightInches;
+    IO.setTargetHeight(this.targetHeight);
   }
 
   public void resetController() {
-    elevatorController.reset(inputs.heightInchesRight, inputs.velocityInchesPerSecondRight);
+    IO.reset();
   }
 
   @Override
   public void periodic() {
 
     IO.updateInputs(inputs);
-    double effortLeft = elevatorController.calculate(inputs.heightInchesRight, targetHeight);
-
-    State state = elevatorController.getSetpoint();
-    if (IO.shouldApplyFF()) {
-      effortLeft += feedforward.calculate(state.position, state.velocity);
-    }
-
-    if (manualControl) {
-      effortLeft = -1 * Robot.operator.getLeftY();
-    }
-
-    effortLeft = MathUtil.clamp(effortLeft, -12, 12);
-    Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
-    Logger.recordOutput("Elevator/Setpoint Position", state.position);
-    IO.setVoltage(effortLeft);
+    // Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
+    Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
     Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
     Logger.recordOutput("Elevator/heightInchesLeft", inputs.heightInchesLeft);
     Logger.recordOutput("Elevator/heightInchesRight", inputs.heightInchesRight);
-
+    Logger.recordOutput("Elevator/LeftVoltage", inputs.outputVoltageLeft);
+    Logger.recordOutput("Elevator/RightVoltage", inputs.outputVoltageRight);
+    Logger.recordOutput("Elevator/LeftCurrent", inputs.currentDrawAmpsLeft);
+    Logger.recordOutput("Elevator/RightCurrent", inputs.currentDrawAmpsRight);
     Logger.processInputs("Elevator", inputs);
   }
 
