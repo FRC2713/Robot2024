@@ -1,20 +1,21 @@
 package frc.robot.subsystems.elevatorIO;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.util.SparkConfigurator;
 
 public class ElevatorIOSparks implements ElevatorIO {
-  private CANSparkMax left, right;
+  private CANSparkFlex left, right;
 
   public ElevatorIOSparks() {
-    left = new CANSparkMax(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
-    right = new CANSparkMax(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    left = new CANSparkFlex(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkFlex(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
 
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
@@ -24,16 +25,15 @@ public class ElevatorIOSparks implements ElevatorIO {
 
     left.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
     left.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
-    // left.getPIDController().setFF(-ElevatorConstants.ELEVATOR_GAINS.getKS());
 
     right.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
     right.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
-    // right.getPIDController().setFF(-ElevatorConstants.ELEVATOR_GAINS.getKS());
 
     for (int i = 0; i < 30; i++) {
       left.setInverted(true);
       right.setInverted(false);
     }
+
   }
 
   @Override
