@@ -165,6 +165,9 @@ public final class RedHawkUtil {
     }
   }
 
+  /**
+   * https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
+   */
   public static void configureCANSparkMAXStatusFrames(
       HashMap<PeriodicFrame, Integer> config, CANSparkMax... sparks) {
     config.forEach(
