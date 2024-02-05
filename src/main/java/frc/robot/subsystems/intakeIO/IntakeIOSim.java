@@ -39,14 +39,14 @@ public class IntakeIOSim implements IntakeIO {
     simRight.update(0.02);
 
     inputs.leftOutputVoltage = MathUtil.clamp(simLeft.getOutput(0), -12, 12);
-    inputs.leftIsOn = simLeft.getAngularVelocityRPM() > 0.005;
+    inputs.leftIsOn = Math.abs(simLeft.getAngularVelocityRPM()) > 0.005;
     inputs.leftVelocityRPM = simLeft.getAngularVelocityRPM();
     inputs.leftTempCelcius = 0.0;
     inputs.leftCurrentAmps = simLeft.getCurrentDrawAmps();
     inputs.leftPositionRad = simLeft.getAngularPositionRad();
 
     inputs.rightOutputVoltage = MathUtil.clamp(simRight.getOutput(0), -12, 12);
-    inputs.rightIsOn = simRight.getAngularVelocityRPM() > 0.005;
+    inputs.rightIsOn = Math.abs(simRight.getAngularVelocityRPM()) > 0.005;
     inputs.rightVelocityRPM = simRight.getAngularVelocityRPM();
     inputs.rightTempCelcius = 0.0;
     inputs.rightCurrentAmps = simRight.getCurrentDrawAmps();
