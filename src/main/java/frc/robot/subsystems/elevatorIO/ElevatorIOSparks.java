@@ -8,7 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.util.SparkConfigurator;
 
 public class ElevatorIOSparks implements ElevatorIO {
   private CANSparkFlex left, right;
@@ -33,7 +32,6 @@ public class ElevatorIOSparks implements ElevatorIO {
       left.setInverted(true);
       right.setInverted(false);
     }
-
   }
 
   @Override

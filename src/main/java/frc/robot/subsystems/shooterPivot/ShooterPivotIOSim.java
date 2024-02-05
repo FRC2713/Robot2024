@@ -22,6 +22,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
           Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
+  private double targetAngle;
 
   public ShooterPivotIOSim() {}
 
@@ -32,6 +33,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     }
 
     sim.update(0.02);
+    // TODO: WRONG
     inputs.outputVoltage = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
 
     inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
@@ -52,8 +54,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
 
   @Override
   public void setTargetPosition(double angleDeg) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setTargetPosition'");
+    targetAngle = angleDeg;
   }
 
   @Override

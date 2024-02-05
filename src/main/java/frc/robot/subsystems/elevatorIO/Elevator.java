@@ -6,7 +6,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
@@ -67,12 +69,6 @@ public class Elevator extends SubsystemBase {
     // Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
     Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
     Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
-    Logger.recordOutput("Elevator/heightInchesLeft", inputs.heightInchesLeft);
-    Logger.recordOutput("Elevator/heightInchesRight", inputs.heightInchesRight);
-    Logger.recordOutput("Elevator/LeftVoltage", inputs.outputVoltageLeft);
-    Logger.recordOutput("Elevator/RightVoltage", inputs.outputVoltageRight);
-    Logger.recordOutput("Elevator/LeftCurrent", inputs.currentDrawAmpsLeft);
-    Logger.recordOutput("Elevator/RightCurrent", inputs.currentDrawAmpsRight);
     Logger.processInputs("Elevator", inputs);
   }
 
@@ -87,9 +83,8 @@ public class Elevator extends SubsystemBase {
   public static class Commands {
 
     public static Command setToHeightAndWait(double targetHeightInches) {
-      return setToHeight(targetHeightInches)
-          .repeatedly()
-          .until(() -> Robot.elevator.atTargetHeight());
+      return new SequentialCommandGroup(
+          setToHeight(targetHeightInches), new WaitUntilCommand(Robot.elevator::atTargetHeight));
     }
 
     public static Command setToHeight(double height) {
