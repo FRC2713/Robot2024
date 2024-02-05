@@ -88,14 +88,10 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
     cOk(getAziEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0));
     cOk(getAziEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
-    SparkConfigurator azimuthConfigurator = new SparkConfigurator(azimuth);
-    azimuthConfigurator
-        .setInverted(true)
-        .checkOK(s -> s.setIdleMode(IdleMode.kBrake))
-        .checkOKAndReadBackValue(
-            s -> s.setIdleMode(IdleMode.kBrake), s -> s.getIdleMode() == IdleMode.kBrake)
-        .checkOK(s -> s.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
-        .checkOK(s -> s.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
+    new SparkConfigurator<>(azimuth)
+        .setUntilOk(() -> azimuth.setIdleMode(IdleMode.kBrake))
+        .setUntilOk(() -> azimuth.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
+        .setUntilOk(() -> azimuth.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
     information.getDriveGains().applyTo(driver.getPIDController());
     information.getAzimuthGains().applyTo(azimuth.getPIDController());

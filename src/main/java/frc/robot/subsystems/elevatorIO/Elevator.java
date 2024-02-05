@@ -37,7 +37,6 @@ public class Elevator extends SubsystemBase {
     this.feedforward = Constants.ElevatorConstants.ELEVATOR_GAINS.createElevatorFeedforward();
     this.inputs = new ElevatorInputsAutoLogged();
     this.IO.updateInputs(inputs);
-    System.out.println(Constants.ElevatorConstants.ELEVATOR_GAINS.toString());
 
     this.leftMotor = new LoggableMotor("Elevator Left", DCMotor.getNEO(1));
     this.rightMotor = new LoggableMotor("Elevator Right", DCMotor.getNEO(1));
