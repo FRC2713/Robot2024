@@ -8,6 +8,7 @@ import frc.robot.Constants.FeederConstants;
 import frc.robot.rhr.RHRPIDFFController;
 
 public class FeederIOSim implements FeederIO {
+  private double setpointRPM;
   DCMotorSim sim =
       new DCMotorSim(
           DCMotor.getNEO(1), Constants.FeederConstants.GERING, Constants.FeederConstants.MOI);
@@ -26,7 +27,7 @@ public class FeederIOSim implements FeederIO {
 
   @Override
   public boolean atTarget() {
-    return Math.abs(sim.getAngularVelocityRPM()) > 0.01;
+    return Math.abs(sim.getAngularVelocityRPM() - setpointRPM) < 0.01;
   }
 
   @Override
@@ -43,5 +44,6 @@ public class FeederIOSim implements FeederIO {
   @Override
   public void setSetpoint(double setpointRPM) {
     feederController.setSetpoint(setpointRPM);
+    this.setpointRPM = setpointRPM;
   }
 }
