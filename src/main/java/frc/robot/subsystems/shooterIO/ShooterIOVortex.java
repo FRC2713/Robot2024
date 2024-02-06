@@ -17,6 +17,12 @@ public class ShooterIOVortex implements ShooterIO {
   private static final CANSparkFlex rightFlyWheel =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
 
+  public ShooterIOVortex()
+  {
+    rightFlyWheel.setInverted(true);
+    leftFlyWheel.setInverted(false);
+  }
+
   @Override
   public void updateInputs(ShooterInputs inputs) {
     inputs.leftOutputVoltage = leftFlyWheel.getBusVoltage();

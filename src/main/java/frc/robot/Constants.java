@@ -95,7 +95,7 @@ public final class Constants {
             .shooterPivotAngleDegrees(50)
             .feederMotorSPeed(0)
             .intakeMotorSpeed(0)
-            .shooterMotorSpeed(5000)
+            .shooterMotorSpeed(2500)
             .build();
     public static final SuperStructureBuilder SCORE_MIDDLE =
         SuperStructureBuilder.builder()
@@ -103,7 +103,7 @@ public final class Constants {
             .shooterPivotAngleDegrees(30)
             .feederMotorSPeed(0)
             .intakeMotorSpeed(0)
-            .shooterMotorSpeed(5000)
+            .shooterMotorSpeed((2500 / 2))
             .build();
     // public static final
   }
@@ -116,7 +116,7 @@ public final class Constants {
     public static final RHRPIDFFController MOTOR_GAINS =
         PIDFFGains.builder()
             .name("Shooter Controller")
-            .kP(0.001)
+            .kP(0.030)
             .kD(0.0)
             .kG(0.0)
             .build()

@@ -51,7 +51,7 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void setRightVoltage(double voltage) {
-    rightFlyWheel.setInputVoltage(-voltage);
-    this.rightVolts = -voltage;
+    rightFlyWheel.setInputVoltage(voltage);
+    this.rightVolts = voltage;
   }
 }
