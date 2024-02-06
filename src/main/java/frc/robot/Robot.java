@@ -23,6 +23,9 @@ import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.feederIO.Feeder;
+import frc.robot.subsystems.feederIO.FeederIOSim;
+import frc.robot.subsystems.feederIO.FeederIOSparks;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.intakeIO.IntakeIOSim;
 import frc.robot.subsystems.intakeIO.IntakeIOSparks;
@@ -46,12 +49,12 @@ public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
   public static VisionManager visionManager;
-  // public static Vision vision;
 
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
   public static Intake intake;
+  public static Feeder feeder;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -84,6 +87,7 @@ public class Robot extends LoggedRobot {
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         // isSimulation()
@@ -263,6 +267,10 @@ public class Robot extends LoggedRobot {
         .onTrue(Intake.Commands.setVelocityRPM(-5000))
         .onFalse(Intake.Commands.setVelocityRPM(0));
 
+    driver.povUp().onTrue(Feeder.Commands.setToVelocity(4000));
+    driver.povDown().onTrue(Feeder.Commands.setToVelocity(0));
+    driver.povLeft().onTrue(Feeder.Commands.setToVelocity(-4000));
+    driver.povLeft().onFalse(Feeder.Commands.setToVelocity(0));
     operator
         .a()
         .whileTrue(

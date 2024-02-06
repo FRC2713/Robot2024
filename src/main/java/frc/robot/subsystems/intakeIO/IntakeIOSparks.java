@@ -40,7 +40,8 @@ public class IntakeIOSparks implements IntakeIO {
   public void updateInputs(IntakeInputs inputs) {
     inputs.leftOutputVoltage = MathUtil.clamp(leftMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.leftIsOn =
-       Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getVelocity())) > 0.005;
+        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getVelocity()))
+            > 0.005;
     inputs.leftVelocityRPM = leftMotor.getEncoder().getVelocity();
     inputs.leftTempCelcius = leftMotor.getMotorTemperature();
     inputs.leftCurrentAmps = leftMotor.getOutputCurrent();
@@ -48,7 +49,8 @@ public class IntakeIOSparks implements IntakeIO {
 
     inputs.rightOutputVoltage = MathUtil.clamp(rightMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.rightIsOn =
-       Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(rightMotor.getEncoder().getVelocity())) > 0.005;
+        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(rightMotor.getEncoder().getVelocity()))
+            > 0.005;
     inputs.rightVelocityRPM = rightMotor.getEncoder().getVelocity();
     inputs.rightTempCelcius = rightMotor.getMotorTemperature();
     inputs.rightCurrentAmps = rightMotor.getOutputCurrent();

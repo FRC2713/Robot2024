@@ -69,6 +69,8 @@ public final class Constants {
     public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
     public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
 
+    public static final int FEEDER_CAN_ID = 7;
+
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
 
@@ -89,6 +91,14 @@ public final class Constants {
 
     public static final double SENSOR_THRESHOLD = 10;
     public static final double MAX_RPM = 5000;
+  }
+
+  public static final class FeederConstants {
+    // TODO: FIX
+    public static final double GERING = 1.;
+    public static final double MAX_RPM = 5000;
+    // TODO: FIX
+    public static final double MOI = 0.001;
   }
 
   public static final class ShooterPivotConstants {
