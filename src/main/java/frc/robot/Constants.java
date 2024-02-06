@@ -66,7 +66,7 @@ public final class Constants {
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
-    
+
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
 
