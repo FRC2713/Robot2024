@@ -43,10 +43,10 @@ public class Shooter extends SubsystemBase {
 
     double effortRight =
         rightFlyWheelController.calculate(
-            inputs.rightFlyWheelSpeedRPM, rightFlyWheelController.getSetpoint());
+            inputs.rightSpeedRPM, rightFlyWheelController.getSetpoint());
     double effortLeft =
         rightFlyWheelController.calculate(
-            inputs.leftFlyWheelSpeedRPM, leftFlyWheelController.getSetpoint());
+            inputs.leftSpeedRPM, leftFlyWheelController.getSetpoint());
 
     effortLeft = MathUtil.clamp(effortLeft, -12, 12);
     effortRight = MathUtil.clamp(effortRight, -12, 12);

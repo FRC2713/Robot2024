@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooterIO;
 
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 public class ShooterIOVortex implements ShooterIO {
@@ -12,37 +14,43 @@ public class ShooterIOVortex implements ShooterIO {
   RHRPIDFFController leftFlyWheelController;
   RHRPIDFFController rightFlyWheelController;*/
 
-  private static final CANSparkFlex leftFlyWheel =
+  private static final CANSparkFlex leftMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
-  private static final CANSparkFlex rightFlyWheel =
+  private static final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
 
   public ShooterIOVortex()
   {
-    rightFlyWheel.setInverted(true);
-    leftFlyWheel.setInverted(false);
+    rightMotor.setInverted(true);
+    leftMotor.setInverted(false);
   }
 
   @Override
-  public void updateInputs(ShooterInputs inputs) {
-    inputs.leftOutputVoltage = leftFlyWheel.getBusVoltage();
-    inputs.rightOutputVoltage = rightFlyWheel.getBusVoltage();
+  public void updateInputs(ShooterInputsAutoLogged inputs) {
+    inputs.leftOutputVoltage = leftMotor.getBusVoltage();
+    inputs.rightOutputVoltage = rightMotor.getBusVoltage();
 
-    inputs.leftFLyWheelDrawAmp = leftFlyWheel.getOutputCurrent();
-    inputs.rightFLyWheelDrawAmp = rightFlyWheel.getOutputCurrent();
+    inputs.leftDrawAmp = leftMotor.getOutputCurrent();
+    inputs.rightDrawAmp = rightMotor.getOutputCurrent();
 
-    inputs.leftTempCelcius = leftFlyWheel.getMotorTemperature();
-    inputs.rightTempCelcius = rightFlyWheel.getMotorTemperature();
+    inputs.leftTempCelcius = leftMotor.getMotorTemperature();
+    inputs.rightTempCelcius = rightMotor.getMotorTemperature();
+
+    inputs.leftPosDeg = Units.rotationsToDegrees(leftMotor.getEncoder().getPosition());
+     inputs.rightPosDeg = Units.rotationsToDegrees(rightMotor.getEncoder().getPosition());
+
+     inputs.leftSpeedRPM = leftMotor.getEncoder().getVelocity();
+     inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();
   }
 
   @Override
   public void setLeftVoltage(double voltage) {
-    leftFlyWheel.setVoltage(voltage);
+    leftMotor.setVoltage(voltage);
   }
 
   @Override
   public void setRightVoltage(double voltage) {
-    rightFlyWheel.setVoltage(voltage);
+    rightMotor.setVoltage(voltage);
   }
 
   /*

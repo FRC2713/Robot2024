@@ -23,7 +23,7 @@ public class ShooterIOSim implements ShooterIO {
   private double rightVolts;
 
   @Override
-  public void updateInputs(ShooterInputs inputs) {
+  public void updateInputs(ShooterInputsAutoLogged inputs) {
     // setLeftVoltage(MathUtil.clamp(0, 0, 0));
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
@@ -33,14 +33,17 @@ public class ShooterIOSim implements ShooterIO {
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
 
-    inputs.leftFLyWheelDrawAmp = leftFlyWheel.getCurrentDrawAmps();
-    inputs.rightFLyWheelDrawAmp = rightFlyWheel.getCurrentDrawAmps();
+    inputs.leftDrawAmp = leftFlyWheel.getCurrentDrawAmps();
+    inputs.rightDrawAmp = rightFlyWheel.getCurrentDrawAmps();
 
     inputs.leftTempCelcius = 0.0;
     inputs.rightTempCelcius = 0.0;
 
-    inputs.rightFlyWheelSpeedRPM = rightFlyWheel.getAngularVelocityRPM();
-    inputs.leftFlyWheelSpeedRPM = leftFlyWheel.getAngularVelocityRPM();
+    inputs.rightSpeedRPM = rightFlyWheel.getAngularVelocityRPM();
+    inputs.leftSpeedRPM = leftFlyWheel.getAngularVelocityRPM();
+
+    inputs.leftPosDeg = 0.0;
+    inputs.rightPosDeg = 0.0;
   }
 
   @Override
