@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAnalogSensor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 
@@ -41,8 +42,9 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   @Override
   public void updateInputs(ShooterPivotInputs inputs) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+    inputs.absoluteEncoderAdjustedAngle =
+        Units.rotationsToDegrees(spark.getEncoder().getPosition());
+    // inputs.
   }
 
   @Override

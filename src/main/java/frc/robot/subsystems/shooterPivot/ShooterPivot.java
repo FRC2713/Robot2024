@@ -80,5 +80,12 @@ public class ShooterPivot extends SubsystemBase {
             Robot.shooterPivot.setTargetAngle(structure.getShooterPivotAngleDegrees());
           });
     }
+
+    public static Command setTargetAngle(double angleDegrees) {
+      return new InstantCommand(
+          () -> {
+            Robot.shooterPivot.setTargetAngle(angleDegrees);
+          });
+    }
   }
 }
