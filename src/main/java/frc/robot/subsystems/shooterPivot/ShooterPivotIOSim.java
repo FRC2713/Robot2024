@@ -23,10 +23,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
 
-  public ShooterPivotIOSim()
-  {
-    
-  }
+  public ShooterPivotIOSim() {}
 
   // TODO
   @Override

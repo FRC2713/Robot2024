@@ -23,6 +23,9 @@ import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.ShooterIOSim;
+import frc.robot.subsystems.shooterIO.ShooterIOVortex;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
@@ -51,6 +54,7 @@ public class Robot extends LoggedRobot {
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
+  public static Shooter shooter;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -80,6 +84,7 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
     shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : null);
+    shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
 
     swerveDrive =
         isSimulation()
