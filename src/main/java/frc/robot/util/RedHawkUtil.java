@@ -11,6 +11,7 @@ import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -56,6 +57,10 @@ public final class RedHawkUtil {
 
   public static Translation2d Pose2dToTranslation2d(Pose2d pose) {
     return new Translation2d(pose.getX(), pose.getY());
+  }
+
+  public static Translation2d Translation3dTo2d(Translation3d trans) {
+    return new Translation2d(trans.getX(), trans.getY());
   }
 
   /**
@@ -136,6 +141,14 @@ public final class RedHawkUtil {
       return old;
     }
 
+    public static Translation3d reflectIfRed(Translation3d old) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Red) {
+        return reflect(old);
+      }
+      return old;
+    }
+
     public static Translation2d reflectIfBlue(Translation2d old) {
       var maybeAlliance = DriverStation.getAlliance();
       if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Blue) {
@@ -146,6 +159,10 @@ public final class RedHawkUtil {
 
     public static Translation2d reflect(Translation2d old) {
       return new Translation2d(FieldConstants.fieldLength - old.getX(), old.getY());
+    }
+
+    public static Translation3d reflect(Translation3d old) {
+      return new Translation3d(FieldConstants.fieldLength - old.getX(), old.getY(), old.getZ());
     }
 
     public static double reflectIfRed(double x) {
@@ -165,6 +182,9 @@ public final class RedHawkUtil {
     }
   }
 
+  /**
+   * https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
+   */
   public static void configureCANSparkMAXStatusFrames(
       HashMap<PeriodicFrame, Integer> config, CANSparkMax... sparks) {
     config.forEach(

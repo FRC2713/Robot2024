@@ -14,7 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionIOLimelight implements VisionIO {
 
-  String name;
+  VisionInfo info;
   NetworkTable table;
 
   DoubleArraySubscriber botPose,
@@ -30,9 +30,9 @@ public class VisionIOLimelight implements VisionIO {
   IntegerPublisher ledMode, cameraMode, stream, pipeline, snapshot;
   DoubleArrayPublisher crop, cameraPoseRobotSpacePub;
 
-  public VisionIOLimelight(String name) {
-    this.name = name;
-    table = NetworkTableInstance.getDefault().getTable(name);
+  public VisionIOLimelight(VisionInfo info) {
+    this.info = info;
+    table = NetworkTableInstance.getDefault().getTable(info.getNtTableName());
 
     botPose = table.getDoubleArrayTopic("botpose").subscribe(new double[] {});
     botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
@@ -144,8 +144,8 @@ public class VisionIOLimelight implements VisionIO {
   }
 
   @Override
-  public String getName() {
-    return name;
+  public VisionInfo getInfo() {
+    return info;
   }
 
   @Override

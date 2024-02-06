@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
+import frc.robot.subsystems.visionIO.VisionInfo;
+import frc.robot.subsystems.visionIO.VisionInfo.MountingDirection;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SuperStructureBuilder;
 import lombok.experimental.UtilityClass;
@@ -39,18 +43,67 @@ public final class Constants {
     public static double VISION_STD_DEVI_POSITION_IN_METERS = 0.9;
     public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5);
     public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+
+    public static VisionInfo FRONT_LIMELIGHT_INFO =
+        VisionInfo.builder()
+            .ntTableName("limelight")
+            .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
+            .mountingDirection(MountingDirection.HORIZONTAL_LL3)
+            .build();
+    public static VisionInfo REAR_LIMELIGHT_INFO =
+        VisionInfo.builder()
+            .ntTableName("limelight-rear")
+            .location(new Transform3d())
+            .mountingDirection(MountingDirection.VERTICAL_LL3)
+            .build();
   }
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 20;
+    public static final int PIGEON_CAN_ID = 60;
     public static final int LEFT_ELEVATOR_CAN_ID = 3;
     public static final int RIGHT_ELEVATOR_CAN_ID = 4;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
+    
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
+
+    public static final int INTAKE_TOF_SENSOR_ID = 70;
+    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
+    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
+
+    public static final int FEEDER_CAN_ID = 7;
+
+    public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
+    public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
+
+    public static final int FRONT_RIGHT_DRIVE_CAN_ID = 42;
+    public static final int FRONT_RIGHT_AZIMUTH_CAN_ID = 2;
+
+    public static final int BACK_LEFT_DRIVE_CAN_ID = 43;
+    public static final int BACK_LEFT_AZIMUTH_CAN_ID = 3;
+
+    public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
+    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
+  }
+
+  public static final class IntakeConstants {
+    public static final double MOI = 0.0005;
+    public static final double LEFT_GEARING = 5.0;
+    public static final double RIGHT_GEARING = 5.0;
+
+    public static final double SENSOR_THRESHOLD = 10;
+    public static final double MAX_RPM = 5000;
+  }
+
+  public static final class FeederConstants {
+    // TODO: FIX
+    public static final double GERING = 1.;
+    public static final double MAX_RPM = 5000;
+    // TODO: FIX
+    public static final double MOI = 0.001;
   }
 
   public static final class ShooterPivotConstants {
@@ -69,7 +122,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final PIDFFGains ELEVATOR_GAINS =
-        PIDFFGains.builder().name("Elevator Controller").kP(0.75).kD(0.0).kG(0.85).build();
+        PIDFFGains.builder().name("Elevator Controller").kP(0.14).kD(0.0).kG(0.31).build();
     public static final double GEARING = 5.0;
     public static final double CARRIAGE_MASS_KG = 0.3;
     public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
@@ -182,10 +235,10 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(1)
-            .aziCANId(2)
+            .driveCANId(RobotMap.FRONT_LEFT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.FRONT_LEFT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(0)
-            .offset(0.349)
+            .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -194,10 +247,10 @@ public final class Constants {
             .name(SwerveModuleName.FRONT_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(3)
-            .aziCANId(4)
+            .driveCANId(RobotMap.FRONT_RIGHT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.FRONT_RIGHT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(1)
-            .offset(0.337)
+            .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -206,10 +259,10 @@ public final class Constants {
             .name(SwerveModuleName.BACK_LEFT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(10)
-            .aziCANId(9)
+            .driveCANId(RobotMap.BACK_LEFT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.BACK_LEFT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(2)
-            .offset(0.021)
+            .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -218,32 +271,37 @@ public final class Constants {
             .name(SwerveModuleName.BACK_RIGHT)
             .driveGains(Constants.DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS)
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
-            .driveCANId(5)
-            .aziCANId(6)
+            .driveCANId(RobotMap.BACK_RIGHT_DRIVE_CAN_ID)
+            .aziCANId(RobotMap.BACK_RIGHT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(3)
-            .offset(0.870)
+            .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
             .build();
+
+    @UtilityClass
+    public static final class FieldTunables {
+      public static final int TIME_BETWEEN_REGERATION_SECONDS = 2;
+    }
 
     @UtilityClass
     public static final class Gains {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
-              // 0.12
-              .kP(0.012)
+              // 0.012
+              .kP(0.01)
               .build();
       // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
-              // 1.0
-              .kP(0.25)
+              // 0.25
+              .kP(0.01)
               // 0.225
-              .kS(0.225)
-              // 2.33
-              .kV(0.2)
+              .kS(0)
+              // 0.114
+              .kV(0.11)
               .build();
       // .buildTunables();
 

@@ -22,29 +22,9 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
           Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
+  private double targetAngle;
 
   public ShooterPivotIOSim() {}
-
-  // TODO
-  @Override
-  public void setCurrentLimit(int currentLimit) {}
-
-  @Override
-  public void setPosition(double angleDeg) {
-    sim.setState(VecBuilder.fill(Units.degreesToRadians(angleDeg), 0.0));
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    sim.setInputVoltage(volts);
-  }
-
-  @Override
-  public void reseed(double absoluteEncoderVolts) {
-    sim.setState(
-        VecBuilder.fill(
-            Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES), 0.0));
-  }
 
   @Override
   public void updateInputs(ShooterPivotInputs inputs) {
@@ -53,25 +33,32 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     }
 
     sim.update(0.02);
+    // TODO: WRONG
     inputs.outputVoltage = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
 
     inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
-    inputs.angleDegreesRange = 0.0;
 
     inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
 
     inputs.velocityDegreesPerSecondOne = Units.radiansToDegrees(sim.getVelocityRadPerSec());
-    inputs.velocityDegreesPerSecondTwo = Units.radiansToDegrees(sim.getVelocityRadPerSec());
-    inputs.velocityDegreesPerSecondRange = 0.0;
 
     inputs.tempCelciusOne = 0.0;
-    inputs.tempCelciusTwo = 0.0;
 
     inputs.currentDrawOne = sim.getCurrentDrawAmps();
-    inputs.currentDrawTwo = sim.getCurrentDrawAmps();
+  }
 
-    inputs.limSwitch =
-        Units.radiansToDegrees(sim.getAngleRads())
-            >= Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES;
+  @Override
+  public void reseedPosition(double angleDeg) {
+    sim.setState(VecBuilder.fill(Units.degreesToRadians(angleDeg), 0.0));
+  }
+
+  @Override
+  public void setTargetPosition(double angleDeg) {
+    targetAngle = angleDeg;
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    sim.setInputVoltage(volts);
   }
 }

@@ -20,9 +20,11 @@ public interface ElevatorIO {
 
   public void updateInputs(ElevatorInputs inputs);
 
-  public void resetEncoders();
+  public void reset();
 
   public boolean shouldApplyFF();
 
   public void setVoltage(double volts);
+
+  public void setTargetHeight(double heightInches);
 }

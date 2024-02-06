@@ -1,27 +1,42 @@
 package frc.robot.subsystems.elevatorIO;
 
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSparks implements ElevatorIO {
-  private CANSparkMax left, right;
+  private CANSparkFlex left, right;
 
   public ElevatorIOSparks() {
-    left = new CANSparkMax(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
-    right = new CANSparkMax(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    left = new CANSparkFlex(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkFlex(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
 
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
     left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
     right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+
+    left.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
+    left.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
+
+    right.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
+    right.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
+
+    for (int i = 0; i < 30; i++) {
+      left.setInverted(true);
+      right.setInverted(false);
+    }
   }
 
   @Override
   public void updateInputs(ElevatorInputs inputs) {
+
     inputs.outputVoltageLeft =
         MathUtil.clamp(left.getAppliedOutput() * RobotController.getBatteryVoltage(), -12.0, 12.0);
     inputs.heightInchesLeft = left.getEncoder().getPosition();
@@ -37,10 +52,9 @@ public class ElevatorIOSparks implements ElevatorIO {
   }
 
   @Override
-  public void resetEncoders() {
+  public void reset() {
     left.getEncoder().setPosition(0);
     right.getEncoder().setPosition(0);
-    ;
   }
 
   @Override
@@ -52,6 +66,24 @@ public class ElevatorIOSparks implements ElevatorIO {
   public void setVoltage(double volts) {
     left.setVoltage(volts);
     right.setVoltage(volts);
-    ;
+  }
+
+  @Override
+  public void setTargetHeight(double heightInches) {
+    left.getPIDController()
+        .setReference(
+            heightInches,
+            ControlType.kPosition,
+            0,
+            ElevatorConstants.ELEVATOR_GAINS.getKG(),
+            ArbFFUnits.kVoltage);
+    right
+        .getPIDController()
+        .setReference(
+            heightInches,
+            ControlType.kPosition,
+            0,
+            ElevatorConstants.ELEVATOR_GAINS.getKG(),
+            ArbFFUnits.kVoltage);
   }
 }
