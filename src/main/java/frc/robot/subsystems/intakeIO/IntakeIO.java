@@ -23,7 +23,7 @@ public interface IntakeIO {
     public String sensorStatus = "";
   }
 
-  public void updateInputs(IntakeInputs inputs);
+  public void updateInputs(IntakeInputsAutoLogged inputs);
 
   public void setCurrentLimit(int currentLimit);
 

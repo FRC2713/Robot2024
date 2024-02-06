@@ -37,7 +37,7 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeInputs inputs) {
+  public void updateInputs(IntakeInputsAutoLogged inputs) {
 
     simLeft.update(0.02);
     simRight.update(0.02);
