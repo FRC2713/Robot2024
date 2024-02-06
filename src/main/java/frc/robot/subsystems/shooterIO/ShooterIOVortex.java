@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooterIO;
 
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
@@ -19,8 +18,7 @@ public class ShooterIOVortex implements ShooterIO {
   private static final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
 
-  public ShooterIOVortex()
-  {
+  public ShooterIOVortex() {
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
   }
@@ -37,10 +35,10 @@ public class ShooterIOVortex implements ShooterIO {
     inputs.rightTempCelcius = rightMotor.getMotorTemperature();
 
     inputs.leftPosDeg = Units.rotationsToDegrees(leftMotor.getEncoder().getPosition());
-     inputs.rightPosDeg = Units.rotationsToDegrees(rightMotor.getEncoder().getPosition());
+    inputs.rightPosDeg = Units.rotationsToDegrees(rightMotor.getEncoder().getPosition());
 
-     inputs.leftSpeedRPM = leftMotor.getEncoder().getVelocity();
-     inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();
+    inputs.leftSpeedRPM = leftMotor.getEncoder().getVelocity();
+    inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();
   }
 
   @Override
