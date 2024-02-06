@@ -99,6 +99,8 @@ public final class Constants {
   }
 
   public static final class FeederConstants {
+    public static final PIDFFGains FEEDER_GAINS =
+        PIDFFGains.builder().name("Feeder Controller").kP(0.0).kD(0.0).build();
     // TODO: FIX
     public static final double GERING = 1.;
     public static final double MAX_RPM = 5000;

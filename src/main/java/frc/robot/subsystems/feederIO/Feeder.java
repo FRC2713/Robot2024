@@ -8,9 +8,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.util.LoggableMotor;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class Feeder extends SubsystemBase {
+  @Getter private LoggableMotor feederMotor;
+
   private FeederIO IO;
   private double target;
   private FeederInputsAutoLogged inputs;
