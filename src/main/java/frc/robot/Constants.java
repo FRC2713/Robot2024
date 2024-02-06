@@ -8,11 +8,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
 import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.subsystems.visionIO.VisionInfo.MountingDirection;
 import frc.robot.util.PIDFFGains;
+import frc.robot.util.SuperStructureBuilder;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -64,6 +66,9 @@ public final class Constants {
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
+    
+    public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
+    public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
 
     public static final int INTAKE_TOF_SENSOR_ID = 70;
     public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
@@ -112,7 +117,7 @@ public final class Constants {
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(20).kD(0).kG(0.85).build();
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(20).kD(0.0).kG(0.85).build();
   }
 
   public static final class ElevatorConstants {
@@ -128,7 +133,48 @@ public final class Constants {
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
   }
 
-  public static final class SuperStructure {}
+  public static final class SuperStructure {
+    public static final SuperStructureBuilder SCORE_HIGH =
+        SuperStructureBuilder.builder()
+            .elevatorHeight(Units.metersToInches(ElevatorConstants.MAX_HEIGHT_METERS))
+            .shooterPivotAngleDegrees(0)
+            .feederMotorSPeed(0)
+            .intakeMotorSpeed(0)
+            .shooterMotorSpeed(5000)
+            .build();
+    public static final SuperStructureBuilder SCORE_LOW =
+        SuperStructureBuilder.builder()
+            .elevatorHeight(Units.metersToInches(0))
+            .shooterPivotAngleDegrees(50)
+            .feederMotorSPeed(0)
+            .intakeMotorSpeed(0)
+            .shooterMotorSpeed(2500)
+            .build();
+    public static final SuperStructureBuilder SCORE_MIDDLE =
+        SuperStructureBuilder.builder()
+            .elevatorHeight(Units.metersToInches(ElevatorConstants.MAX_HEIGHT_METERS / 2))
+            .shooterPivotAngleDegrees(30)
+            .feederMotorSPeed(0)
+            .intakeMotorSpeed(0)
+            .shooterMotorSpeed((2500 / 2))
+            .build();
+    // public static final
+  }
+
+  public static final class ShooterConstants {
+    public static final double GEARING = 1;
+    public static final double RADIUS_METERS = Units.inchesToMeters(2);
+    public static final double MASS_KG = 0.83461;
+    public static final double MOI = 0.001;
+    public static final RHRPIDFFController MOTOR_GAINS =
+        PIDFFGains.builder()
+            .name("Shooter Controller")
+            .kP(0.030)
+            .kD(0.0)
+            .kG(0.0)
+            .build()
+            .createRHRController();
+  }
 
   @UtilityClass
   public static final class DriveConstants {
