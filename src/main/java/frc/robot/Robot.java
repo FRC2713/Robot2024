@@ -176,7 +176,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             new SequentialCommandGroup(
                 new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
-                RotateScore.goOptimalAngle()));
+                RotateScore.optimalShoot()));
 
     driver
         .y()
