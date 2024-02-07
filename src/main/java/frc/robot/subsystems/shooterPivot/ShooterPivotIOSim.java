@@ -7,6 +7,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
+import frc.robot.rhr.RHRFeedForward;
+import frc.robot.rhr.RHRPIDFFController;
 
 public class ShooterPivotIOSim implements ShooterPivotIO {
 
@@ -20,11 +22,20 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.LENGTH_METERS,
           Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES),
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
-          Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
+          !Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
   private double targetAngle;
 
-  public ShooterPivotIOSim() {}
+  private RHRPIDFFController motorController;
+
+  private RHRFeedForward feedforward;
+
+  private double voltage;
+
+  public ShooterPivotIOSim() {
+    motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
+    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRFeedForward();
+  }
 
   @Override
   public void updateInputs(ShooterPivotInputs inputs) {
@@ -33,8 +44,8 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     }
 
     sim.update(0.02);
-    // TODO: WRONG
-    inputs.outputVoltage = MathUtil.clamp(sim.getOutput(0), -12.0, 12.0);
+
+    inputs.outputVoltage = this.voltage;
 
     inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
 
@@ -45,6 +56,10 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     inputs.tempCelciusOne = 0.0;
 
     inputs.currentDrawOne = sim.getCurrentDrawAmps();
+
+    double effort = motorController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
+    effort = MathUtil.clamp(effort, -12, 12);
+    setVoltage(effort);
   }
 
   @Override
@@ -54,11 +69,12 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
 
   @Override
   public void setTargetPosition(double angleDeg) {
-    targetAngle = angleDeg;
+    this.targetAngle = angleDeg;
   }
 
   @Override
   public void setVoltage(double volts) {
     sim.setInputVoltage(volts);
+    this.voltage = volts;
   }
 }

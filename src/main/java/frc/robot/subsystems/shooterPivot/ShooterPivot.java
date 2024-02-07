@@ -4,7 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.Robot;
@@ -64,6 +66,11 @@ public class ShooterPivot extends SubsystemBase {
     }
 
     IO.updateInputs(inputs);
+    Logger.recordOutput("ShooterPivot/isAtTarget", this.isAtTargetAngle());
+  }
+
+  public boolean isAtTargetAngle() {
+    return (Math.abs(getCurrentAngle() - this.targetDegs) < 0.001);
   }
 
   public double getCurrentAngle() {
@@ -80,6 +87,18 @@ public class ShooterPivot extends SubsystemBase {
           () -> {
             Robot.shooterPivot.setTargetAngle(structure.getShooterPivotAngleDegrees());
           });
+    }
+
+    public static Command setTargetAngle(double angleDegrees) {
+      return new InstantCommand(
+          () -> {
+            Robot.shooterPivot.setTargetAngle(angleDegrees);
+          });
+    }
+
+    public static Command setTargetAndWait(double angleDegrees) {
+      return new SequentialCommandGroup(
+          setTargetAngle(angleDegrees), new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle));
     }
   }
 }

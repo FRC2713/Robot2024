@@ -13,6 +13,7 @@ public interface ShooterPivotIO {
     public double currentDrawOne = 0.0;
     public double absoluteEncoderVolts = 0.0;
     public double absoluteEncoderAdjustedAngle = 0.0;
+    public double targetAngle = 0.0;
   }
 
   public void updateInputs(ShooterPivotInputs inputs);

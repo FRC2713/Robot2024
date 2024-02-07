@@ -5,6 +5,11 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAnalogSensor;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
+import frc.robot.rhr.RHRFeedForward;
+import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 
@@ -12,6 +17,12 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   CANSparkMax spark;
   SparkAnalogSensor analogSensor;
+
+  private double targetAngle;
+
+  private RHRPIDFFController motorController;
+
+  private RHRFeedForward feedforward;
 
   public ShooterPivotIOSparks() {
     spark = new CANSparkMax(0, MotorType.kBrushless);
@@ -21,6 +32,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     spark.getPIDController().setFeedbackDevice(analogSensor);
 
     spark.setSmartCurrentLimit(20);
+
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
           {
@@ -37,29 +49,48 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     spark.setIdleMode(IdleMode.kBrake);
     spark.setInverted(false);
+
+    motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
+    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRFeedForward();
   }
 
   @Override
   public void updateInputs(ShooterPivotInputs inputs) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+    inputs.absoluteEncoderAdjustedAngle =
+        Units.rotationsToDegrees(spark.getEncoder().getPosition());
+
+    inputs.angleDegreesOne = inputs.absoluteEncoderAdjustedAngle;
+
+    inputs.velocityDegreesPerSecondOne =
+        Units.radiansToDegrees(
+            Units.rotationsPerMinuteToRadiansPerSecond(spark.getEncoder().getVelocity()));
+
+    inputs.tempCelciusOne = spark.getMotorTemperature();
+
+    inputs.currentDrawOne = spark.getOutputCurrent();
+
+    inputs.outputVoltage = spark.getBusVoltage();
+
+    double effort =
+        motorController.calculate(inputs.absoluteEncoderAdjustedAngle, this.targetAngle);
+
+    effort = MathUtil.clamp(effort, -12, 12);
+    setVoltage(effort);
   }
 
   @Override
   public void reseedPosition(double angleDeg) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'reseedPosition'");
+    double trueAngle = angleDeg - Constants.ShooterPivotConstants.OFFSET;
+    spark.getEncoder().setPosition(trueAngle);
   }
 
   @Override
   public void setVoltage(double volts) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
+    spark.setVoltage(volts);
   }
 
   @Override
   public void setTargetPosition(double angleDeg) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setTargetPosition'");
+    this.targetAngle = angleDeg;
   }
 }
