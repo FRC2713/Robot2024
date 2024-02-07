@@ -134,6 +134,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
+    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
   }
 
   public static final class SuperStructure {
