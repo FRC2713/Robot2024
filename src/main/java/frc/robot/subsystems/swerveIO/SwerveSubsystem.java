@@ -17,12 +17,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
 import frc.robot.util.MotionHandler;
+import frc.robot.util.SwerveHeadingController;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -399,5 +404,15 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Swerve/Desired speeds/r-radps", desiredSpeeds.omegaRadiansPerSecond);
   }
 
-  public static class Commands {}
+  public static class Commands {
+    public static Command setHeading(Rotation2d degrees) {
+      return new InstantCommand(() -> SwerveHeadingController.getInstance().setSetpoint(degrees));
+    }
+
+    public static Command setHeadingandWait(Rotation2d degrees) {
+      return new SequentialCommandGroup(
+          setHeading(degrees),
+          new WaitUntilCommand(SwerveHeadingController.getInstance()::atSetpoint));
+    }
+  }
 }

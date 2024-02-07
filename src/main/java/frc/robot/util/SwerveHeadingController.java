@@ -64,6 +64,9 @@ public class SwerveHeadingController {
     return setpoint;
   }
 
+  public boolean atSetpoint() {
+    return this.error < 0.1;
+  }
   /**
    * Updates the heading controller PID with the setpoint and calculates output.
    *
@@ -77,6 +80,7 @@ public class SwerveHeadingController {
     Logger.recordOutput("Heading Controller/setpoint", setpoint.getDegrees());
 
     double output = 0;
+
     if (!controller.atSetpoint()) {
       Rotation2d currentHeading = Robot.swerveDrive.getYaw();
       output = controller.calculate(currentHeading.getDegrees(), setpoint.getDegrees());
