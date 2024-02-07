@@ -66,7 +66,7 @@ public final class Constants {
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
-    
+
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
 
@@ -99,6 +99,8 @@ public final class Constants {
   }
 
   public static final class FeederConstants {
+    public static final PIDFFGains FEEDER_GAINS =
+        PIDFFGains.builder().name("Feeder Controller").kP(0.0).kD(0.0).build();
     // TODO: FIX
     public static final double GERING = 1.;
     public static final double MAX_RPM = 5000;

@@ -13,11 +13,11 @@ public interface FeederIO {
     public double positionDeg = 0.0;
   }
 
-  // public void setSetpoint(double setpointRPM);
+  public void setSetpoint(double setpointRPM);
 
   public void setVoltage(double volts);
 
-  // public boolean atTarget();
+  public boolean atTarget();
 
   public void updateInputs(FeederInputsAutoLogged inputs);
 }
