@@ -37,7 +37,7 @@ public class IntakeIOSparks implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeInputs inputs) {
+  public void updateInputs(IntakeInputsAutoLogged inputs) {
     inputs.leftOutputVoltage = MathUtil.clamp(leftMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.leftIsOn =
         Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getVelocity()))
