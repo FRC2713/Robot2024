@@ -4,6 +4,7 @@ import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoControlFunction;
 import com.choreo.lib.ChoreoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -459,8 +460,18 @@ public class SwerveSubsystem extends SubsystemBase {
           new WaitUntilCommand(SwerveHeadingController.getInstance()::atSetpoint));
     }
 
-    public static Command getAutonomousCommandChoreo(String trajectory) {
+    public static Command getAutonomousCommand(String trajectory) {
       return new RHRPathPlannerAuto(trajectory);
+    }
+
+    public static Command resetOdometry(Pose2d pose) {
+      return new InstantCommand(() -> Robot.swerveDrive.resetOdometry(pose));
+    }
+
+    public static Command resetOdometry(String trajectory) {
+      PathPlannerPath p = PathPlannerPath.fromChoreoTrajectory(trajectory);
+      return new InstantCommand(
+          () -> Robot.swerveDrive.resetOdometry(p.getPreviewStartingHolonomicPose()));
     }
 
     public Command choreoCommandBuilder(ChoreoTrajectory traj) {
