@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
@@ -40,7 +41,9 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
-import frc.robot.subsystems.visionIO.VisionManager;
+import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -51,8 +54,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
-  public static VisionManager visionManager;
 
+  public static Vision visionFront, visionRear;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
@@ -120,6 +123,17 @@ public class Robot extends LoggedRobot {
     //             true
     //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
     //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
+
+    visionFront =
+        new Vision(
+            true
+                ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+    visionRear =
+        new Vision(
+            true
+                ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     mechManager = new MechanismManager();
 
@@ -342,10 +356,6 @@ public class Robot extends LoggedRobot {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
-    // Logger.recordOutput("Tof", tof.getRange());
-
-    // swerveDrive.seed();
-
     // RoboRioSim.setVInVoltage(
     // BatterySim.calculateDefaultBatteryLoadedVoltage(swerveDrive.getTotalCurrentDraw()));
 
@@ -356,29 +366,11 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    // TimestampedDoubleArray[] frontfQueue = frontVisionPose.readQueue();
-    // TimestampedDoubleArray[] frontcQueue = frontCamera2TagPose.readQueue();
+    swerveDrive.updateOdometryFromVision(
+        visionFront.getInfo(), visionFront.getLatestPose(), visionFront.getLatestPoseTimestamp());
 
-    // TimestampedDoubleArray[] rearfQueue = rearVisionPose.readQueue();
-    // TimestampedDoubleArray[] rearcQueue = rearCamera2TagPose.readQueue();
-
-    // if (frontfQueue.length > 0
-    // && frontcQueue.length > 0
-    // && vision.hasMultipleTargets(Limelights.FRONT)) {
-    // TimestampedDoubleArray fLastCameraReading = frontfQueue[frontfQueue.length -
-    // 1];
-    // TimestampedDoubleArray cLastCameraReading = frontcQueue[frontcQueue.length -
-    // 1];
-    // swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
-    // } else if (rearfQueue.length > 0
-    // && rearcQueue.length > 0
-    // && vision.hasMultipleTargets(Limelights.REAR)) {
-    // TimestampedDoubleArray fLastCameraReading = rearfQueue[rearfQueue.length -
-    // 1];
-    // TimestampedDoubleArray cLastCameraReading = rearcQueue[rearcQueue.length -
-    // 1];
-    // swerveDrive.updateVisionPose(fLastCameraReading, cLastCameraReading);
-    // }
+    swerveDrive.updateOdometryFromVision(
+        visionRear.getInfo(), visionRear.getLatestPose(), visionRear.getLatestPoseTimestamp());
   }
 
   @Override

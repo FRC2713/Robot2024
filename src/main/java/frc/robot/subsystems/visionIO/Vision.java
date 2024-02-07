@@ -1,5 +1,6 @@
 package frc.robot.subsystems.visionIO;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,5 +25,17 @@ public class Vision extends SubsystemBase {
     Logger.processInputs(key, inputs);
 
     Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPose.toPose2d());
+  }
+
+  public VisionInfo getInfo() {
+    return io.getInfo();
+  }
+
+  public Pose2d getLatestPose() {
+    return inputs.botPose.toPose2d();
+  }
+
+  public double getLatestPoseTimestamp() {
+    return inputs.botPoseTimestamp;
   }
 }
