@@ -35,6 +35,7 @@ import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
 import frc.robot.util.ErrorTracker;
+import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SwerveHeadingController;
@@ -254,6 +255,8 @@ public class SwerveSubsystem extends SubsystemBase {
         + backLeft.getTotalCurrentDraw()
         + backRight.getTotalCurrentDraw();
   }
+
+  public void updateOdometryFromVision(VisionInfo visionInfo, Pose2d pose, double timestamp) {}
 
   public void updateVisionPose(
       TimestampedDoubleArray fieldPoseArray, TimestampedDoubleArray cameraPoseArray) {
