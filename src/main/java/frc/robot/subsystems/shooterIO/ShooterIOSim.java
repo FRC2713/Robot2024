@@ -3,8 +3,11 @@ package frc.robot.subsystems.shooterIO;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.rhr.RHRPIDFFController;
 
 public class ShooterIOSim implements ShooterIO {
+  RHRPIDFFController shooterController;
 
   private static final FlywheelSim leftFlyWheel =
       new FlywheelSim(
@@ -22,14 +25,15 @@ public class ShooterIOSim implements ShooterIO {
 
   private double rightVolts;
 
+  public ShooterIOSim() {
+    shooterController = ShooterConstants.SHOOTER_GAINS.createRHRController();
+  }
+
   @Override
   public void updateInputs(ShooterInputsAutoLogged inputs) {
-    // setLeftVoltage(MathUtil.clamp(0, 0, 0));
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
 
-    // inputs.leftOutputVoltage = MathUtil.clamp(leftFlyWheel.getOutput(0), -12, 12);
-    // inputs.rightOutputVoltage = MathUtil.clamp(rightFlyWheel.getOutput(0), -12, 12);
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
 
@@ -56,5 +60,10 @@ public class ShooterIOSim implements ShooterIO {
   public void setRightVoltage(double voltage) {
     rightFlyWheel.setInputVoltage(voltage);
     this.rightVolts = voltage;
+  }
+
+  @Override
+  public void setMotorSetPoint(double setpointRPM) {
+    shooterController.setSetpoint(setpointRPM);
   }
 }

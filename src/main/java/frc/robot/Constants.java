@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
 import frc.robot.subsystems.visionIO.VisionInfo;
@@ -170,14 +169,8 @@ public final class Constants {
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
-    public static final RHRPIDFFController MOTOR_GAINS =
-        PIDFFGains.builder()
-            .name("Shooter Controller")
-            .kP(0.030)
-            .kD(0.0)
-            .kG(0.0)
-            .build()
-            .createRHRController();
+    public static final PIDFFGains SHOOTER_GAINS =
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kD(0.0).build();
   }
 
   @UtilityClass

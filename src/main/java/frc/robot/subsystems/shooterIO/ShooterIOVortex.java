@@ -1,18 +1,13 @@
 package frc.robot.subsystems.shooterIO;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 
 public class ShooterIOVortex implements ShooterIO {
-
-  /*CANSparkFlex leftFlyWheel;
-  CANSparkFlex rightFlyWheel;
-
-  RHRPIDFFController leftFlyWheelController;
-  RHRPIDFFController rightFlyWheelController;*/
-
   private static final CANSparkFlex leftMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
   private static final CANSparkFlex rightMotor =
@@ -21,6 +16,12 @@ public class ShooterIOVortex implements ShooterIO {
   public ShooterIOVortex() {
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
+
+    leftMotor.getPIDController().setP(ShooterConstants.SHOOTER_GAINS.getKP());
+    leftMotor.getPIDController().setD(ShooterConstants.SHOOTER_GAINS.getKD());
+
+    rightMotor.getPIDController().setP(ShooterConstants.SHOOTER_GAINS.getKP());
+    rightMotor.getPIDController().setD(ShooterConstants.SHOOTER_GAINS.getKD());
   }
 
   @Override
@@ -51,13 +52,9 @@ public class ShooterIOVortex implements ShooterIO {
     rightMotor.setVoltage(voltage);
   }
 
-  /*
-  public void setLeftMotorRPMSetPoint(double rPM) {
-    leftFlyWheelController.setSetpoint(rPM);
+  @Override
+  public void setMotorSetPoint(double setpointRPM) {
+    leftMotor.getPIDController().setReference(setpointRPM, ControlType.kVelocity, 0);
+    rightMotor.getPIDController().setReference(setpointRPM, ControlType.kVelocity, 0);
   }
-
-  public void setRightMotorRPMSetPoint(double rPM) {
-    rightFlyWheelController.setSetpoint(rPM);
-  }*/
-
 }
