@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
@@ -83,8 +82,8 @@ public class Elevator extends SubsystemBase {
   public static class Commands {
 
     public static Command setToHeightAndWait(double targetHeightInches) {
-      return new SequentialCommandGroup(
-          setToHeight(targetHeightInches), new WaitUntilCommand(Robot.elevator::atTargetHeight));
+      return setToHeight(targetHeightInches).until(Robot.elevator::atTargetHeight);
+      //return new SequentialCommandGroup(new InstantCommand(()->{Robot.elevator});
     }
 
     public static Command setToHeight(double height) {

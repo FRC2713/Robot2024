@@ -283,11 +283,9 @@ public class Robot extends LoggedRobot {
     operator
         .y()
         .whileTrue(
-            new InstantCommand(
-                () -> {
-                  shooterPivot.setGoal(20);
-                  elevator.setTargetHeight(20);
-                }));
+            new SequentialCommandGroup(
+                Elevator.Commands.setToHeightAndWait(20),
+                ShooterPivot.Commands.setTargetAndWait(20)));
 
     // operator.a().whileTrue(autoCommand)
 

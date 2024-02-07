@@ -112,7 +112,8 @@ public final class Constants {
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(20).kD(0).kG(0.85).build();
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.6).kD(0).kG(0.85).build();
+    public static final double OFFSET = 118.7;
   }
 
   public static final class ElevatorConstants {

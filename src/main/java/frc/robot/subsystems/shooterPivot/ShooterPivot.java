@@ -63,6 +63,11 @@ public class ShooterPivot extends SubsystemBase {
     }
 
     IO.updateInputs(inputs);
+    Logger.recordOutput("ShooterPivot/isAtTarget", this.isAtTargetAngle());
+  }
+
+  public boolean isAtTargetAngle() {
+    return (Math.abs(getCurrentAngle() - this.targetDegs) < 0.001);
   }
 
   public double getCurrentAngle() {
@@ -86,6 +91,10 @@ public class ShooterPivot extends SubsystemBase {
           () -> {
             Robot.shooterPivot.setTargetAngle(angleDegrees);
           });
+    }
+
+    public static Command setTargetAndWait(double angleDegrees) {
+      return setTargetAngle(angleDegrees).until(Robot.shooterPivot::isAtTargetAngle);
     }
   }
 }
