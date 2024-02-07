@@ -23,6 +23,9 @@ import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
+import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.ShooterIOSim;
+import frc.robot.subsystems.shooterIO.ShooterIOVortex;
 import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.subsystems.feederIO.FeederIOSim;
 import frc.robot.subsystems.feederIO.FeederIOSparks;
@@ -53,6 +56,7 @@ public class Robot extends LoggedRobot {
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
+  public static Shooter shooter;
   public static Intake intake;
   public static Feeder feeder;
 
@@ -84,7 +88,8 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(true ? new ElevatorIOSim() : null);
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
+    shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
     feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
@@ -249,6 +254,10 @@ public class Robot extends LoggedRobot {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
+    operator.a().whileTrue(Constants.SuperStructure.SCORE_LOW.run());
+    operator.y().whileTrue(Constants.SuperStructure.SCORE_HIGH.run());
+    operator.x().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
+    operator.b().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
     // operator
     //     .a()
     //     .whileTrue(
