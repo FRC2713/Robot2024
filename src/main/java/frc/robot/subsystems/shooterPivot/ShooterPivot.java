@@ -4,7 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.Robot;
@@ -94,7 +96,8 @@ public class ShooterPivot extends SubsystemBase {
     }
 
     public static Command setTargetAndWait(double angleDegrees) {
-      return setTargetAngle(angleDegrees).until(Robot.shooterPivot::isAtTargetAngle);
+      return new SequentialCommandGroup(
+          setTargetAngle(angleDegrees), new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle));
     }
   }
 }
