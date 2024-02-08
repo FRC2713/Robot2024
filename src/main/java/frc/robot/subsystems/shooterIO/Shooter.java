@@ -39,14 +39,12 @@ public class Shooter extends SubsystemBase {
       return new InstantCommand(
           () -> {
             Robot.shooter.setFlyWheelTargetRPM(targetRPM);
-            Robot.shooter.setFlyWheelTargetRPM(targetRPM);
           });
     }
 
     public static Command toRPM(SuperStructureBuilder builder) {
       return new InstantCommand(
           () -> {
-            Robot.shooter.setFlyWheelTargetRPM(builder.getShooterMotorSpeed());
             Robot.shooter.setFlyWheelTargetRPM(builder.getShooterMotorSpeed());
           });
     }
