@@ -39,8 +39,10 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double VISION_STD_DEVI_POSITION_IN_METERS = 0.9;
-    public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5);
+    public static double STATE_STD_DEVI_POSITION_IN_METERS = 0.1;
+    public static double STATE_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(0);
+    public static double VISION_STD_DEVI_POSITION_IN_METERS = 1.3;
+    public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5.72);
     public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
