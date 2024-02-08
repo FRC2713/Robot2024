@@ -1,5 +1,6 @@
 package frc.robot.subsystems.visionIO;
 
+import com.alibaba.fastjson.JSON;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -11,6 +12,8 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
+import frc.robot.subsystems.visionIO.LimelightHelpers.LimelightResults;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -27,6 +30,7 @@ public class VisionIOLimelight implements VisionIO {
       cameraPoseRobotSpace,
       tc;
   DoubleSubscriber aprilTagId, tv, tx, ty, ta, tl, cl, tshort, tlong, thor, tvert, getpipe, tclass;
+  StringSubscriber json;
   IntegerPublisher ledMode, cameraMode, stream, pipeline, snapshot;
   DoubleArrayPublisher crop, cameraPoseRobotSpacePub;
 
@@ -62,6 +66,8 @@ public class VisionIOLimelight implements VisionIO {
     tvert = table.getDoubleTopic("tvert").subscribe(0);
     getpipe = table.getDoubleTopic("getpipe").subscribe(0);
     tclass = table.getDoubleTopic("tclass").subscribe(0);
+
+    json = table.getStringTopic("json").subscribe("{}");
 
     ledMode = table.getIntegerTopic("ledMode").publish();
     cameraMode = table.getIntegerTopic("camMode").publish();
@@ -141,6 +147,11 @@ public class VisionIOLimelight implements VisionIO {
     inputs.verticalBoundingBoxSideLength = tvert.get();
     inputs.activePipeline = getpipe.get();
     inputs.neuralNetClassId = tclass.get();
+
+    // var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
+    // inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
+
+    var results = JSON.parseObject(json.get(), LimelightResults.class);
   }
 
   @Override
