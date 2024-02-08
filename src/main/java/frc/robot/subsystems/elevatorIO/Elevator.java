@@ -84,7 +84,8 @@ public class Elevator extends SubsystemBase {
 
     public static Command setToHeightAndWait(double targetHeightInches) {
       return new SequentialCommandGroup(
-          setToHeight(targetHeightInches), new WaitUntilCommand(() -> Robot.elevator.atTargetHeight()));
+          setToHeight(targetHeightInches),
+          new WaitUntilCommand(() -> Robot.elevator.atTargetHeight()));
     }
 
     public static Command setToHeight(double height) {

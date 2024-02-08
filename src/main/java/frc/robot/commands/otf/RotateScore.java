@@ -51,7 +51,9 @@ public class RotateScore extends SequentialCommandGroup {
   public static Rotation2d getOptimalShooterAngle(Pose2d position, double elevatorHeight) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     var FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
-    Logger.recordOutput("OTF/Offset Speaker Height", speakerLoc.getZ() - FLOOR_TO_ELEVATOR_BASE_METRES - Units.inchesToMeters(elevatorHeight));
+    Logger.recordOutput(
+        "OTF/Offset Speaker Height",
+        speakerLoc.getZ() - FLOOR_TO_ELEVATOR_BASE_METRES - Units.inchesToMeters(elevatorHeight));
     Logger.recordOutput("OTF/DIST", distance);
     return new Rotation2d(
         Math.atan((speakerLoc.getZ() - FLOOR_TO_ELEVATOR_BASE_METRES - elevatorHeight) / distance));

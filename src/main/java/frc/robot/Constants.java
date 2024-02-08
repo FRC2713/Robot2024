@@ -40,11 +40,16 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double STATE_STD_DEVI_POSITION_IN_METERS = 0.1;
-    public static double STATE_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(0);
-    public static double VISION_STD_DEVI_POSITION_IN_METERS = 1.3;
-    public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5.72);
     public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+
+    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {}
+
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
+        new PoseEstimatorErrorStDevs(0.1, 0);
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
+        new PoseEstimatorErrorStDevs(1, 1);
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
+        new PoseEstimatorErrorStDevs(0.1, 0.1);
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
         VisionInfo.builder()

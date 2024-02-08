@@ -335,11 +335,9 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    swerveDrive.updateOdometryFromVision(
-        visionFront.getInfo(), visionFront.getLatestPose(), visionFront.getLatestPoseTimestamp());
+    swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
 
-    swerveDrive.updateOdometryFromVision(
-        visionRear.getInfo(), visionRear.getLatestPose(), visionRear.getLatestPoseTimestamp());
+    swerveDrive.updateOdometryFromVision(visionRear.getInfo(), visionRear.getInputs());
   }
 
   @Override

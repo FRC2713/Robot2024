@@ -1,6 +1,4 @@
-package frc.robot.util;
-
-// LimelightHelpers v1.2.1 (March 1, 2023)
+package frc.robot.subsystems.visionIO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -746,13 +744,10 @@ public class LimelightHelpers {
           new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    String jsonDump = getJSONDump(limelightName);
-    if (!jsonDump.isEmpty()) {
-      try {
-        results = mapper.readValue(jsonDump, LimelightResults.class);
-      } catch (JsonProcessingException e) {
-        System.err.println("lljson error: " + e.getMessage());
-      }
+    try {
+      results = mapper.readValue(getJSONDump(limelightName), LimelightResults.class);
+    } catch (JsonProcessingException e) {
+      System.err.println("lljson error: " + e.getMessage());
     }
 
     long end = System.nanoTime();

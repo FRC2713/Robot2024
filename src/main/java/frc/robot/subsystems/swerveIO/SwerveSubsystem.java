@@ -35,6 +35,7 @@ import frc.robot.Robot;
 import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
+import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.ErrorTracker;
 import frc.robot.util.MotionHandler;
@@ -119,13 +120,13 @@ public class SwerveSubsystem extends SubsystemBase {
             },
             new Pose2d(),
             VecBuilder.fill(
-                LimeLightConstants.STATE_STD_DEVI_POSITION_IN_METERS,
-                LimeLightConstants.STATE_STD_DEVI_POSITION_IN_METERS,
-                LimeLightConstants.STATE_STD_DEVI_ROTATION_IN_RADIANS),
+                LimeLightConstants.POSE_ESTIMATOR_STATE_STDEVS.translationalStDev(),
+                LimeLightConstants.POSE_ESTIMATOR_STATE_STDEVS.translationalStDev(),
+                LimeLightConstants.POSE_ESTIMATOR_STATE_STDEVS.rotationalStDev()),
             VecBuilder.fill(
-                LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
+                LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.translationalStDev(),
+                LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.translationalStDev(),
+                LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.rotationalStDev()));
 
     AutoBuilder.configureHolonomic(
         this::getUsablePose,
@@ -260,15 +261,21 @@ public class SwerveSubsystem extends SubsystemBase {
         + backRight.getTotalCurrentDraw();
   }
 
-  public void updateOdometryFromVision(VisionInfo visionInfo, Pose2d pose, double timestamp) {
-    double jumpDistance = getUsablePose().getTranslation().getDistance(pose.getTranslation());
+  public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
+    double jumpDistance =
+        getUsablePose()
+            .getTranslation()
+            .getDistance(visionInputs.botPoseBlue.toPose2d().getTranslation());
+
     Logger.recordOutput("Vision/" + visionInfo.getNtTableName() + "/Jump Distance", jumpDistance);
 
     // Use the pose if
     //  - We are disabled, OR
     //  - We are within the jump distance
     if (!DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_IN_INCHES) {
-      poseEstimator.addVisionMeasurement(pose, timestamp);
+
+      poseEstimator.addVisionMeasurement(
+          visionInputs.botPoseBlue.toPose2d(), visionInputs.botPoseBlueTimestamp);
     }
   }
 
