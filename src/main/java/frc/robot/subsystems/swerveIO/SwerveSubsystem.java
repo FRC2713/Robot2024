@@ -30,12 +30,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.Robot;
 import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
-import frc.robot.util.ErrorTracker;
 import frc.robot.subsystems.visionIO.VisionInfo;
+import frc.robot.util.ErrorTracker;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SwerveHeadingController;
@@ -117,11 +118,14 @@ public class SwerveSubsystem extends SubsystemBase {
               this.backRight.getPosition()
             },
             new Pose2d(),
-            VecBuilder.fill(0.1, 0.1, 0.1),
             VecBuilder.fill(
-                Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                Constants.LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
-                Constants.LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
+                LimeLightConstants.STATE_STD_DEVI_POSITION_IN_METERS,
+                LimeLightConstants.STATE_STD_DEVI_POSITION_IN_METERS,
+                LimeLightConstants.STATE_STD_DEVI_ROTATION_IN_RADIANS),
+            VecBuilder.fill(
+                LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
+                LimeLightConstants.VISION_STD_DEVI_POSITION_IN_METERS,
+                LimeLightConstants.VISION_STD_DEVI_ROTATION_IN_RADIANS));
 
     AutoBuilder.configureHolonomic(
         this::getUsablePose,
@@ -256,7 +260,17 @@ public class SwerveSubsystem extends SubsystemBase {
         + backRight.getTotalCurrentDraw();
   }
 
-  public void updateOdometryFromVision(VisionInfo visionInfo, Pose2d pose, double timestamp) {}
+  public void updateOdometryFromVision(VisionInfo visionInfo, Pose2d pose, double timestamp) {
+    double jumpDistance = getUsablePose().getTranslation().getDistance(pose.getTranslation());
+    Logger.recordOutput("Vision/" + visionInfo.getNtTableName() + "/Jump Distance", jumpDistance);
+
+    // Use the pose if
+    //  - We are disabled, OR
+    //  - We are within the jump distance
+    if (!DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_IN_INCHES) {
+      poseEstimator.addVisionMeasurement(pose, timestamp);
+    }
+  }
 
   public void updateVisionPose(
       TimestampedDoubleArray fieldPoseArray, TimestampedDoubleArray cameraPoseArray) {
@@ -343,14 +357,14 @@ public class SwerveSubsystem extends SubsystemBase {
    * be run in periodic() or during every code loop to maintain accuracy.
    */
   public void updateOdometry() {
-    // odometry.update(
-    // Rotation2d.fromDegrees(inputs.gyroYawPosition),
-    // new SwerveModulePosition[] {
-    //   frontLeft.getPosition(),
-    //   frontRight.getPosition(),
-    //   backLeft.getPosition(),
-    //   backRight.getPosition()
-    // });
+    odometry.update(
+        Rotation2d.fromDegrees(inputs.gyroYawPosition),
+        new SwerveModulePosition[] {
+          frontLeft.getPosition(),
+          frontRight.getPosition(),
+          backLeft.getPosition(),
+          backRight.getPosition()
+        });
 
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(),
