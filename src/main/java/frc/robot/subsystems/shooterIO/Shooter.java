@@ -50,6 +50,7 @@ public class Shooter extends SubsystemBase {
         break;
     }
 
+    Logger.recordOutput("Shooter/Mode", motionMode);
     Logger.processInputs("Shooter", inputs);
   }
 

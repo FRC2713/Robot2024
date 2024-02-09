@@ -276,8 +276,7 @@ public class Robot extends LoggedRobot {
 
     driver
         .leftBumper()
-        .onTrue(Intake.Commands.setVelocityRPM(2000))
-        .onFalse(Intake.Commands.setVelocityRPM(0));
+        .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)));
 
     driver
         .rightBumper()
