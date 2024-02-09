@@ -104,7 +104,7 @@ public final class Constants {
     public static final double GERING = 1.;
     public static final double MAX_RPM = 5000;
     // TODO: FIX
-    public static final double MOI = 0.001;
+    public static final double MOI = 0.000001;
   }
 
   public static final class ShooterPivotConstants {
