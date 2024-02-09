@@ -66,8 +66,8 @@ public final class Constants {
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
 
-    public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
-    public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
+    public static final int SHOOTER_LEFT_FLYWHEEL_ID = 30;
+    public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
     public static final int INTAKE_TOF_SENSOR_ID = 70;
     public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
@@ -170,7 +170,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kD(0.0).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.0001875).build();
   }
 
   @UtilityClass

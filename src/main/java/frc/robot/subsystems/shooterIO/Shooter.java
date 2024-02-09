@@ -34,11 +34,23 @@ public class Shooter extends SubsystemBase {
     IO.setMotorSetPoint(targetRPM);
   }
 
+  public void setVoltage(double volts) {
+    IO.setLeftVoltage(volts);
+    IO.setRightVoltage(volts);
+  }
+
   public static class Commands {
     public static Command setTargetRPM(double targetRPM) {
       return new InstantCommand(
           () -> {
             Robot.shooter.setFlyWheelTargetRPM(targetRPM);
+          });
+    }
+
+    public static Command setVoltage(double volts) {
+      return new InstantCommand(
+          () -> {
+            Robot.shooter.setVoltage(volts);
           });
     }
 

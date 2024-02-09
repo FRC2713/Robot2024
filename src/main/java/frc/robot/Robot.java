@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -88,11 +89,11 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : null);
+    elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
-    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
+    intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
+    feeder = new Feeder(true ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         // isSimulation()
@@ -266,9 +267,12 @@ public class Robot extends LoggedRobot {
     //               elevator.setTargetHeight(20);
     //             }));
 
+    driver.a().onTrue(Commands.sequence(Shooter.Commands.setTargetRPM(5000)));
+    driver.a().onFalse(Commands.sequence(Shooter.Commands.setTargetRPM(0)));
+
     driver
         .leftBumper()
-        .onTrue(Intake.Commands.setVelocityRPM(5000))
+        .onTrue(Intake.Commands.setVelocityRPM(2000))
         .onFalse(Intake.Commands.setVelocityRPM(0));
 
     driver
