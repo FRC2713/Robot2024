@@ -46,4 +46,10 @@ public class FeederIOSim implements FeederIO {
     feederController.setSetpoint(setpointRPM);
     this.setpointRPM = setpointRPM;
   }
+
+  @Override
+  public boolean hasGamepiece() 
+  {
+    return false;
+  }
 }
