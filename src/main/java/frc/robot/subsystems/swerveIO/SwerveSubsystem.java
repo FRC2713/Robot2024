@@ -415,10 +415,12 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public static class Commands {
-    public ChoreoControlFunction modifiedChoreoSwerveController(
+    public static ErrorTracker errorTracker;
+
+    public static ChoreoControlFunction modifiedChoreoSwerveController(
         PIDController xController, PIDController yController, PIDController rotationController) {
       rotationController.enableContinuousInput(-Math.PI, Math.PI);
-      ErrorTracker errorTracker =
+      Commands.errorTracker =
           new ErrorTracker(
               10,
               PIDFFGains.fromPIDGains(xController),
@@ -474,7 +476,7 @@ public class SwerveSubsystem extends SubsystemBase {
           () -> Robot.swerveDrive.resetOdometry(p.getPreviewStartingHolonomicPose()));
     }
 
-    public Command choreoCommandBuilder(ChoreoTrajectory traj) {
+    public static Command choreoCommandBuilder(ChoreoTrajectory traj) {
       var alliance = DriverStation.getAlliance();
       boolean useAllianceColour = false;
       if (alliance.isPresent()) {
