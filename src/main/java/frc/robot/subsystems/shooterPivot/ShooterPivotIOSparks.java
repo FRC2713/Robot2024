@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterPivot;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -70,12 +71,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     inputs.currentDrawOne = spark.getOutputCurrent();
 
     inputs.outputVoltage = spark.getBusVoltage();
-
-    double effort =
-        motorController.calculate(inputs.absoluteEncoderAdjustedAngle, this.targetAngle);
-
-    effort = MathUtil.clamp(effort, -12, 12);
-    setVoltage(effort);
   }
 
   @Override
@@ -92,5 +87,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   @Override
   public void setTargetPosition(double angleDeg) {
     this.targetAngle = angleDeg;
+    this.spark.getPIDController().setReference(angleDeg, ControlType.kPosition);
   }
 }
