@@ -9,9 +9,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
+import frc.robot.commands.ShootingCommands;
+import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.util.ErrorTracker;
 import frc.robot.util.PIDFFGains;
 import org.littletonrobotics.junction.Logger;
@@ -86,11 +88,19 @@ public class ThreePieceChoreo extends SequentialCommandGroup {
             () -> {
               Robot.swerveDrive.resetOdometry(firstTraj.getInitialPose());
             }),
-        choreoCommandBuilder(firstTraj),
-        new WaitCommand(1),
-        choreoCommandBuilder(secondTraj),
-        new WaitCommand(1),
-        choreoCommandBuilder(thirdTraj),
+        ShootingCommands.FeederShotCommands(),
+        new ParallelCommandGroup(
+            choreoCommandBuilder(firstTraj),
+            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+        ShootingCommands.FullShotCommands(),
+        new ParallelCommandGroup(
+            choreoCommandBuilder(secondTraj),
+            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+        ShootingCommands.FullShotCommands(),
+        new ParallelCommandGroup(
+            choreoCommandBuilder(thirdTraj),
+            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+        ShootingCommands.FullShotCommands(),
         new InstantCommand(
             () -> {
               errorTracker.printSummary("ThreePieceChoreo");

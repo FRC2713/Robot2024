@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.feederIO.Feeder;
+import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.util.SuperStructureBuilder;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +19,7 @@ public class ShooterPivot extends SubsystemBase {
     CLOSED_LOOP,
     FEED_CLOSED_LOOP,
     OPEN_LOOP,
+    SHORT_AUTO_SHOTS
   }
 
   public MotionMode mode;
@@ -50,13 +52,19 @@ public class ShooterPivot extends SubsystemBase {
 
     Logger.recordOutput("ShooterPivot/Mode", mode);
     switch (mode) {
+      case SHORT_AUTO_SHOTS:
+        setTargetAngle((ShooterPivotConstants.SHORT_AUTO_SHOTS));
+        if (isAtTargetAngle()) {
+          Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP);
+        }
+        break;
       case CLOSED_LOOP:
         setTargetAngle((this.targetDegs));
         break;
       case FEED_CLOSED_LOOP:
         setTargetAngle((ShooterPivotConstants.FEEDING_ANGLE));
         if (isAtTargetAngle()) {
-          Robot.feeder.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER);
+          Robot.feeder.setMotionMode(Feeder.MotionMode.INTAKE_GP);
         }
         break;
       case OPEN_LOOP:
