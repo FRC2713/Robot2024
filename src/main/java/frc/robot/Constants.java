@@ -111,7 +111,7 @@ public final class Constants {
   public static final class ShooterPivotConstants {
     public static final double LENGTH_METERS = Units.inchesToMeters(18);
     public static final double MASS_KG = 6.80389;
-    public static final double MAX_ANGLE_DEGREES = 90;
+    public static final double MAX_ANGLE_DEGREES = 60;
     public static final double RETRACTED_ANGLE_DEGREES = 0;
     public static final boolean SIMULATE_GRAVITY = true;
     public static final double GEARING = 100;
@@ -121,6 +121,7 @@ public final class Constants {
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
         PIDFFGains.builder().name("ShooterPivot Controller").kP(0.6).kD(0).kG(0.85).build();
     public static final double OFFSET = 118.7;
+    public static final double FEEDING_ANGLE = 30;
   }
 
   public static final class ElevatorConstants {

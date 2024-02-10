@@ -3,9 +3,7 @@ package frc.robot.subsystems.swerveIO.module;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.LoggableMotor;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends SubsystemBase {
@@ -15,8 +13,6 @@ public class SwerveModule extends SubsystemBase {
 
   SwerveModuleState state;
   public final ModuleInfo information;
-
-  LoggableMotor azimuthMotor, driveMotor;
 
   /**
    * Creates a new SwerveModule object.
@@ -32,10 +28,6 @@ public class SwerveModule extends SubsystemBase {
     io.updateInputs(inputs);
 
     state = new SwerveModuleState(0, Rotation2d.fromDegrees(inputs.aziEncoderPositionDeg));
-
-    azimuthMotor =
-        new LoggableMotor("Swerve " + information.getName() + " Azimuth", DCMotor.getNEO(1));
-    driveMotor = new LoggableMotor("Swerve " + information.getName() + " Drive", DCMotor.getNEO(1));
   }
 
   /**
@@ -116,8 +108,6 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
 
-    azimuthMotor.log(inputs.aziCurrentDrawAmps, inputs.aziOutputVolts);
-    driveMotor.log(inputs.driveCurrentDrawAmps, inputs.driveOutputVolts);
     update();
 
     Logger.processInputs("Swerve/" + information.getName(), inputs);

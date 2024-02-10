@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakeIO;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -9,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.util.LoggableMotor;
 import frc.robot.util.RumbleManager;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -28,15 +26,11 @@ public class Intake extends SubsystemBase {
   private final IntakeIO IO;
   private final IntakeInputsAutoLogged inputs;
   private double leftTargetRPM, rightTargetRPM = 0.0;
-  private LoggableMotor leftMotor, rightMotor;
 
   public Intake(IntakeIO IO) {
     this.inputs = new IntakeInputsAutoLogged();
     IO.updateInputs(inputs);
     this.IO = IO;
-
-    leftMotor = new LoggableMotor("Left intake Roller", DCMotor.getNEO(1));
-    rightMotor = new LoggableMotor("Right intake Roller", DCMotor.getNEO(1));
   }
 
   public boolean leftIsAtTarget() {
@@ -73,8 +67,6 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     IO.updateInputs(inputs);
-    leftMotor.log(inputs.leftCurrentAmps, inputs.leftOutputVoltage);
-    rightMotor.log(inputs.rightCurrentAmps, inputs.rightOutputVoltage);
 
     boolean hasGamepiece = hasGamepiece();
     boolean leftIsAtTarget = leftIsAtTarget();
@@ -116,6 +108,9 @@ public class Intake extends SubsystemBase {
         }
         break;
       case OFF:
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+        }
       default:
         setRPM(0, 0);
         break;

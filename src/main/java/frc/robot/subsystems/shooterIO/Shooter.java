@@ -1,11 +1,10 @@
 package frc.robot.subsystems.shooterIO;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.util.LoggableMotor;
+import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.util.SuperStructureBuilder;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -22,15 +21,13 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIO IO;
   private final ShooterInputsAutoLogged inputs;
-  private LoggableMotor leftMotor;
-  private LoggableMotor rightMotor;
+
+  private double targetRPM;
 
   public Shooter(ShooterIO IO) {
     this.IO = IO;
     this.inputs = new ShooterInputsAutoLogged();
     this.IO.updateInputs(inputs);
-    leftMotor = new LoggableMotor("LeftMotor", DCMotor.getNeoVortex(1));
-    rightMotor = new LoggableMotor("rightMotor", DCMotor.getNeoVortex(1));
   }
 
   @Override
@@ -43,6 +40,11 @@ public class Shooter extends SubsystemBase {
         break;
       case FENDER_SHOT_CLOSED_LOOP:
         setFlyWheelTargetRPM(3500);
+        if (isAtTarget()) {
+          Robot.feeder.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER);
+        }
+        break;
+      case VELOCITY_CLOSED_LOOP:
         break;
       case OFF:
       default:
@@ -51,10 +53,12 @@ public class Shooter extends SubsystemBase {
     }
 
     Logger.recordOutput("Shooter/Mode", motionMode);
+    Logger.recordOutput("Shooter/isAtTarget", isAtTarget());
     Logger.processInputs("Shooter", inputs);
   }
 
   public void setFlyWheelTargetRPM(double targetRPM) {
+    this.targetRPM = targetRPM;
     Logger.recordOutput("Shooter/TargetRPM", targetRPM);
     IO.setMotorSetPoint(targetRPM);
   }
@@ -62,6 +66,10 @@ public class Shooter extends SubsystemBase {
   public void setVoltage(double volts) {
     IO.setLeftVoltage(volts);
     IO.setRightVoltage(volts);
+  }
+
+  public boolean isAtTarget() {
+    return Math.abs(inputs.leftSpeedRPM - targetRPM) < 90;
   }
 
   public static class Commands {

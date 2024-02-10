@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
@@ -127,6 +125,23 @@ public class Robot extends LoggedRobot {
     checkAlliance();
     buildAutoChooser();
 
+    driver.a().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
+    driver.a().onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    driver
+        .b()
+        .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
+    driver
+        .b()
+        .onFalse(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.CLOSED_LOOP),
+                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
+    driver.y().onTrue(Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP));
+    driver.y().onFalse(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF));
+
+    driver.povUp().onTrue(ShooterPivot.Commands.setTargetAndWait(10));
+    driver.povDown().onTrue(ShooterPivot.Commands.setTargetAndWait(0));
+
     // driver
     // .a()
     // .onTrue(
@@ -177,20 +192,21 @@ public class Robot extends LoggedRobot {
     // otf.cancelCommand();
     // }));
 
-    driver
-        .y()
-        .onTrue(
-            new SequentialCommandGroup(
-                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
-                RotateScore.optimalShoot()));
+    // driver
+    //     .y()
+    //     .onTrue(
+    //         new SequentialCommandGroup(
+    //             new InstantCommand(() ->
+    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
+    //             RotateScore.optimalShoot()));
 
-    driver
-        .y()
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                }));
+    // driver
+    //     .y()
+    //     .onFalse(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+    //             }));
     // driver
     // .povUp()
     // .onTrue(
@@ -235,30 +251,30 @@ public class Robot extends LoggedRobot {
     // swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
     // }));
 
-    driver
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-                }));
+    // driver
+    //     .start()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+    //             }));
 
-    driver
-        .back()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-                }));
+    // driver
+    //     .back()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+    //             }));
 
-    if (!Robot.isReal()) {
-      DriverStation.silenceJoystickConnectionWarning(true);
-    }
+    // if (!Robot.isReal()) {
+    //   DriverStation.silenceJoystickConnectionWarning(true);
+    // }
 
-    operator.a().whileTrue(Constants.SuperStructure.SCORE_LOW.run());
-    operator.y().whileTrue(Constants.SuperStructure.SCORE_HIGH.run());
-    operator.x().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
-    operator.b().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
+    // operator.a().whileTrue(Constants.SuperStructure.SCORE_LOW.run());
+    // operator.y().whileTrue(Constants.SuperStructure.SCORE_HIGH.run());
+    // operator.x().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
+    // operator.b().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
     // operator
     // .a()
     // .whileTrue(
@@ -267,39 +283,39 @@ public class Robot extends LoggedRobot {
     // elevator.setTargetHeight(20);
     // }));
 
-    driver
-        .a()
-        .onTrue(Commands.sequence(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP)));
-    driver.a().onFalse(Commands.sequence(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF)));
+    // driver
+    //     .a()
+    //     .onTrue(Commands.sequence(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP)));
+    // driver.a().onFalse(Commands.sequence(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF)));
 
-    driver
-        .leftBumper()
-        .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)));
+    // driver
+    //     .leftBumper()
+    //     .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)));
 
-    driver
-        .rightBumper()
-        .onTrue(Intake.Commands.setVelocityRPM(-5000))
-        .onFalse(Intake.Commands.setVelocityRPM(0));
+    // driver
+    //     .rightBumper()
+    //     .onTrue(Intake.Commands.setVelocityRPM(-5000))
+    //     .onFalse(Intake.Commands.setVelocityRPM(0));
 
-    driver.povUp().onTrue(Feeder.Commands.setToVelocity(4000));
-    driver.povDown().onTrue(Feeder.Commands.setToVelocity(0));
-    driver.povLeft().onTrue(Feeder.Commands.setToVelocity(-4000));
-    driver.povLeft().onFalse(Feeder.Commands.setToVelocity(0));
-    operator
-        .a()
-        .whileTrue(
-            new InstantCommand(
-                () -> {
-                  shooterPivot.setGoal(0);
-                  elevator.setTargetHeight(0);
-                }));
+    // driver.povUp().onTrue(Feeder.Commands.setToVelocity(4000));
+    // driver.povDown().onTrue(Feeder.Commands.setToVelocity(0));
+    // driver.povLeft().onTrue(Feeder.Commands.setToVelocity(-4000));
+    // driver.povLeft().onFalse(Feeder.Commands.setToVelocity(0));
+    // operator
+    //     .a()
+    //     .whileTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               shooterPivot.setGoal(0);
+    //               elevator.setTargetHeight(0);
+    //             }));
 
-    operator
-        .y()
-        .onTrue(
-            new SequentialCommandGroup(
-                ShooterPivot.Commands.setTargetAndWait(20),
-                Elevator.Commands.setToHeightAndWait(20)));
+    // operator
+    //     .y()
+    //     .onTrue(
+    //         new SequentialCommandGroup(
+    //             ShooterPivot.Commands.setTargetAndWait(20),
+    //             Elevator.Commands.setToHeightAndWait(20)));
 
     // operator.a().whileTrue(autoCommand)
 
