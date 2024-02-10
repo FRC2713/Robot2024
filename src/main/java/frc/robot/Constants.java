@@ -122,6 +122,7 @@ public final class Constants {
         PIDFFGains.builder().name("ShooterPivot Controller").kP(0.6).kD(0).kG(0.85).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
+    public static final double SHORT_AUTO_SHOTS = 45;
   }
 
   public static final class ElevatorConstants {
