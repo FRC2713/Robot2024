@@ -56,7 +56,7 @@ public class ShooterPivot extends SubsystemBase {
       case FEED_CLOSED_LOOP:
         setTargetAngle((ShooterPivotConstants.FEEDING_ANGLE));
         if (isAtTargetAngle()) {
-          Robot.feeder.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER);
+          Robot.feeder.setMotionMode(Feeder.MotionMode.INTAKE_GP);
         }
         break;
       case OPEN_LOOP:
@@ -67,6 +67,7 @@ public class ShooterPivot extends SubsystemBase {
 
     IO.updateInputs(inputs);
     Logger.recordOutput("ShooterPivot/isAtTarget", this.isAtTargetAngle());
+    Logger.recordOutput("ShooterPivot/TargetAngleDegs", targetDegs);
   }
 
   public boolean isAtTargetAngle() {

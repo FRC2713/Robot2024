@@ -89,20 +89,22 @@ public class Intake extends SubsystemBase {
         setRPM(0);
         break;
       case INTAKE_GP:
-        setRPM(4000);
+        // setRPM(4000);
+        IO.setVoltage(6, 6);
         if (hasGamepiece()) {
           motionMode = MotionMode.HOLDING_GP;
           RumbleManager.getInstance().setDriver(1, 2);
         }
         break;
       case SEND_GP_TO_FEEDER:
-        setRPM(2000);
+        // setRPM(2000);
+        IO.setVoltage(5, 5);
         if (!hasGamepiece()) {
           motionMode = MotionMode.OFF;
         }
         break;
       case OUTAKE_GP:
-        setRPM(-4000);
+        IO.setVoltage(-6, -6);
         if (!hasGamepiece()) {
           motionMode = MotionMode.OFF;
         }
@@ -112,7 +114,7 @@ public class Intake extends SubsystemBase {
           motionMode = MotionMode.HOLDING_GP;
         }
       default:
-        setRPM(0, 0);
+        IO.setVoltage(0, 0);
         break;
     }
 

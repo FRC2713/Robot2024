@@ -13,6 +13,7 @@ public class Shooter extends SubsystemBase {
   public enum MotionMode {
     FENDER_SHOT_OPEN_LOOP,
     FENDER_SHOT_CLOSED_LOOP,
+    RESTING_SPEED,
     VELOCITY_CLOSED_LOOP,
     OFF
   }
@@ -45,6 +46,9 @@ public class Shooter extends SubsystemBase {
         }
         break;
       case VELOCITY_CLOSED_LOOP:
+        break;
+      case RESTING_SPEED:
+        setFlyWheelTargetRPM(1000);
         break;
       case OFF:
       default:

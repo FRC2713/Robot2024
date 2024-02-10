@@ -49,16 +49,19 @@ public class Feeder extends SubsystemBase {
     switch (motionMode) {
       case INTAKE_GP:
         Robot.intake.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER);
-        setTarget(2000);
+        // setTarget(2000);
+        IO.setVoltage(6);
         if (hasGamepiece()) {
           motionMode = MotionMode.HOLD_GAMEPIECE;
         }
         break;
       case HOLD_GAMEPIECE:
-        setTarget(0);
+        // setTarget(0);
+        IO.setVoltage(0);
         break;
       case SEND_TO_SHOOTER:
-        setTarget(2000);
+        // setTarget(2000);
+        IO.setVoltage(6);
         if (!hasGamepiece()) {
           motionMode = MotionMode.OFF;
         }
@@ -68,7 +71,8 @@ public class Feeder extends SubsystemBase {
           motionMode = MotionMode.HOLD_GAMEPIECE;
         }
       default:
-        setTarget(0);
+        // setTarget(0);
+        IO.setVoltage(0);
         break;
     }
   }

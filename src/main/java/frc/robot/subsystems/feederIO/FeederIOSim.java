@@ -4,7 +4,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
-import frc.robot.Constants.FeederConstants;
 import frc.robot.rhr.RHRPIDFFController;
 
 public class FeederIOSim implements FeederIO {
@@ -13,10 +12,10 @@ public class FeederIOSim implements FeederIO {
       new DCMotorSim(
           DCMotor.getNEO(1), Constants.FeederConstants.GERING, Constants.FeederConstants.MOI);
   private double volts;
-  RHRPIDFFController feederController;
+  RHRPIDFFController feederController = null;
 
   public FeederIOSim() {
-    feederController = FeederConstants.FEEDER_GAINS.createRHRController();
+    // feederController = FeederConstants.FEEDER_GAINS.createRHRController();
   }
 
   @Override

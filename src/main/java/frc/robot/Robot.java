@@ -33,6 +33,7 @@ import frc.robot.subsystems.shooterIO.ShooterIOSim;
 import frc.robot.subsystems.shooterIO.ShooterIOVortex;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.shooterPivot.ShooterPivotIOSim;
+import frc.robot.subsystems.shooterPivot.ShooterPivotIOSparks;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -89,9 +90,9 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
-    shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : null);
-    intake = new Intake(true ? new IntakeIOSim() : new IntakeIOSparks());
-    feeder = new Feeder(true ? new FeederIOSim() : new FeederIOSparks());
+    shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
+    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         // isSimulation()
@@ -110,36 +111,45 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
     // visionManager =
-    // new VisionManager(
-    // new Vision(
-    // true
-    // ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-    // : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
-    // new Vision(
-    // true
-    // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
+    //     new VisionManager(
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
+    //         new Vision(
+    //             true
+    //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
 
     mechManager = new MechanismManager();
 
     checkAlliance();
     buildAutoChooser();
 
-    driver.a().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
-    driver.a().onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
+    driver.leftBumper().onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    // driver
+    //     .leftTrigger(0.1)
+    //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
+    driver.leftTrigger(0.1).onTrue(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP));
+    // driver
+    //     .leftTrigger(0.1)
+    //     .onFalse(
+    //         Commands.sequence(
+    //             ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.CLOSED_LOOP),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
     driver
-        .b()
-        .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
-    driver
-        .b()
+        .leftTrigger(0.1)
         .onFalse(
             Commands.sequence(
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.CLOSED_LOOP),
+                Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
-    driver.y().onTrue(Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP));
-    driver.y().onFalse(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF));
+    driver
+        .rightBumper()
+        .onTrue(Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP));
+    driver.rightBumper().onFalse(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF));
 
-    driver.povUp().onTrue(ShooterPivot.Commands.setTargetAndWait(10));
+    driver.povUp().onTrue(ShooterPivot.Commands.setTargetAndWait(60));
     driver.povDown().onTrue(ShooterPivot.Commands.setTargetAndWait(0));
 
     // driver

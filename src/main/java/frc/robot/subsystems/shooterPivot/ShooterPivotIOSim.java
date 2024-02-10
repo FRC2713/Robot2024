@@ -22,7 +22,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.LENGTH_METERS,
           Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES),
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
-          !Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
+          Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
   private double targetAngle;
 
