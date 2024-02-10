@@ -48,8 +48,7 @@ public class FeederIOSim implements FeederIO {
   }
 
   @Override
-  public boolean hasGamepiece() 
-  {
+  public boolean hasGamepiece() {
     return false;
   }
 }

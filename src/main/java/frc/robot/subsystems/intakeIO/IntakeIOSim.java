@@ -2,7 +2,6 @@ package frc.robot.subsystems.intakeIO;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
@@ -22,8 +21,7 @@ public class IntakeIOSim implements IntakeIO {
 
   private double rightVolts;
 
-  public IntakeIOSim() {
-  }
+  public IntakeIOSim() {}
 
   @Override
   public void setCurrentLimit(int currentLimit) {

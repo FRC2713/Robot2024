@@ -10,26 +10,19 @@ import frc.robot.Robot;
 import frc.robot.util.LoggableMotor;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.littletonrobotics.junction.Logger;
-
-
-
 
 public class Feeder extends SubsystemBase {
   @Getter private LoggableMotor feederMotor;
 
-  public enum MotionMode
-  {
+  public enum MotionMode {
     INTAKE_GP,
     HOLD_GAMEPIECE,
     SEND_TO_SHOOTER,
     OFF;
   }
 
-
-  @Setter
-  public MotionMode motionMode = MotionMode.OFF;
+  @Setter public MotionMode motionMode = MotionMode.OFF;
   private FeederIO IO;
   private double target;
   private FeederInputsAutoLogged inputs;
@@ -55,30 +48,27 @@ public class Feeder extends SubsystemBase {
     switch (motionMode) {
       case INTAKE_GP:
         setTarget(2000);
-        if(hasGamepiece())
-        {
+        if (hasGamepiece()) {
           motionMode = MotionMode.HOLD_GAMEPIECE;
         }
-      break;
+        break;
       case HOLD_GAMEPIECE:
         setTarget(0);
-      break;
-        case SEND_TO_SHOOTER:
+        break;
+      case SEND_TO_SHOOTER:
         setTarget(2000);
-        if(!hasGamepiece())
-        {
+        if (!hasGamepiece()) {
           motionMode = MotionMode.OFF;
         }
-      break;
+        break;
       case OFF:
-        default:
+      default:
         setTarget(0);
         break;
     }
   }
 
-  public boolean hasGamepiece()
-  {
+  public boolean hasGamepiece() {
     return IO.hasGamepiece();
   }
 

@@ -21,5 +21,5 @@ public interface FeederIO {
 
   public void updateInputs(FeederInputsAutoLogged inputs);
 
-public boolean hasGamepiece();
+  public boolean hasGamepiece();
 }

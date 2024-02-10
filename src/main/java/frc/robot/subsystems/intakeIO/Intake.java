@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.subsystems.feederIO.Feeder;
-import frc.robot.subsystems.feederIO.Feeder.FeederState;
 import frc.robot.util.LoggableMotor;
 import frc.robot.util.RumbleManager;
 import lombok.Setter;

@@ -269,9 +269,7 @@ public class Robot extends LoggedRobot {
 
     driver
         .a()
-        .onTrue(
-            Commands.sequence(
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP)));
+        .onTrue(Commands.sequence(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP)));
     driver.a().onFalse(Commands.sequence(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF)));
 
     driver
@@ -302,8 +300,7 @@ public class Robot extends LoggedRobot {
             new SequentialCommandGroup(
                 ShooterPivot.Commands.setTargetAndWait(20),
                 Elevator.Commands.setToHeightAndWait(20)));
-    
-  
+
     // operator.a().whileTrue(autoCommand)
 
     // shooterPivot.setGoal(10);
