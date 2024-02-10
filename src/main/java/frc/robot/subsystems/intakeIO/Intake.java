@@ -9,10 +9,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.feederIO.Feeder;
+import frc.robot.subsystems.feederIO.Feeder.FeederState;
 import frc.robot.util.LoggableMotor;
+import frc.robot.util.RumbleManager;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
+  public enum MotionMode {
+    INTAKE_GP,
+    HOLDING_GP,
+    SEND_GP_TO_FEEDER,
+    OUTAKE_GP,
+    OFF
+  }
+
+  @Setter public MotionMode motionMode = MotionMode.OFF;
+
   private final IntakeIO IO;
   private final IntakeInputsAutoLogged inputs;
   private double leftTargetRPM, rightTargetRPM = 0.0;
@@ -33,6 +47,10 @@ public class Intake extends SubsystemBase {
 
   public boolean rightIsAtTarget() {
     return Math.abs(inputs.rightVelocityRPM - rightTargetRPM) < 0.5;
+  }
+
+  public void setRPM(double rpm) {
+    setRPM(rpm, rpm);
   }
 
   public void setRPM(double leftRpm, double rightRPM) {
@@ -72,8 +90,40 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
     Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
-    Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
+
+    Logger.recordOutput("Intake/Mode", motionMode);
+
+    switch (motionMode) {
+      case HOLDING_GP:
+        setRPM(0);
+        break;
+      case INTAKE_GP:
+        setRPM(4000);
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+          RumbleManager.getInstance().setDriver(1, 2);
+        }
+        break;
+      case SEND_GP_TO_FEEDER:
+        setRPM(2000);
+        if (!hasGamepiece()) {
+          motionMode = MotionMode.OFF;
+        }
+        break;
+      case OUTAKE_GP:
+        setRPM(-4000);
+        if (!hasGamepiece()) {
+          motionMode = MotionMode.OFF;
+        }
+        break;
+      case OFF:
+      default:
+        setRPM(0, 0);
+        break;
+    }
+
+    Logger.processInputs("Intake", inputs);
   }
 
   public void setCurrentLimit(int currentLimit) {
@@ -81,6 +131,9 @@ public class Intake extends SubsystemBase {
   }
 
   public static class Commands {
+    public static Command setMotionMode(MotionMode mode) {
+      return new InstantCommand(() -> Robot.intake.setMotionMode(mode));
+    }
 
     public static Command setVelocityRPM(double targetRPM) {
       return new InstantCommand(() -> Robot.intake.setRPM(targetRPM, targetRPM));

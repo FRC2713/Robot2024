@@ -18,17 +18,11 @@ public class IntakeIOSim implements IntakeIO {
           Constants.IntakeConstants.RIGHT_GEARING,
           Constants.IntakeConstants.MOI);
 
-  private Timer intakeIsRunning = new Timer();
-  private boolean intakeHasStarted = false;
-  private final double numSecToObtain = 5;
-
   private double leftVolts;
 
   private double rightVolts;
 
   public IntakeIOSim() {
-    intakeIsRunning.start();
-    intakeIsRunning.stop(); // just so that I can use restart from the get-go
   }
 
   @Override
@@ -62,30 +56,11 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public boolean hasGamepiece() {
-    if (intakeHasStarted && intakeIsRunning.hasElapsed(numSecToObtain)) {
-      intakeIsRunning.stop();
-
-      return true;
-    }
-
     return false;
   }
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-
-    if (!intakeHasStarted && leftVolts > 0) {
-      // start intaking
-      intakeIsRunning.restart();
-      intakeHasStarted = true;
-    }
-
-    if (leftVolts < 0) {
-      // outtaking immediately removes the gamepiece
-      intakeHasStarted = false;
-      intakeIsRunning.stop();
-    }
-
     simLeft.setInputVoltage(leftVolts);
     this.leftVolts = leftVolts;
     simRight.setInputVoltage(-rightVolts);

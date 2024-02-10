@@ -65,5 +65,8 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void setMotorSetPoint(double setpointRPM) {
     shooterController.setSetpoint(setpointRPM);
+    var voltage = shooterController.calculate(setpointRPM);
+    setLeftVoltage(voltage);
+    setRightVoltage(voltage);
   }
 }

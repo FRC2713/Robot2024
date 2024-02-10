@@ -1,16 +1,18 @@
 package frc.robot.subsystems.feederIO;
 
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Constants.RobotMap;
 
 public class FeederIOSparks implements FeederIO {
   CANSparkMax motor;
   double setpoint = 0;
-
+  private TimeOfFlight sensor;
   public FeederIOSparks() {
     motor = new CANSparkMax(RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
     motor.getPIDController().setP(FeederConstants.FEEDER_GAINS.getKP());
@@ -40,5 +42,10 @@ public class FeederIOSparks implements FeederIO {
     inputs.tempCelcius = motor.getMotorTemperature();
     inputs.velocityRPM = motor.getEncoder().getVelocity();
     inputs.positionDeg = Units.rotationsToDegrees(motor.getEncoder().getPosition());
+  }
+
+  @Override
+  public boolean hasGamepiece() {
+    return (sensor.getRange() < Constants.FeederConstants.SENSOR_THRESHOLD);
   }
 }
