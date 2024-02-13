@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAnalogSensor;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.rhr.RHRFeedForward;
@@ -26,7 +25,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   private RHRFeedForward feedforward;
 
   public ShooterPivotIOSparks() {
-    spark = new CANSparkMax(0, MotorType.kBrushless);
+    spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
     analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
 
     spark.restoreFactoryDefaults();

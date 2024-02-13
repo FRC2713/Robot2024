@@ -17,6 +17,7 @@ public class FeederIOSparks implements FeederIO {
     motor = new CANSparkMax(RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
     // motor.getPIDController().setP(FeederConstants.FEEDER_GAINS.getKP());
     // motor.getPIDController().setD(FeederConstants.FEEDER_GAINS.getKD());
+    sensor = new TimeOfFlight(71);
   }
 
   @Override

@@ -49,8 +49,7 @@ public class MotionHandler {
     double ySpeed =
         MathUtil.applyDeadband(-Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
             * speedFactor;
-    double rSpeed =
-        (Robot.driver.getLeftTriggerAxis() - Robot.driver.getRightTriggerAxis()) * speedFactor;
+    double rSpeed = (Robot.driver.getRightX()) * speedFactor;
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         xSpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,
         ySpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,

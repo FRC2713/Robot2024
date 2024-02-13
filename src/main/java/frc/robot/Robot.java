@@ -90,13 +90,13 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
-    shooterPivot = new ShooterPivot(true ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
+    shooterPivot =
+        new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
     feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
-        // isSimulation()
-        true
+        isSimulation()
             ? new SwerveSubsystem(
                 new SwerveIOSim(),
                 new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),

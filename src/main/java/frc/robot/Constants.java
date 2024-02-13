@@ -70,10 +70,11 @@ public final class Constants {
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
     public static final int INTAKE_TOF_SENSOR_ID = 70;
-    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
-    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
+    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 8;
+    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 9;
 
-    public static final int FEEDER_CAN_ID = 7;
+    public static final int FEEDER_CAN_ID = 6;
+    public static final int PIVOT_ID = 5;
 
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
@@ -119,7 +120,7 @@ public final class Constants {
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.6).kD(0).kG(0.85).build();
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
