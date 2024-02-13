@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 
 public class FeederIOSparks implements FeederIO {
@@ -43,10 +42,7 @@ public class FeederIOSparks implements FeederIO {
     inputs.tempCelcius = motor.getMotorTemperature();
     inputs.velocityRPM = motor.getEncoder().getVelocity();
     inputs.positionDeg = Units.rotationsToDegrees(motor.getEncoder().getPosition());
-  }
-
-  @Override
-  public boolean hasGamepiece() {
-    return (sensor.getRange() < Constants.FeederConstants.SENSOR_THRESHOLD);
+    inputs.sensorRange = sensor.getRange();
+    inputs.sensorStatus = sensor.getStatus().name();
   }
 }

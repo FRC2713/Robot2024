@@ -38,16 +38,13 @@ public class FeederIOSim implements FeederIO {
     inputs.tempCelcius = 0;
     inputs.velocityRPM = sim.getAngularVelocityRPM();
     inputs.positionDeg = Units.rotationsToDegrees(sim.getAngularPositionRotations());
+    inputs.sensorRange = 0.0;
+    inputs.sensorStatus = "Short";
   }
 
   @Override
   public void setSetpoint(double setpointRPM) {
     feederController.setSetpoint(setpointRPM);
     this.setpointRPM = setpointRPM;
-  }
-
-  @Override
-  public boolean hasGamepiece() {
-    return false;
   }
 }

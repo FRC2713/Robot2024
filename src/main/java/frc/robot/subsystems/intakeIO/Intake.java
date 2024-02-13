@@ -62,7 +62,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasGamepiece() {
-    return IO.hasGamepiece();
+    return inputs.sensorRange < Constants.IntakeConstants.SENSOR_THRESHOLD;
   }
 
   public void periodic() {
@@ -71,8 +71,6 @@ public class Intake extends SubsystemBase {
     boolean hasGamepiece = hasGamepiece();
     boolean leftIsAtTarget = leftIsAtTarget();
     boolean rightIsAtTarget = rightIsAtTarget();
-
-    Logger.recordOutput("Intake/Sensor Range", this.inputs.sensorRange);
 
     Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
     Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);

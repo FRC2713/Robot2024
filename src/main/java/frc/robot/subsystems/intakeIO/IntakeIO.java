@@ -28,6 +28,4 @@ public interface IntakeIO {
   public void setCurrentLimit(int currentLimit);
 
   public void setVoltage(double leftVolts, double rightVolts);
-
-  public boolean hasGamepiece();
 }
