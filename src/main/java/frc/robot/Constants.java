@@ -59,9 +59,9 @@ public final class Constants {
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
         new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(1));
+        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(15));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0.1));
+        new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
         VisionInfo.builder()
@@ -141,7 +141,7 @@ public final class Constants {
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
         PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
-    public static final double OFFSET = 118.7;
+    public static final double OFFSET = 0;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
   }
