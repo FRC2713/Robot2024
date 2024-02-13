@@ -18,6 +18,7 @@ import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
+import frc.robot.commands.fullRoutines.Week0MobilityChoreo;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -457,6 +458,8 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
     autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
+    autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
+    
   }
 
   public void checkAlliance() {
