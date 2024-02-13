@@ -26,9 +26,9 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   public ShooterPivotIOSparks() {
     spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
-    analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-
     spark.restoreFactoryDefaults();
+
+    analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
     spark.getPIDController().setFeedbackDevice(analogSensor);
 
     spark.setSmartCurrentLimit(20);
@@ -36,9 +36,9 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
           {
-            put(PeriodicFrame.kStatus0, 60);
-            put(PeriodicFrame.kStatus1, 40);
-            put(PeriodicFrame.kStatus2, 40);
+            put(PeriodicFrame.kStatus0, 20);
+            put(PeriodicFrame.kStatus1, 20);
+            put(PeriodicFrame.kStatus2, 20);
             put(PeriodicFrame.kStatus3, 65535);
             put(PeriodicFrame.kStatus4, 65535);
             put(PeriodicFrame.kStatus5, 20);

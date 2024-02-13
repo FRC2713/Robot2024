@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 
 public class FeederIOSparks implements FeederIO {
@@ -15,6 +14,8 @@ public class FeederIOSparks implements FeederIO {
 
   public FeederIOSparks() {
     motor = new CANSparkMax(RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
+    motor.restoreFactoryDefaults();
+
     // motor.getPIDController().setP(FeederConstants.FEEDER_GAINS.getKP());
     // motor.getPIDController().setD(FeederConstants.FEEDER_GAINS.getKD());
     sensor = new TimeOfFlight(71);
@@ -47,6 +48,7 @@ public class FeederIOSparks implements FeederIO {
 
   @Override
   public boolean hasGamepiece() {
-    return (sensor.getRange() < Constants.FeederConstants.SENSOR_THRESHOLD);
+    // return (sensor.getRange() < Constants.FeederConstants.SENSOR_THRESHOLD);
+    return false;
   }
 }

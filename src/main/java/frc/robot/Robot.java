@@ -74,8 +74,6 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
 
-  // TimeOfFlight tof = new TimeOfFlight(70);
-
   @Override
   public void robotInit() {
     Logger.addDataReceiver(new NT4Publisher());
@@ -113,25 +111,14 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    // visionManager =
-    //     new VisionManager(
-    //         new Vision(
-    //             true
-    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-    //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
-    //         new Vision(
-    //             true
-    //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
-
     visionFront =
         new Vision(
-            true
+            isSimulation()
                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
     visionRear =
         new Vision(
-            true
+            isSimulation()
                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 

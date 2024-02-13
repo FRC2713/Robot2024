@@ -262,6 +262,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
+    if (!visionInputs.hasValidTarget) {
+      return;
+    }
+
     double jumpDistance =
         getUsablePose()
             .getTranslation()
@@ -273,9 +277,15 @@ public class SwerveSubsystem extends SubsystemBase {
     //  - We are disabled, OR
     //  - We are within the jump distance
     if (!DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_IN_INCHES) {
+      var stdevs =
+          visionInputs.targetCountFiducials > 1
+              ? LimeLightConstants.POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS
+              : LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.multiplyByRange(1);
 
       poseEstimator.addVisionMeasurement(
-          visionInputs.botPoseBlue.toPose2d(), visionInputs.botPoseBlueTimestamp);
+          visionInputs.botPoseBlue.toPose2d(),
+          visionInputs.botPoseBlueTimestamp,
+          stdevs.toMatrix());
     }
   }
 

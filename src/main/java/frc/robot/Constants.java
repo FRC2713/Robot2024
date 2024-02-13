@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
@@ -41,24 +45,33 @@ public final class Constants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
     public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
 
-    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {}
+    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
+      public PoseEstimatorErrorStDevs multiplyByRange(double range) {
+        return new PoseEstimatorErrorStDevs(this.translationalStDev * range, rotationalStDev);
+      }
+
+      public Matrix<N3, N1> toMatrix() {
+        return VecBuilder.fill(
+            this.translationalStDev, this.translationalStDev, this.rotationalStDev);
+      }
+    }
 
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, 0);
+        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(1, 1);
+        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(1));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, 0.1);
+        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0.1));
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight")
+            .ntTableName("limelight-a")
             .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
     public static VisionInfo REAR_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight-rear")
+            .ntTableName("limelight-b")
             .location(new Transform3d())
             .mountingDirection(MountingDirection.VERTICAL_LL3)
             .build();

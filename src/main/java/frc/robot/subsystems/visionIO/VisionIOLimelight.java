@@ -1,6 +1,5 @@
 package frc.robot.subsystems.visionIO;
 
-import com.alibaba.fastjson.JSON;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -13,7 +12,6 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
-import frc.robot.subsystems.visionIO.LimelightHelpers.LimelightResults;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -148,10 +146,8 @@ public class VisionIOLimelight implements VisionIO {
     inputs.activePipeline = getpipe.get();
     inputs.neuralNetClassId = tclass.get();
 
-    // var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
-    // inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
-
-    var results = JSON.parseObject(json.get(), LimelightResults.class);
+    var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
+    inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
   }
 
   @Override
