@@ -75,6 +75,8 @@ public class Feeder extends SubsystemBase {
         IO.setVoltage(0);
         break;
     }
+
+    Logger.recordOutput("Feeder/Mode", motionMode.name());
   }
 
   public boolean hasGamepiece() {

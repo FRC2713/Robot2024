@@ -27,8 +27,8 @@ public class IntakeIOSparks implements IntakeIO {
     leftMotor.setSmartCurrentLimit(40);
     rightMotor.setSmartCurrentLimit(40);
 
-    rightMotor.setInverted(true);
-    leftMotor.setInverted(false);
+    rightMotor.setInverted(false);
+    leftMotor.setInverted(true);
   }
 
   @Override
@@ -62,7 +62,8 @@ public class IntakeIOSparks implements IntakeIO {
 
   @Override
   public boolean hasGamepiece() {
-    return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    // return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    return false;
   }
 
   @Override

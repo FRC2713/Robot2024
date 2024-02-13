@@ -26,7 +26,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   private ArmFeedforward feedforward;
 
   public ShooterPivotIOSparks() {
-    spark = new CANSparkMax(0, MotorType.kBrushless);
+    spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
     analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
 
     spark.restoreFactoryDefaults();
@@ -56,8 +56,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     pid.setP(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKP());
     pid.setI(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKI());
     pid.setD(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKD());
-
-    spark.burnFlash();
 
     // motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
     feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createArmFeedForward();
