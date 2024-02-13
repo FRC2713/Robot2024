@@ -81,7 +81,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean hasGamepiece() {
-    return (inputs.sensorRange < Constants.FeederConstants.SENSOR_THRESHOLD);
+    return inputs.sensorRange < Constants.FeederConstants.SENSOR_THRESHOLD;
   }
 
   public boolean atTarget() {
