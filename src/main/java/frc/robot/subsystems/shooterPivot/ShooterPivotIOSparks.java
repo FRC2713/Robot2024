@@ -7,10 +7,8 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkPIDController;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
-import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 
@@ -20,10 +18,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   SparkAnalogSensor analogSensor;
 
   private double targetAngle;
-
-  private RHRPIDFFController motorController;
-
-  private ArmFeedforward feedforward;
 
   public ShooterPivotIOSparks() {
     spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
@@ -51,18 +45,14 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     spark.setIdleMode(IdleMode.kBrake);
     spark.setInverted(false);
 
-    // Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(spark.getPIDController());
     SparkPIDController pid = spark.getPIDController();
     pid.setP(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKP());
     pid.setI(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKI());
     pid.setD(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKD());
-
-    // motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
-    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createArmFeedForward();
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs) {
+  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
 
     inputs.absoluteEncoderAdjustedAngle =
         Units.rotationsToDegrees(spark.getEncoder().getPosition());
@@ -78,15 +68,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     inputs.currentDrawOne = spark.getOutputCurrent();
 
     inputs.outputVoltage = spark.getBusVoltage();
-    spark
-        .getPIDController()
-        .setReference(
-            targetAngle,
-            ControlType.kPosition,
-            0,
-            feedforward.calculate(
-                Units.degreesToRadians(inputs.absoluteEncoderAdjustedAngle),
-                Units.degreesToRadians(inputs.velocityDegreesPerSecondOne)));
+    spark.getPIDController().setReference(targetAngle, ControlType.kPosition, 0, ffVolts);
   }
 
   @Override
