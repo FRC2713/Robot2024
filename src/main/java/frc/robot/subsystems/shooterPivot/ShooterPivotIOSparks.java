@@ -64,7 +64,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     inputs.outputVoltage = spark.getAppliedOutput() * RobotController.getBatteryVoltage();
 
     inputs.absoluteEncoderRawPosition = throughBoreEncoder.getPosition();
-    inputs.absoluteEncoderAdjustedAngle = throughBoreEncoder.getPosition() - ShooterPivotConstants.OFFSET;
+    inputs.absoluteEncoderAdjustedAngle =
+        throughBoreEncoder.getPosition() - ShooterPivotConstants.OFFSET;
     inputs.absoluteEncoderVelocity = throughBoreEncoder.getVelocity();
   }
 

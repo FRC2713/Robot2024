@@ -276,7 +276,10 @@ public class SwerveSubsystem extends SubsystemBase {
     // Use the pose if
     //  - We are disabled, OR
     //  - We are within the jump distance
-    if (!DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_IN_INCHES) {
+    boolean shouldUpdatePose =
+        !DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_METERS;
+    Logger.recordOutput("Vision/Should update pose", shouldUpdatePose);
+    if (shouldUpdatePose) {
       var stdevs =
           visionInputs.targetCountFiducials > 1
               ? LimeLightConstants.POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS
@@ -313,7 +316,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/jump_distance", jump_distance);
     if (distCamToTag < Constants.LimeLightConstants.CAMERA_TO_TAG_MAX_DIST_INCHES
         && ((!DriverStation.isEnabled())
-            || jump_distance < Constants.LimeLightConstants.MAX_POSE_JUMP_IN_INCHES)) {
+            || jump_distance < Constants.LimeLightConstants.MAX_POSE_JUMP_METERS)) {
       poseEstimator.addVisionMeasurement(fPose, Timer.getFPGATimestamp() - (fVal[6] / 1000.0));
     }
   }

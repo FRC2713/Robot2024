@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.wpilibj.Timer;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -89,7 +90,7 @@ public class VisionIOLimelight implements VisionIO {
                   Units.degreesToRadians(arr[3]),
                   Units.degreesToRadians(arr[4]),
                   Units.degreesToRadians(arr[5]))),
-          arr[6]);
+          Timer.getFPGATimestamp() - arr[6] / 1000.0);
     }
 
     return new Pair<Pose3d, Double>(
@@ -146,8 +147,10 @@ public class VisionIOLimelight implements VisionIO {
     inputs.activePipeline = getpipe.get();
     inputs.neuralNetClassId = tclass.get();
 
-    var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
-    inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
+    if (inputs.hasValidTarget) {
+      var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
+      inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
+    }
   }
 
   @Override

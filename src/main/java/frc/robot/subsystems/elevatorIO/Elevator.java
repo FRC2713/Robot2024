@@ -14,7 +14,6 @@ import frc.robot.util.AccelerationCalc;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.SuperStructureBuilder;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   /*public final ElevatorIO IO;
@@ -60,11 +59,11 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
 
-    IO.updateInputs(inputs);
+    // IO.updateInputs(inputs);
     // Logger.recordOutput("Elevator/Setpoint Velocity", state.velocity);
-    Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
-    Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
-    Logger.processInputs("Elevator", inputs);
+    // Logger.recordOutput("Elevator/Setpoint Position", this.targetHeight);
+    // Logger.recordOutput("Elevator/isAtTarget", atTargetHeight());
+    // Logger.processInputs("Elevator", inputs);
   }
 
   public boolean atTargetHeight() {

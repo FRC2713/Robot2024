@@ -43,7 +43,7 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+    public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
 
     public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
       public PoseEstimatorErrorStDevs multiplyByRange(double range) {
