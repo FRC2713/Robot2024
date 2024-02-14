@@ -2,7 +2,6 @@ package frc.robot.subsystems.intakeIO;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
@@ -18,18 +17,11 @@ public class IntakeIOSim implements IntakeIO {
           Constants.IntakeConstants.RIGHT_GEARING,
           Constants.IntakeConstants.MOI);
 
-  private Timer intakeIsRunning = new Timer();
-  private boolean intakeHasStarted = false;
-  private final double numSecToObtain = 5;
-
   private double leftVolts;
 
   private double rightVolts;
 
-  public IntakeIOSim() {
-    intakeIsRunning.start();
-    intakeIsRunning.stop(); // just so that I can use restart from the get-go
-  }
+  public IntakeIOSim() {}
 
   @Override
   public void setCurrentLimit(int currentLimit) {
@@ -43,14 +35,12 @@ public class IntakeIOSim implements IntakeIO {
     simRight.update(0.02);
 
     inputs.leftOutputVoltage = MathUtil.clamp(leftVolts, -12, 12);
-    inputs.leftIsOn = Math.abs(simLeft.getAngularVelocityRPM()) > 0.005;
     inputs.leftVelocityRPM = simLeft.getAngularVelocityRPM();
     inputs.leftTempCelcius = 0.0;
     inputs.leftCurrentAmps = simLeft.getCurrentDrawAmps();
     inputs.leftPositionRad = simLeft.getAngularPositionRad();
 
     inputs.rightOutputVoltage = MathUtil.clamp(rightVolts, -12, 12);
-    inputs.rightIsOn = Math.abs(simRight.getAngularVelocityRPM()) > 0.005;
     inputs.rightVelocityRPM = simRight.getAngularVelocityRPM();
     inputs.rightTempCelcius = 0.0;
     inputs.rightCurrentAmps = simRight.getCurrentDrawAmps();
@@ -62,30 +52,11 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public boolean hasGamepiece() {
-    if (intakeHasStarted && intakeIsRunning.hasElapsed(numSecToObtain)) {
-      intakeIsRunning.stop();
-
-      return true;
-    }
-
     return false;
   }
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-
-    if (!intakeHasStarted && leftVolts > 0) {
-      // start intaking
-      intakeIsRunning.restart();
-      intakeHasStarted = true;
-    }
-
-    if (leftVolts < 0) {
-      // outtaking immediately removes the gamepiece
-      intakeHasStarted = false;
-      intakeIsRunning.stop();
-    }
-
     simLeft.setInputVoltage(leftVolts);
     this.leftVolts = leftVolts;
     simRight.setInputVoltage(-rightVolts);

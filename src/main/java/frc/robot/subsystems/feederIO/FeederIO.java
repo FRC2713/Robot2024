@@ -20,4 +20,6 @@ public interface FeederIO {
   public boolean atTarget();
 
   public void updateInputs(FeederInputsAutoLogged inputs);
+
+  public boolean hasGamepiece();
 }

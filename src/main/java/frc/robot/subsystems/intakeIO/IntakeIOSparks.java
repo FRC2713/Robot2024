@@ -4,8 +4,7 @@ import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 
 public class IntakeIOSparks implements IntakeIO {
@@ -27,8 +26,8 @@ public class IntakeIOSparks implements IntakeIO {
     leftMotor.setSmartCurrentLimit(40);
     rightMotor.setSmartCurrentLimit(40);
 
-    rightMotor.setInverted(true);
-    leftMotor.setInverted(false);
+    rightMotor.setInverted(false);
+    leftMotor.setInverted(true);
   }
 
   @Override
@@ -38,31 +37,32 @@ public class IntakeIOSparks implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeInputsAutoLogged inputs) {
-    inputs.leftOutputVoltage = MathUtil.clamp(leftMotor.getAppliedOutput() * 12, -12.0, 12.0);
-    inputs.leftIsOn =
-        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getVelocity()))
-            > 0.005;
+    inputs.leftOutputVoltage = leftMotor.getAppliedOutput() * RobotController.getBatteryVoltage();
+
     inputs.leftVelocityRPM = leftMotor.getEncoder().getVelocity();
     inputs.leftTempCelcius = leftMotor.getMotorTemperature();
     inputs.leftCurrentAmps = leftMotor.getOutputCurrent();
     inputs.leftPositionRad = leftMotor.getEncoder().getPosition() * Math.PI * 2;
 
-    inputs.rightOutputVoltage = MathUtil.clamp(rightMotor.getAppliedOutput() * 12, -12.0, 12.0);
-    inputs.rightIsOn =
-        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(rightMotor.getEncoder().getVelocity()))
-            > 0.005;
+    inputs.rightOutputVoltage = rightMotor.getAppliedOutput() * RobotController.getBatteryVoltage();
+
     inputs.rightVelocityRPM = rightMotor.getEncoder().getVelocity();
     inputs.rightTempCelcius = rightMotor.getMotorTemperature();
     inputs.rightCurrentAmps = rightMotor.getOutputCurrent();
     inputs.rightPositionRad = leftMotor.getEncoder().getPosition() * Math.PI * 2;
 
     inputs.sensorRange = sensor.getRange();
-    inputs.sensorStatus = sensor.getStatus().toString();
+    inputs.sensorStatus = sensor.getStatus().name();
+    inputs.sensorAmbientLightLevel = sensor.getAmbientLightLevel();
+    inputs.sensorRangeStdev = sensor.getRangeSigma();
+    inputs.sensorRangingMode = sensor.getRangingMode().name();
+    inputs.sensorSampleTime = sensor.getSampleTime();
   }
 
   @Override
   public boolean hasGamepiece() {
-    return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    // return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    return false;
   }
 
   @Override

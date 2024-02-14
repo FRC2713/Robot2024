@@ -23,7 +23,5 @@ public interface ShooterIO {
 
   public void setRightVoltage(double voltage);
 
-  // public void setLeftMotorRPMSetPoint(double rPM);
-
-  // public void setRightMotorRPMSetPoint(double rPM);
+  public void setMotorSetPoint(double setpointRPM);
 }

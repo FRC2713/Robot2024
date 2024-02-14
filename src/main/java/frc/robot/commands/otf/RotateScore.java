@@ -9,6 +9,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.util.InterpolatingTreeMap;
@@ -50,13 +51,18 @@ public class RotateScore extends SequentialCommandGroup {
 
   public static Rotation2d getOptimalShooterAngle(Pose2d position, double elevatorHeight) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-    var FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
     Logger.recordOutput(
         "OTF/Offset Speaker Height",
-        speakerLoc.getZ() - FLOOR_TO_ELEVATOR_BASE_METRES - Units.inchesToMeters(elevatorHeight));
+        speakerLoc.getZ()
+            - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
+            - Units.inchesToMeters(elevatorHeight));
     Logger.recordOutput("OTF/DIST", distance);
     return new Rotation2d(
-        Math.atan((speakerLoc.getZ() - FLOOR_TO_ELEVATOR_BASE_METRES - elevatorHeight) / distance));
+        Math.atan(
+            (speakerLoc.getZ()
+                    - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
+                    - elevatorHeight)
+                / distance));
   }
 
   private static InterpolatingTreeMap<Double, Double> heights =

@@ -22,7 +22,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.LENGTH_METERS,
           Units.degreesToRadians(Constants.ShooterPivotConstants.RETRACTED_ANGLE_DEGREES),
           Units.degreesToRadians(Constants.ShooterPivotConstants.MAX_ANGLE_DEGREES),
-          !Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
+          Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
   private double targetAngle;
 
@@ -47,15 +47,16 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
 
     inputs.outputVoltage = this.voltage;
 
-    inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+    inputs.angleDegreesMotor =
+        Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
 
     inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
 
-    inputs.velocityDegreesPerSecondOne = Units.radiansToDegrees(sim.getVelocityRadPerSec());
+    inputs.velocityDegreesPerSecondMotor = Units.radiansToDegrees(sim.getVelocityRadPerSec());
 
-    inputs.tempCelciusOne = 0.0;
+    inputs.tempCelcius = 0.0;
 
-    inputs.currentDrawOne = sim.getCurrentDrawAmps();
+    inputs.currentDraw = sim.getCurrentDrawAmps();
 
     double effort = motorController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
     effort = MathUtil.clamp(effort, -12, 12);

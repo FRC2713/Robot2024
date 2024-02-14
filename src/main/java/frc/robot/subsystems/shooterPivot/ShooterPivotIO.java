@@ -7,12 +7,13 @@ public interface ShooterPivotIO {
   @AutoLog
   public static class ShooterPivotInputs {
     public double outputVoltage = 0.0;
-    public double angleDegreesOne = 0.0;
-    public double velocityDegreesPerSecondOne = 0.0;
-    public double tempCelciusOne = 0.0;
-    public double currentDrawOne = 0.0;
-    public double absoluteEncoderVolts = 0.0;
+    public double angleDegreesMotor = 0.0;
+    public double velocityDegreesPerSecondMotor = 0.0;
+    public double tempCelcius = 0.0;
+    public double currentDraw = 0.0;
     public double absoluteEncoderAdjustedAngle = 0.0;
+    public double absoluteEncoderRawPosition = 0.0;
+    public double absoluteEncoderVelocity = 0.0;
     public double targetAngle = 0.0;
   }
 

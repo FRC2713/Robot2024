@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakeIO;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -9,22 +8,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.util.LoggableMotor;
+import frc.robot.util.RumbleManager;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
+  public enum MotionMode {
+    INTAKE_GP,
+    HOLDING_GP,
+    SEND_GP_TO_FEEDER,
+    OUTAKE_GP,
+    OFF
+  }
+
+  @Setter public MotionMode motionMode = MotionMode.OFF;
+
   private final IntakeIO IO;
   private final IntakeInputsAutoLogged inputs;
   private double leftTargetRPM, rightTargetRPM = 0.0;
-  private LoggableMotor leftMotor, rightMotor;
 
   public Intake(IntakeIO IO) {
     this.inputs = new IntakeInputsAutoLogged();
     IO.updateInputs(inputs);
     this.IO = IO;
-
-    leftMotor = new LoggableMotor("Left intake Roller", DCMotor.getNEO(1));
-    rightMotor = new LoggableMotor("Right intake Roller", DCMotor.getNEO(1));
   }
 
   public boolean leftIsAtTarget() {
@@ -33,6 +39,10 @@ public class Intake extends SubsystemBase {
 
   public boolean rightIsAtTarget() {
     return Math.abs(inputs.rightVelocityRPM - rightTargetRPM) < 0.5;
+  }
+
+  public void setRPM(double rpm) {
+    setRPM(rpm, rpm);
   }
 
   public void setRPM(double leftRpm, double rightRPM) {
@@ -57,8 +67,6 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     IO.updateInputs(inputs);
-    leftMotor.log(inputs.leftCurrentAmps, inputs.leftOutputVoltage);
-    rightMotor.log(inputs.rightCurrentAmps, inputs.rightOutputVoltage);
 
     boolean hasGamepiece = hasGamepiece();
     boolean leftIsAtTarget = leftIsAtTarget();
@@ -72,8 +80,45 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
     Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
-    Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
+
+    Logger.recordOutput("Intake/Mode", motionMode);
+
+    switch (motionMode) {
+      case HOLDING_GP:
+        setRPM(0);
+        break;
+      case INTAKE_GP:
+        // setRPM(4000);
+        IO.setVoltage(6, 6);
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+          RumbleManager.getInstance().setDriver(1, 2);
+        }
+        break;
+      case SEND_GP_TO_FEEDER:
+        // setRPM(2000);
+        IO.setVoltage(5, 5);
+        if (!hasGamepiece()) {
+          motionMode = MotionMode.OFF;
+        }
+        break;
+      case OUTAKE_GP:
+        IO.setVoltage(-6, -6);
+        if (!hasGamepiece()) {
+          motionMode = MotionMode.OFF;
+        }
+        break;
+      case OFF:
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+        }
+      default:
+        IO.setVoltage(0, 0);
+        break;
+    }
+
+    Logger.processInputs("Intake", inputs);
   }
 
   public void setCurrentLimit(int currentLimit) {
@@ -81,6 +126,9 @@ public class Intake extends SubsystemBase {
   }
 
   public static class Commands {
+    public static Command setMotionMode(MotionMode mode) {
+      return new InstantCommand(() -> Robot.intake.setMotionMode(mode));
+    }
 
     public static Command setVelocityRPM(double targetRPM) {
       return new InstantCommand(() -> Robot.intake.setRPM(targetRPM, targetRPM));

@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.REVLibError;
 
 public class SparkConfigurator<T extends CANSparkBase> {
   private T spark;
@@ -13,16 +12,17 @@ public class SparkConfigurator<T extends CANSparkBase> {
 
   public SparkConfigurator<T> setUntilOk(Runnable runnable) {
     n++;
-    do {
-      runnable.run();
-      if (spark.getLastError() != REVLibError.kOk) {
-        System.err.println(
-            String.format(
-                "Spark #%s (n=%s) last error: %s",
-                spark.getDeviceId(), n, spark.getLastError().name()));
-      }
-    } while (spark.getLastError() != REVLibError.kOk);
+    // do {
+    //   runnable.run();
+    //   if (spark.getLastError() != REVLibError.kOk) {
+    //     System.err.println(
+    //         String.format(
+    //             "Spark #%s (n=%s) last error: %s",
+    //             spark.getDeviceId(), n, spark.getLastError().name()));
+    //   }
+    // } while (spark.getLastError() != REVLibError.kOk);
 
+    runnable.run();
     return this;
   }
 }

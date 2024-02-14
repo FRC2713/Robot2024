@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import frc.robot.rhr.RHRPIDFFController;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
 import frc.robot.subsystems.visionIO.VisionInfo;
@@ -40,26 +43,35 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+    public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
 
-    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {}
+    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
+      public PoseEstimatorErrorStDevs multiplyByRange(double range) {
+        return new PoseEstimatorErrorStDevs(this.translationalStDev * range, rotationalStDev);
+      }
+
+      public Matrix<N3, N1> toMatrix() {
+        return VecBuilder.fill(
+            this.translationalStDev, this.translationalStDev, this.rotationalStDev);
+      }
+    }
 
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, 0);
+        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(1, 1);
+        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(15));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, 0.1);
+        new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight")
+            .ntTableName("limelight-a")
             .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
     public static VisionInfo REAR_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight-rear")
+            .ntTableName("limelight-b")
             .location(new Transform3d())
             .mountingDirection(MountingDirection.VERTICAL_LL3)
             .build();
@@ -74,14 +86,15 @@ public final class Constants {
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
 
-    public static final int SHOOTER_LEFT_FLYWHEEL_ID = 4110;
-    public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 4540;
+    public static final int SHOOTER_LEFT_FLYWHEEL_ID = 30;
+    public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
     public static final int INTAKE_TOF_SENSOR_ID = 70;
-    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 5;
-    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 6;
+    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 8;
+    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 9;
 
-    public static final int FEEDER_CAN_ID = 7;
+    public static final int FEEDER_CAN_ID = 6;
+    public static final int PIVOT_ID = 5;
 
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
@@ -112,22 +125,25 @@ public final class Constants {
     public static final double GERING = 1.;
     public static final double MAX_RPM = 5000;
     // TODO: FIX
-    public static final double MOI = 0.001;
+    public static final double MOI = 0.000001;
+    public static final double SENSOR_THRESHOLD = 10;
   }
 
   public static final class ShooterPivotConstants {
     public static final double LENGTH_METERS = Units.inchesToMeters(18);
     public static final double MASS_KG = 6.80389;
-    public static final double MAX_ANGLE_DEGREES = 90;
+    public static final double MAX_ANGLE_DEGREES = 60;
     public static final double RETRACTED_ANGLE_DEGREES = 0;
     public static final boolean SIMULATE_GRAVITY = true;
     public static final double GEARING = 100;
-    public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(45);
+    public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(30);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.6).kD(0).kG(0.85).build();
-    public static final double OFFSET = 118.7;
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
+    public static final double OFFSET = 0;
+    public static final double FEEDING_ANGLE = 30;
+    public static final double SHORT_AUTO_SHOTS = 45;
   }
 
   public static final class ElevatorConstants {
@@ -141,6 +157,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
+    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
   }
 
   public static final class SuperStructure {
@@ -176,14 +193,8 @@ public final class Constants {
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
-    public static final RHRPIDFFController MOTOR_GAINS =
-        PIDFFGains.builder()
-            .name("Shooter Controller")
-            .kP(0.030)
-            .kD(0.0)
-            .kG(0.0)
-            .build()
-            .createRHRController();
+    public static final PIDFFGains SHOOTER_GAINS =
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.0001875).build();
   }
 
   @UtilityClass

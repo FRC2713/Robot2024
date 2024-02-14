@@ -1,6 +1,5 @@
 package frc.robot.subsystems.visionIO;
 
-import com.alibaba.fastjson.JSON;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -13,7 +12,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
-import frc.robot.subsystems.visionIO.LimelightHelpers.LimelightResults;
+import edu.wpi.first.wpilibj.Timer;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -38,44 +37,44 @@ public class VisionIOLimelight implements VisionIO {
     this.info = info;
     table = NetworkTableInstance.getDefault().getTable(info.getNtTableName());
 
-    botPose = table.getDoubleArrayTopic("botpose").subscribe(new double[] {});
-    botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    botPoseWpiRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
-    cameraPoseTargetSpace =
-        table.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
-    targetPoseCameraSpace =
-        table.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
-    targetPoseRobotSpace =
-        table.getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[] {});
-    botPoseTargetSpace =
-        table.getDoubleArrayTopic("botpose_targetspace").subscribe(new double[] {});
-    cameraPoseRobotSpace =
-        table.getDoubleArrayTopic("camerapose_robotspace").subscribe(new double[] {});
-    tc = table.getDoubleArrayTopic("tc").subscribe(new double[] {});
+    // botPose = table.getDoubleArrayTopic("botpose").subscribe(new double[] {});
+    // botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
+    // botPoseWpiRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
+    // cameraPoseTargetSpace =
+    //     table.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
+    // targetPoseCameraSpace =
+    //     table.getDoubleArrayTopic("targetpose_cameraspace").subscribe(new double[] {});
+    // targetPoseRobotSpace =
+    //     table.getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[] {});
+    // botPoseTargetSpace =
+    //     table.getDoubleArrayTopic("botpose_targetspace").subscribe(new double[] {});
+    // cameraPoseRobotSpace =
+    //     table.getDoubleArrayTopic("camerapose_robotspace").subscribe(new double[] {});
+    // tc = table.getDoubleArrayTopic("tc").subscribe(new double[] {});
 
-    aprilTagId = table.getDoubleTopic("tid").subscribe(0);
-    tv = table.getDoubleTopic("tv").subscribe(0);
-    tx = table.getDoubleTopic("tx").subscribe(0);
-    ty = table.getDoubleTopic("ty").subscribe(0);
-    ta = table.getDoubleTopic("ta").subscribe(0);
-    tl = table.getDoubleTopic("tl").subscribe(0);
-    cl = table.getDoubleTopic("cl").subscribe(0);
-    tshort = table.getDoubleTopic("tshort").subscribe(0);
-    tlong = table.getDoubleTopic("tlong").subscribe(0);
-    thor = table.getDoubleTopic("thor").subscribe(0);
-    tvert = table.getDoubleTopic("tvert").subscribe(0);
-    getpipe = table.getDoubleTopic("getpipe").subscribe(0);
-    tclass = table.getDoubleTopic("tclass").subscribe(0);
+    // aprilTagId = table.getDoubleTopic("tid").subscribe(0);
+    // tv = table.getDoubleTopic("tv").subscribe(0);
+    // tx = table.getDoubleTopic("tx").subscribe(0);
+    // ty = table.getDoubleTopic("ty").subscribe(0);
+    // ta = table.getDoubleTopic("ta").subscribe(0);
+    // tl = table.getDoubleTopic("tl").subscribe(0);
+    // cl = table.getDoubleTopic("cl").subscribe(0);
+    // tshort = table.getDoubleTopic("tshort").subscribe(0);
+    // tlong = table.getDoubleTopic("tlong").subscribe(0);
+    // thor = table.getDoubleTopic("thor").subscribe(0);
+    // tvert = table.getDoubleTopic("tvert").subscribe(0);
+    // getpipe = table.getDoubleTopic("getpipe").subscribe(0);
+    // tclass = table.getDoubleTopic("tclass").subscribe(0);
 
-    json = table.getStringTopic("json").subscribe("{}");
+    // json = table.getStringTopic("json").subscribe("{}");
 
-    ledMode = table.getIntegerTopic("ledMode").publish();
-    cameraMode = table.getIntegerTopic("camMode").publish();
-    pipeline = table.getIntegerTopic("pipeline").publish();
-    stream = table.getIntegerTopic("stream").publish();
-    snapshot = table.getIntegerTopic("snapshot").publish();
-    crop = table.getDoubleArrayTopic("crop").publish();
-    cameraPoseRobotSpacePub = table.getDoubleArrayTopic("camerapose_robotspace_set").publish();
+    // ledMode = table.getIntegerTopic("ledMode").publish();
+    // cameraMode = table.getIntegerTopic("camMode").publish();
+    // pipeline = table.getIntegerTopic("pipeline").publish();
+    // stream = table.getIntegerTopic("stream").publish();
+    // snapshot = table.getIntegerTopic("snapshot").publish();
+    // crop = table.getDoubleArrayTopic("crop").publish();
+    // cameraPoseRobotSpacePub = table.getDoubleArrayTopic("camerapose_robotspace_set").publish();
   }
 
   private Pair<Pose3d, Double> timestampedPoseFromLLArray(double[] arr) {
@@ -91,7 +90,7 @@ public class VisionIOLimelight implements VisionIO {
                   Units.degreesToRadians(arr[3]),
                   Units.degreesToRadians(arr[4]),
                   Units.degreesToRadians(arr[5]))),
-          arr[6]);
+          Timer.getFPGATimestamp() - arr[6] / 1000.0);
     }
 
     return new Pair<Pose3d, Double>(
@@ -106,52 +105,53 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    var botPosePair = timestampedPoseFromLLArray(botPose.get());
-    var botPoseBluePair = timestampedPoseFromLLArray(botPoseWpiBlue.get());
-    var botPoseRedPair = timestampedPoseFromLLArray(botPoseWpiRed.get());
-    var cameraPoseInTargetSpacePair = timestampedPoseFromLLArray(cameraPoseTargetSpace.get());
-    var targetPoseInCameraSpacePair = timestampedPoseFromLLArray(targetPoseCameraSpace.get());
-    var targetPoseInRobotSpacePair = timestampedPoseFromLLArray(targetPoseRobotSpace.get());
-    var botPoseInTargetSpacePair = timestampedPoseFromLLArray(botPoseTargetSpace.get());
-    var cameraPoseInRobotSpacePair = timestampedPoseFromLLArray(cameraPoseRobotSpace.get());
+    // var botPosePair = timestampedPoseFromLLArray(botPose.get());
+    // var botPoseBluePair = timestampedPoseFromLLArray(botPoseWpiBlue.get());
+    // inputs.botPoseBlue = botPoseBluePair.getFirst();
 
-    inputs.botPose = botPosePair.getFirst();
+    // var botPoseRedPair = timestampedPoseFromLLArray(botPoseWpiRed.get());
+    // var cameraPoseInTargetSpacePair = timestampedPoseFromLLArray(cameraPoseTargetSpace.get());
+    // var targetPoseInCameraSpacePair = timestampedPoseFromLLArray(targetPoseCameraSpace.get());
+    // var targetPoseInRobotSpacePair = timestampedPoseFromLLArray(targetPoseRobotSpace.get());
+    // var botPoseInTargetSpacePair = timestampedPoseFromLLArray(botPoseTargetSpace.get());
+    // var cameraPoseInRobotSpacePair = timestampedPoseFromLLArray(cameraPoseRobotSpace.get());
+
+    // inputs.botPose = botPosePair.getFirst();
+    // inputs.botPoseRed = botPoseRedPair.getFirst();
+    // inputs.cameraPoseInTargetSpace = cameraPoseInTargetSpacePair.getFirst();
+    // inputs.targetPoseInCameraSpace = targetPoseInCameraSpacePair.getFirst();
+    // inputs.targetPoseInRobotSpace = targetPoseInRobotSpacePair.getFirst();
+    // inputs.botPoseInTargetSpace = botPoseInTargetSpacePair.getFirst();
+    // inputs.cameraPoseInRobotSpace = cameraPoseInRobotSpacePair.getFirst();
+    // inputs.botPoseTimestamp = botPosePair.getSecond();
+    // inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
+    // inputs.botPoseRedTimestamp = botPoseRedPair.getSecond();
+    // inputs.cameraPoseInTargetSpaceTimestamp = cameraPoseInTargetSpacePair.getSecond();
+    // inputs.targetPoseInCameraSpaceTimestamp = targetPoseInCameraSpacePair.getSecond();
+    // inputs.targetPoseInRobotSpaceTimestamp = targetPoseInRobotSpacePair.getSecond();
+    // inputs.botPoseInTargetSpaceTimestamp = botPoseInTargetSpacePair.getSecond();
+    // inputs.cameraPoseInRobotSpaceTimestamp = cameraPoseInRobotSpacePair.getSecond();
+
+    // inputs.averageHsvColor = tc.get();
+    // inputs.aprilTagId = aprilTagId.get();
+    // inputs.hasValidTarget = tv.get() == 1;
+    // inputs.horizontalOffsetFromTarget = tx.get();
+    // inputs.verticalOffsetFromTarget = ty.get();
+    // inputs.targetArea = ta.get();
+    // inputs.pipelineLatency = tl.get();
+    // inputs.captureLatency = cl.get();
+    // inputs.totalLatency = inputs.pipelineLatency + inputs.captureLatency;
+    // inputs.shortestBoundingBoxSidelength = tshort.get();
+    // inputs.longestBoundingBoxSideLength = tlong.get();
+    // inputs.horizontalBoundingBoxSideLength = thor.get();
+    // inputs.verticalBoundingBoxSideLength = tvert.get();
+    // inputs.activePipeline = getpipe.get();
+    // inputs.neuralNetClassId = tclass.get();
+
+    var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
+    var botPoseBluePair = timestampedPoseFromLLArray(jsonResults.targetingResults.botpose_wpiblue);
     inputs.botPoseBlue = botPoseBluePair.getFirst();
-    inputs.botPoseRed = botPoseRedPair.getFirst();
-    inputs.cameraPoseInTargetSpace = cameraPoseInTargetSpacePair.getFirst();
-    inputs.targetPoseInCameraSpace = targetPoseInCameraSpacePair.getFirst();
-    inputs.targetPoseInRobotSpace = targetPoseInRobotSpacePair.getFirst();
-    inputs.botPoseInTargetSpace = botPoseInTargetSpacePair.getFirst();
-    inputs.cameraPoseInRobotSpace = cameraPoseInRobotSpacePair.getFirst();
-    inputs.botPoseTimestamp = botPosePair.getSecond();
     inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
-    inputs.botPoseRedTimestamp = botPoseRedPair.getSecond();
-    inputs.cameraPoseInTargetSpaceTimestamp = cameraPoseInTargetSpacePair.getSecond();
-    inputs.targetPoseInCameraSpaceTimestamp = targetPoseInCameraSpacePair.getSecond();
-    inputs.targetPoseInRobotSpaceTimestamp = targetPoseInRobotSpacePair.getSecond();
-    inputs.botPoseInTargetSpaceTimestamp = botPoseInTargetSpacePair.getSecond();
-    inputs.cameraPoseInRobotSpaceTimestamp = cameraPoseInRobotSpacePair.getSecond();
-
-    inputs.averageHsvColor = tc.get();
-    inputs.aprilTagId = aprilTagId.get();
-    inputs.hasValidTarget = tv.get() == 1;
-    inputs.horizontalOffsetFromTarget = tx.get();
-    inputs.verticalOffsetFromTarget = ty.get();
-    inputs.targetArea = ta.get();
-    inputs.pipelineLatency = tl.get();
-    inputs.captureLatency = cl.get();
-    inputs.totalLatency = inputs.pipelineLatency + inputs.captureLatency;
-    inputs.shortestBoundingBoxSidelength = tshort.get();
-    inputs.longestBoundingBoxSideLength = tlong.get();
-    inputs.horizontalBoundingBoxSideLength = thor.get();
-    inputs.verticalBoundingBoxSideLength = tvert.get();
-    inputs.activePipeline = getpipe.get();
-    inputs.neuralNetClassId = tclass.get();
-
-    // var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
-    // inputs.targetCountFiducials = jsonResults.targetingResults.targets_Fiducials.length;
-
-    var results = JSON.parseObject(json.get(), LimelightResults.class);
   }
 
   @Override

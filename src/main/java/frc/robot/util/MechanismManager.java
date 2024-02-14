@@ -49,8 +49,8 @@ public class MechanismManager {
   }
 
   public void periodic() {
-    shooterPivot.setPosition(5, 5 + Units.inchesToMeters(Robot.elevator.getCurrentHeight()));
-    shooter.setAngle(Robot.shooterPivot.getCurrentAngle());
+    // shooterPivot.setPosition(5, 5 + Units.inchesToMeters(Robot.elevator.getCurrentHeight()));
+    // shooter.setAngle(Robot.shooterPivot.getCurrentAngle());
   }
 }
 

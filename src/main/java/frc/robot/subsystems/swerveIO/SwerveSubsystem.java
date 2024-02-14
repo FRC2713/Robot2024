@@ -262,6 +262,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
+    if (!visionInputs.hasValidTarget) {
+      return;
+    }
+
     double jumpDistance =
         getUsablePose()
             .getTranslation()
@@ -272,10 +276,19 @@ public class SwerveSubsystem extends SubsystemBase {
     // Use the pose if
     //  - We are disabled, OR
     //  - We are within the jump distance
-    if (!DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_IN_INCHES) {
+    boolean shouldUpdatePose =
+        !DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_METERS;
+    Logger.recordOutput("Vision/Should update pose", shouldUpdatePose);
+    if (shouldUpdatePose) {
+      var stdevs =
+          visionInputs.targetCountFiducials > 1
+              ? LimeLightConstants.POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS
+              : LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.multiplyByRange(1);
 
       poseEstimator.addVisionMeasurement(
-          visionInputs.botPoseBlue.toPose2d(), visionInputs.botPoseBlueTimestamp);
+          visionInputs.botPoseBlue.toPose2d(),
+          visionInputs.botPoseBlueTimestamp,
+          stdevs.toMatrix());
     }
   }
 
@@ -303,7 +316,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/jump_distance", jump_distance);
     if (distCamToTag < Constants.LimeLightConstants.CAMERA_TO_TAG_MAX_DIST_INCHES
         && ((!DriverStation.isEnabled())
-            || jump_distance < Constants.LimeLightConstants.MAX_POSE_JUMP_IN_INCHES)) {
+            || jump_distance < Constants.LimeLightConstants.MAX_POSE_JUMP_METERS)) {
       poseEstimator.addVisionMeasurement(fPose, Timer.getFPGATimestamp() - (fVal[6] / 1000.0));
     }
   }
@@ -439,10 +452,12 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public static class Commands {
-    public ChoreoControlFunction modifiedChoreoSwerveController(
+    public static ErrorTracker errorTracker;
+
+    public static ChoreoControlFunction modifiedChoreoSwerveController(
         PIDController xController, PIDController yController, PIDController rotationController) {
       rotationController.enableContinuousInput(-Math.PI, Math.PI);
-      ErrorTracker errorTracker =
+      Commands.errorTracker =
           new ErrorTracker(
               10,
               PIDFFGains.fromPIDGains(xController),
@@ -498,7 +513,7 @@ public class SwerveSubsystem extends SubsystemBase {
           () -> Robot.swerveDrive.resetOdometry(p.getPreviewStartingHolonomicPose()));
     }
 
-    public Command choreoCommandBuilder(ChoreoTrajectory traj) {
+    public static Command choreoCommandBuilder(ChoreoTrajectory traj) {
       var alliance = DriverStation.getAlliance();
       boolean useAllianceColour = false;
       if (alliance.isPresent()) {
