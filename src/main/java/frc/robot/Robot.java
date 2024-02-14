@@ -22,7 +22,6 @@ import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
-import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.subsystems.feederIO.FeederIOSim;
 import frc.robot.subsystems.feederIO.FeederIOSparks;
@@ -89,7 +88,7 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(true ? new ElevatorIOSim() : null);
+    // elevator = new Elevator(true ? new ElevatorIOSim() : null);
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
@@ -122,7 +121,7 @@ public class Robot extends LoggedRobot {
                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
-    mechManager = new MechanismManager();
+    // mechManager = new MechanismManager();
 
     checkAlliance();
     buildAutoChooser();
@@ -338,7 +337,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // ErrHandler.getInstance().log();
     // RumbleManager.getInstance().periodic();
-    mechManager.periodic();
+    // mechManager.periodic();
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
@@ -354,7 +353,6 @@ public class Robot extends LoggedRobot {
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
     swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
-
     swerveDrive.updateOdometryFromVision(visionRear.getInfo(), visionRear.getInputs());
   }
 
@@ -372,7 +370,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     checkAlliance();
 
-    swerveDrive.seed();
+    // swerveDrive.seed();
   }
 
   @Override
