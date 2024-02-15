@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -52,6 +53,7 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Audio.BeepOnBoot = false;
     config.Audio.BeepOnConfig = false;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     RedHawkUtil.applyConfigs(drive, config);
 
     azimuthEncoder = new OffsetAbsoluteAnalogEncoder(info.getAziEncoderCANId(), info.getOffset());
@@ -79,13 +81,13 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
       azimuth.setInverted(true);
     }
 
-    cOk(azimuth.setIdleMode(IdleMode.kBrake));
+    cOk(azimuth.setIdleMode(IdleMode.kCoast));
 
     cOk(getAziEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0));
     cOk(getAziEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
     new SparkConfigurator<>(azimuth)
-        .setUntilOk(() -> azimuth.setIdleMode(IdleMode.kBrake))
+        .setUntilOk(() -> azimuth.setIdleMode(IdleMode.kCoast))
         .setUntilOk(() -> azimuth.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
         .setUntilOk(() -> azimuth.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
 
@@ -105,7 +107,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
 
   @Override
   public void updateInputs(SwerveModuleInputs inputs) {
-    inputs.driveCurrentDrawAmps = drive.getStatorCurrent().getValue();
+    inputs.driveCurrentDrawStator = drive.getStatorCurrent().getValue();
+    inputs.driveCurrentDrawSupply = drive.getSupplyCurrent().getValue();
     inputs.driveEncoderPositionMetres =
         drive.getPosition().getValue() * Constants.DriveConstants.DIST_PER_PULSE;
     inputs.driveEncoderVelocityMetresPerSecond =

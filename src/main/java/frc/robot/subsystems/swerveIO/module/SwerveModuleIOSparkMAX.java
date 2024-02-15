@@ -137,7 +137,7 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
     inputs.driveEncoderPositionMetres = getDriveEncoder().getPosition();
     inputs.driveEncoderVelocityMetresPerSecond = getDriveEncoder().getVelocity();
     inputs.driveOutputVolts = driver.getAppliedOutput() * RobotController.getBatteryVoltage();
-    inputs.driveCurrentDrawAmps = driver.getOutputCurrent();
+    inputs.driveCurrentDrawStator = driver.getOutputCurrent();
     inputs.driveTempCelcius = driver.getMotorTemperature();
   }
 

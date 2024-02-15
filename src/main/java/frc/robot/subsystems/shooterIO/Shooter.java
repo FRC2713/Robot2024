@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.util.SuperStructureBuilder;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -41,9 +40,9 @@ public class Shooter extends SubsystemBase {
         break;
       case FENDER_SHOT_CLOSED_LOOP:
         setFlyWheelTargetRPM(3500);
-        if (isAtTarget()) {
-          Robot.feeder.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER);
-        }
+        // if (isAtTarget()) {
+        //   Robot.feeder.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER);
+        // }
         break;
       case VELOCITY_CLOSED_LOOP:
         break;

@@ -61,8 +61,7 @@ public class IntakeIOSparks implements IntakeIO {
 
   @Override
   public boolean hasGamepiece() {
-    // return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
-    return false;
+    return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
   }
 
   @Override

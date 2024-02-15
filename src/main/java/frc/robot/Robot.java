@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
@@ -124,6 +125,7 @@ public class Robot extends LoggedRobot {
     // mechManager = new MechanismManager();
 
     checkAlliance();
+
     buildAutoChooser();
 
     driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
@@ -131,26 +133,39 @@ public class Robot extends LoggedRobot {
     // driver
     //     .leftTrigger(0.1)
     //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
-    driver.leftTrigger(0.1).onTrue(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP));
+    // driver.leftTrigger(0.1).onTrue(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP));
     // driver
     //     .leftTrigger(0.1)
     //     .onFalse(
     //         Commands.sequence(
     //             ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.CLOSED_LOOP),
     //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
-    driver
-        .leftTrigger(0.1)
-        .onFalse(
-            Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
+    // driver
+    //     .leftTrigger(0.1)
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
     driver
         .rightBumper()
-        .onTrue(Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP));
-    driver.rightBumper().onFalse(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF));
+        .onTrue(
+            Commands.sequence(
+                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+                new WaitUntilCommand(shooter::isAtTarget),
+                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)));
+    driver
+        .rightBumper()
+        .onFalse(
+            Commands.sequence(
+                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    driver.povUp().onTrue(ShooterPivot.Commands.setTargetAndWait(60));
-    driver.povDown().onTrue(ShooterPivot.Commands.setTargetAndWait(0));
+    // driver
+    //     .povUp()
+    //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.SHORT_AUTO_SHOTS));
+    // driver.povDown().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.OFF));
 
     // driver
     // .a()

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.util.RumbleManager;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
@@ -90,18 +89,18 @@ public class Intake extends SubsystemBase {
         break;
       case INTAKE_GP:
         // setRPM(4000);
-        IO.setVoltage(6, 6);
+        IO.setVoltage(10, 10);
         if (hasGamepiece()) {
           motionMode = MotionMode.HOLDING_GP;
-          RumbleManager.getInstance().setDriver(1, 2);
+          // RumbleManager.getInstance().setDriver(1, 2);
         }
         break;
       case SEND_GP_TO_FEEDER:
         // setRPM(2000);
         IO.setVoltage(5, 5);
-        if (!hasGamepiece()) {
-          motionMode = MotionMode.OFF;
-        }
+        // if (!hasGamepiece()) {
+        //   motionMode = MotionMode.OFF;
+        // }
         break;
       case OUTAKE_GP:
         IO.setVoltage(-6, -6);

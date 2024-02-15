@@ -61,10 +61,10 @@ public class Feeder extends SubsystemBase {
         break;
       case SEND_TO_SHOOTER:
         // setTarget(2000);
-        IO.setVoltage(6);
-        if (!hasGamepiece()) {
-          motionMode = MotionMode.OFF;
-        }
+        IO.setVoltage(12);
+        // if (!hasGamepiece()) {
+        //   motionMode = MotionMode.OFF;
+        // }
         break;
       case OFF:
         if (hasGamepiece()) {

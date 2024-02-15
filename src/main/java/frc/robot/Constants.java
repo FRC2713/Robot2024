@@ -96,17 +96,17 @@ public final class Constants {
     public static final int FEEDER_CAN_ID = 6;
     public static final int PIVOT_ID = 5;
 
-    public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
-    public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
+    public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 4;
+    public static final int FRONT_LEFT_DRIVE_CAN_ID = 44;
 
-    public static final int FRONT_RIGHT_DRIVE_CAN_ID = 42;
-    public static final int FRONT_RIGHT_AZIMUTH_CAN_ID = 2;
+    public static final int FRONT_RIGHT_DRIVE_CAN_ID = 43;
+    public static final int FRONT_RIGHT_AZIMUTH_CAN_ID = 3;
 
-    public static final int BACK_LEFT_DRIVE_CAN_ID = 43;
-    public static final int BACK_LEFT_AZIMUTH_CAN_ID = 3;
+    public static final int BACK_LEFT_DRIVE_CAN_ID = 42;
+    public static final int BACK_LEFT_AZIMUTH_CAN_ID = 2;
 
-    public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
-    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
+    public static final int BACK_RIGHT_DRIVE_CAN_ID = 41;
+    public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 1;
   }
 
   public static final class IntakeConstants {
@@ -114,7 +114,7 @@ public final class Constants {
     public static final double LEFT_GEARING = 5.0;
     public static final double RIGHT_GEARING = 5.0;
 
-    public static final double SENSOR_THRESHOLD = 10;
+    public static final double SENSOR_THRESHOLD = 250;
     public static final double MAX_RPM = 5000;
   }
 
@@ -141,7 +141,7 @@ public final class Constants {
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
         PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
-    public static final double OFFSET = 0;
+    public static final double OFFSET = -12.7 - 11;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
   }
@@ -258,8 +258,8 @@ public final class Constants {
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
             .driveCANId(RobotMap.FRONT_LEFT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.FRONT_LEFT_AZIMUTH_CAN_ID)
-            .aziEncoderCANId(0)
-            .offset(0.4711362627767633)
+            .aziEncoderCANId(3)
+            .offset(0.313)
             .location(FRONT_LEFT_LOCATION)
             .build();
 
@@ -270,8 +270,8 @@ public final class Constants {
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
             .driveCANId(RobotMap.FRONT_RIGHT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.FRONT_RIGHT_AZIMUTH_CAN_ID)
-            .aziEncoderCANId(1)
-            .offset(0.280788243336548)
+            .aziEncoderCANId(2)
+            .offset(0.215)
             .location(FRONT_RIGHT_LOCATION)
             .build();
 
@@ -282,8 +282,8 @@ public final class Constants {
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
             .driveCANId(RobotMap.BACK_LEFT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.BACK_LEFT_AZIMUTH_CAN_ID)
-            .aziEncoderCANId(2)
-            .offset(0.7232726445483575)
+            .aziEncoderCANId(1)
+            .offset(0.78)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -294,8 +294,8 @@ public final class Constants {
             .azimuthGains(Constants.DriveConstants.Gains.K_DEFAULT_AZIMUTH_GAINS)
             .driveCANId(RobotMap.BACK_RIGHT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.BACK_RIGHT_AZIMUTH_CAN_ID)
-            .aziEncoderCANId(3)
-            .offset(0.8124671353331704)
+            .aziEncoderCANId(0)
+            .offset(0.9643718722413558)
             .location(BACK_RIGHT_LOCATION)
             .build();
 
@@ -318,10 +318,10 @@ public final class Constants {
           PIDFFGains.builder()
               .name("Swerve/Defaults/Driving")
               // 0.25
-              .kP(0.01)
+              // .kP(0.01)
               // 0.225
-              .kS(0)
-              // 0.114
+              .kS(0.09)
+              // 0.11
               .kV(0.11)
               .build();
       // .buildTunables();

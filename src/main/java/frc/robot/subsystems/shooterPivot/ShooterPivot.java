@@ -10,7 +10,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.feederIO.Feeder;
-import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.util.SuperStructureBuilder;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,7 +21,7 @@ public class ShooterPivot extends SubsystemBase {
     SHORT_AUTO_SHOTS
   }
 
-  public MotionMode mode;
+  public MotionMode mode = MotionMode.SHORT_AUTO_SHOTS;
 
   public final ShooterPivotInputsAutoLogged inputs;
   private final ShooterPivotIO IO;
@@ -32,7 +31,7 @@ public class ShooterPivot extends SubsystemBase {
     this.inputs = new ShooterPivotInputsAutoLogged();
     this.IO = IO;
     this.IO.updateInputs(inputs);
-    mode = MotionMode.CLOSED_LOOP;
+    mode = MotionMode.SHORT_AUTO_SHOTS;
   }
 
   public void setTargetAngle(double angleInDegrees) {
@@ -54,9 +53,6 @@ public class ShooterPivot extends SubsystemBase {
     switch (mode) {
       case SHORT_AUTO_SHOTS:
         setTargetAngle((ShooterPivotConstants.SHORT_AUTO_SHOTS));
-        if (isAtTargetAngle()) {
-          Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP);
-        }
         break;
       case CLOSED_LOOP:
         setTargetAngle((this.targetDegs));
@@ -84,10 +80,6 @@ public class ShooterPivot extends SubsystemBase {
 
   public double getCurrentAngle() {
     return this.inputs.absoluteEncoderAdjustedAngle;
-  }
-
-  public void setGoal(double goal) {
-    this.targetDegs = goal;
   }
 
   public static class Commands {

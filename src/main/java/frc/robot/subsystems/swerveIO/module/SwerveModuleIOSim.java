@@ -69,7 +69,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     inputs.driveEncoderVelocityMetresPerSecond =
         driveSim.getAngularVelocityRPM() * Math.PI * Units.inchesToMeters(4) / 60;
     inputs.driveOutputVolts = MathUtil.clamp(theDriveVolts, -12.0, 12.0);
-    inputs.driveCurrentDrawAmps = driveSim.getCurrentDrawAmps();
+    inputs.driveCurrentDrawStator = driveSim.getCurrentDrawAmps();
     inputs.driveTempCelcius = 0.0;
   }
 

@@ -68,11 +68,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getDriveCurrentDraw() {
-    return inputs.driveCurrentDrawAmps;
+    return inputs.driveCurrentDrawStator;
   }
 
   public double getTotalCurrentDraw() {
-    return inputs.driveCurrentDrawAmps + inputs.aziCurrentDrawAmps;
+    return inputs.driveCurrentDrawStator + inputs.aziCurrentDrawAmps;
   }
 
   // Only used to characterize the drive

@@ -12,13 +12,12 @@ import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   CANSparkMax spark;
   SparkAbsoluteEncoder throughBoreEncoder;
-
-  private double targetAngle;
 
   public ShooterPivotIOSparks() {
     spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
@@ -29,11 +28,13 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     throughBoreEncoder = spark.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     spark.getPIDController().setFeedbackDevice(throughBoreEncoder);
+    spark.getPIDController().setP(0.05);
 
     throughBoreEncoder.setPositionConversionFactor(360.0 / (80.0 / 20.0));
     throughBoreEncoder.setVelocityConversionFactor(360.0 / (80.0 / 20.0));
 
     spark.setSmartCurrentLimit(20);
+    spark.setIdleMode(IdleMode.kBrake);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
@@ -49,7 +50,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
         },
         spark);
 
-    spark.setIdleMode(IdleMode.kCoast);
     spark.setInverted(false);
   }
 
@@ -60,19 +60,19 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
         Units.radiansToDegrees(
             Units.rotationsPerMinuteToRadiansPerSecond(spark.getEncoder().getVelocity()));
     inputs.tempCelcius = spark.getMotorTemperature();
-    inputs.currentDraw = spark.getOutputCurrent();
     inputs.outputVoltage = spark.getAppliedOutput() * RobotController.getBatteryVoltage();
 
     inputs.absoluteEncoderRawPosition = throughBoreEncoder.getPosition();
     inputs.absoluteEncoderAdjustedAngle =
-        throughBoreEncoder.getPosition() - ShooterPivotConstants.OFFSET;
+        throughBoreEncoder.getPosition() + ShooterPivotConstants.OFFSET;
     inputs.absoluteEncoderVelocity = throughBoreEncoder.getVelocity();
+    inputs.currentDraw = spark.getOutputCurrent();
   }
 
   @Override
   public void reseedPosition(double angleDeg) {
-    double trueAngle = angleDeg - Constants.ShooterPivotConstants.OFFSET;
-    spark.getEncoder().setPosition(trueAngle);
+    // double trueAngle = angleDeg + Constants.ShooterPivotConstants.OFFSET;
+    // spark.getEncoder().setPosition(trueAngle);
   }
 
   @Override
@@ -82,7 +82,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   @Override
   public void setTargetPosition(double angleDeg) {
-    this.targetAngle = angleDeg;
-    this.spark.getPIDController().setReference(angleDeg, ControlType.kPosition);
+    angleDeg = angleDeg - Constants.ShooterPivotConstants.OFFSET;
+    Logger.recordOutput("ShooterPivot/Offset Target", angleDeg);
+    spark.getPIDController().setReference(angleDeg, ControlType.kPosition);
   }
 }

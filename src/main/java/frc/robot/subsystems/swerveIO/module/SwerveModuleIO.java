@@ -19,7 +19,8 @@ public interface SwerveModuleIO {
     public double driveEncoderPositionMetres = 0.0;
     public double driveEncoderVelocityMetresPerSecond = 0.0;
     public double driveOutputVolts = 0.0;
-    public double driveCurrentDrawAmps = 0.0;
+    public double driveCurrentDrawSupply = 0.0;
+    public double driveCurrentDrawStator = 0.0;
     public double driveTempCelcius = 0.0;
   }
 
