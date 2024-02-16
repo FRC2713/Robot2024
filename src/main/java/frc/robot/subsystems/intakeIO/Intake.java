@@ -104,9 +104,9 @@ public class Intake extends SubsystemBase {
         break;
       case OUTAKE_GP:
         IO.setVoltage(-6, -6);
-        if (!hasGamepiece()) {
-          motionMode = MotionMode.OFF;
-        }
+        // if (!hasGamepiece()) {
+        // motionMode = MotionMode.OFF;
+        // }
         break;
       case OFF:
         if (hasGamepiece()) {

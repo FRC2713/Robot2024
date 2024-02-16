@@ -18,6 +18,7 @@ import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
+import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
 import frc.robot.commands.fullRoutines.ThreePiece;
 import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
@@ -128,223 +129,29 @@ public class Robot extends LoggedRobot {
 
     buildAutoChooser();
 
-    driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
-    driver.leftBumper().onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
-    // driver
-    //     .leftTrigger(0.1)
-    //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
-    // driver.leftTrigger(0.1).onTrue(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP));
-    // driver
-    //     .leftTrigger(0.1)
-    //     .onFalse(
-    //         Commands.sequence(
-    //             ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.CLOSED_LOOP),
-    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
-    // driver
-    //     .leftTrigger(0.1)
-    //     .onFalse(
-    //         Commands.sequence(
-    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
-    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
     driver
         .rightBumper()
+        .onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP))
+        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+
+    driver
+        .rightTrigger(0.5)
         .onTrue(
             Commands.sequence(
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
                 new WaitUntilCommand(shooter::isAtTarget),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
-                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)));
-    driver
-        .rightBumper()
+                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
         .onFalse(
             Commands.sequence(
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
                 Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    // driver
-    //     .povUp()
-    //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.SHORT_AUTO_SHOTS));
-    // driver.povDown().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.OFF));
-
-    // driver
-    // .a()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // otf.followPath(OTFOptions.SPEAKER_MOTION).schedule();
-    // }))
-    // .whileTrue(
-    // new RepeatCommand(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-    // otf.regenerateTraj().schedule();
-    // })));
-
-    // driver
-    // .a()
-    // .onFalse(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-    // otf.printErrorSummary();
-    // otf.cancelCommand();
-    // }));
-
-    // driver
-    // .b()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // otf.followPath(OTFOptions.AMP_STATIC).schedule();
-    // }))
-    // .whileTrue(
-    // new RepeatCommand(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
-    // otf.regenerateTraj().schedule();
-    // })));
-
-    // driver
-    // .b()
-    // .onFalse(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-    // otf.printErrorSummary();
-    // otf.cancelCommand();
-    // }));
-
-    // driver
-    //     .y()
-    //     .onTrue(
-    //         new SequentialCommandGroup(
-    //             new InstantCommand(() ->
-    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER)),
-    //             RotateScore.optimalShoot()));
-
-    // driver
-    //     .y()
-    //     .onFalse(
-    //         new InstantCommand(
-    //             () -> {
-    //               swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-    //             }));
-    // driver
-    // .povUp()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(0));
-    // }));
-
-    // driver
-    // .povLeft()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(90));
-    // }));
-
-    // driver
-    // .povDown()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(180));
-    // }));
-
-    // driver
-    // .povRight()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-    // SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(270));
-    // }));
-
-    // driver
-    // .x()
-    // .onTrue(
-    // new InstantCommand(
-    // () -> {
-    // swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
-    // }));
-
-    // driver
-    //     .start()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () -> {
-    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-    //             }));
-
-    // driver
-    //     .back()
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () -> {
-    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-    //             }));
-
-    // if (!Robot.isReal()) {
-    //   DriverStation.silenceJoystickConnectionWarning(true);
-    // }
-
-    // operator.a().whileTrue(Constants.SuperStructure.SCORE_LOW.run());
-    // operator.y().whileTrue(Constants.SuperStructure.SCORE_HIGH.run());
-    // operator.x().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
-    // operator.b().whileTrue(Constants.SuperStructure.SCORE_MIDDLE.run());
-    // operator
-    // .a()
-    // .whileTrue(
-    // new InstantCommand(
-    // () -> {
-    // elevator.setTargetHeight(20);
-    // }));
-
-    // driver
-    //     .a()
-    //     .onTrue(Commands.sequence(Feeder.Commands.setMotionMode(Feeder.MotionMode.INTAKE_GP)));
-    // driver.a().onFalse(Commands.sequence(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF)));
-
-    // driver
-    //     .leftBumper()
-    //     .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)));
-
-    // driver
-    //     .rightBumper()
-    //     .onTrue(Intake.Commands.setVelocityRPM(-5000))
-    //     .onFalse(Intake.Commands.setVelocityRPM(0));
-
-    // driver.povUp().onTrue(Feeder.Commands.setToVelocity(4000));
-    // driver.povDown().onTrue(Feeder.Commands.setToVelocity(0));
-    // driver.povLeft().onTrue(Feeder.Commands.setToVelocity(-4000));
-    // driver.povLeft().onFalse(Feeder.Commands.setToVelocity(0));
-    // operator
-    //     .a()
-    //     .whileTrue(
-    //         new InstantCommand(
-    //             () -> {
-    //               shooterPivot.setGoal(0);
-    //               elevator.setTargetHeight(0);
-    //             }));
-
-    // operator
-    //     .y()
-    //     .onTrue(
-    //         new SequentialCommandGroup(
-    //             ShooterPivot.Commands.setTargetAndWait(20),
-    //             Elevator.Commands.setToHeightAndWait(20)));
-
-    // operator.a().whileTrue(autoCommand)
-
-    // shooterPivot.setGoal(10);
+    driver
+        .leftBumper()
+        .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
+        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
   }
 
   @Override
@@ -441,12 +248,11 @@ public class Robot extends LoggedRobot {
   public void buildAutoChooser() {
     RHRNamedCommands.registerGenericCommands();
 
-    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red
-    // ? -1 : 1;
-    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
+    autoChooser.addOption("ThreePiece", ThreePiece.getAutonomousCommand());
     autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
     autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
+    autoChooser.addDefaultOption("SimpleWeekZero", new SimpleWeekZeroAuto());
   }
 
   public void checkAlliance() {
