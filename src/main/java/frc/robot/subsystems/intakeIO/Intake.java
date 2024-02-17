@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeIO IO) {
     this.inputs = new IntakeInputsAutoLogged();
-    IO.updateInputs(inputs);
+    // IO.updateInputs(inputs);
     this.IO = IO;
   }
 
@@ -117,10 +117,6 @@ public class Intake extends SubsystemBase {
     // }
   }
 
-  public void setCurrentLimit(int currentLimit) {
-    IO.setCurrentLimit(currentLimit);
-  }
-
   public static class Commands {
     public static Command setMotionMode(MotionMode mode) {
       return new InstantCommand(() -> Robot.intake.setMotionMode(mode));
@@ -130,15 +126,15 @@ public class Intake extends SubsystemBase {
       return new InstantCommand(() -> Robot.intake.setRPM(targetRPM, targetRPM));
     }
 
-    public static Command setVelocityRPMAndWait(double targetRPM) {
-      return new SequentialCommandGroup(
-          setVelocityRPM(targetRPM),
-          new WaitUntilCommand(
-              () -> Robot.intake.leftIsAtTarget() && Robot.intake.rightIsAtTarget()));
-    }
+    // public static Command setVelocityRPMAndWait(double targetRPM) {
+    //   return new SequentialCommandGroup(
+    //       setVelocityRPM(targetRPM),
+    //       new WaitUntilCommand(
+    //           () -> Robot.intake.leftIsAtTarget() && Robot.intake.rightIsAtTarget()));
+    // }
 
-    public static Command setVelocityRPMUntilGP(double targetRPM) {
-      return setVelocityRPM(targetRPM).repeatedly().until(() -> Robot.intake.hasGamepiece());
-    }
+    // public static Command setVelocityRPMUntilGP(double targetRPM) {
+    //   return setVelocityRPM(targetRPM).repeatedly().until(() -> Robot.intake.hasGamepiece());
+    // }
   }
 }
