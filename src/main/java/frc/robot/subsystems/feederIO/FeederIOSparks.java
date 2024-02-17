@@ -1,6 +1,5 @@
 package frc.robot.subsystems.feederIO;
 
-import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
