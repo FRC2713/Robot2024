@@ -2,6 +2,7 @@ package frc.robot.subsystems.feederIO;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.RobotMap;
