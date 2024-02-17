@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
 import frc.robot.commands.otf.OTF;
-import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.subsystems.feederIO.FeederIOSim;
@@ -216,7 +215,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    checkAlliance();
+    // checkAlliance();
 
     // swerveDrive.seed();
   }
@@ -226,7 +225,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    checkAlliance();
+    // checkAlliance();
     swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
     autoCommand = autoChooser.get();
 
