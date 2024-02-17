@@ -136,13 +136,27 @@ public class Robot extends LoggedRobot {
 
     driver
         .rightTrigger(0.5)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
                 new WaitUntilCommand(shooter::isAtTarget),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
                 Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .onFalse(
+        .whileFalse(
+            Commands.sequence(
+                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
+
+    driver
+        .y()
+        .whileTrue(
+            Commands.sequence(
+                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+                new WaitUntilCommand(shooter::isAtTarget),
+                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
+        .whileFalse(
             Commands.sequence(
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
@@ -174,8 +188,8 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
-    swerveDrive.updateOdometryFromVision(visionRear.getInfo(), visionRear.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionRear.getInfo(), visionRear.getInputs());
   }
 
   @Override

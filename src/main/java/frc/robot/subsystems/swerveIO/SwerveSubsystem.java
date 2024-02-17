@@ -338,10 +338,6 @@ public class SwerveSubsystem extends SubsystemBase {
     this.desiredSpeeds = speeds;
   }
 
-  public boolean gyroPitchHasChanged() {
-    return inputs.gyroPitchPosition == inputs.previousgyroPitchPosition;
-  }
-
   private SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
       frontLeft.getPosition(),

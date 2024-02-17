@@ -114,7 +114,7 @@ public final class Constants {
     public static final double LEFT_GEARING = 5.0;
     public static final double RIGHT_GEARING = 5.0;
 
-    public static final double SENSOR_THRESHOLD = 250;
+    public static final double SENSOR_THRESHOLD = 325;
     public static final double MAX_RPM = 5000;
   }
 
@@ -141,7 +141,7 @@ public final class Constants {
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
         PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
-    public static final double OFFSET = -12.7 - 11;
+    public static final double OFFSET = -10 - 4.85;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
   }
@@ -283,7 +283,7 @@ public final class Constants {
             .driveCANId(RobotMap.BACK_LEFT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.BACK_LEFT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(1)
-            .offset(0.78)
+            .offset(0.790)
             .location(BACK_LEFT_LOCATION)
             .build();
 
@@ -295,7 +295,7 @@ public final class Constants {
             .driveCANId(RobotMap.BACK_RIGHT_DRIVE_CAN_ID)
             .aziCANId(RobotMap.BACK_RIGHT_AZIMUTH_CAN_ID)
             .aziEncoderCANId(0)
-            .offset(0.9643718722413558)
+            .offset(0.9615)
             .location(BACK_RIGHT_LOCATION)
             .build();
 

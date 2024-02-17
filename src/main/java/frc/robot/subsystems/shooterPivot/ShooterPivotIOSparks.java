@@ -30,11 +30,13 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     spark.getPIDController().setFeedbackDevice(throughBoreEncoder);
     spark.getPIDController().setP(0.05);
 
-    throughBoreEncoder.setPositionConversionFactor(360.0 / (80.0 / 20.0));
-    throughBoreEncoder.setVelocityConversionFactor(360.0 / (80.0 / 20.0));
+    spark.setInverted(true);
+    throughBoreEncoder.setInverted(true);
+    throughBoreEncoder.setPositionConversionFactor(360.0 / (80.0 / 20.0 * 38.0 / 42.0));
+    throughBoreEncoder.setVelocityConversionFactor(360.0 / (80.0 / 20.0 * 38.0 / 42.0));
 
     spark.setSmartCurrentLimit(20);
-    spark.setIdleMode(IdleMode.kBrake);
+    spark.setIdleMode(IdleMode.kCoast);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
@@ -49,8 +51,6 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
           }
         },
         spark);
-
-    spark.setInverted(false);
   }
 
   @Override

@@ -66,6 +66,7 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     IO.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
 
     boolean hasGamepiece = hasGamepiece();
     boolean leftIsAtTarget = leftIsAtTarget();
@@ -89,7 +90,7 @@ public class Intake extends SubsystemBase {
         break;
       case INTAKE_GP:
         // setRPM(4000);
-        IO.setVoltage(10, 10);
+        IO.setVoltage(7, 7);
         if (hasGamepiece()) {
           motionMode = MotionMode.HOLDING_GP;
           // RumbleManager.getInstance().setDriver(1, 2);
@@ -116,8 +117,6 @@ public class Intake extends SubsystemBase {
         IO.setVoltage(0, 0);
         break;
     }
-
-    Logger.processInputs("Intake", inputs);
   }
 
   public void setCurrentLimit(int currentLimit) {

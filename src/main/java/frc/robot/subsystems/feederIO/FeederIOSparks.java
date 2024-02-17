@@ -15,7 +15,7 @@ public class FeederIOSparks implements FeederIO {
   public FeederIOSparks() {
     motor = new CANSparkMax(RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
-    motor.setSmartCurrentLimit(20);
+    motor.setSmartCurrentLimit(40);
     motor.setInverted(true);
 
     // motor.getPIDController().setP(FeederConstants.FEEDER_GAINS.getKP());
