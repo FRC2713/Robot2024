@@ -39,13 +39,11 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
@@ -124,59 +122,59 @@ public class Robot extends LoggedRobot {
 
     buildAutoChooser();
 
-    driver
-        .rightBumper()
-        .onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP))
-        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    // driver
+    //     .rightBumper()
+    //     .onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP))
+    //     .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
 
-    driver
-        .rightTrigger(0.5)
-        .whileTrue(
-            Commands.sequence(
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
-                new WaitUntilCommand(shooter::isAtTarget),
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
-                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .onFalse(
-            Commands.sequence(
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
+    // driver
+    //     .rightTrigger(0.5)
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+    //             new WaitUntilCommand(shooter::isAtTarget),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    driver
-        .y()
-        .whileTrue(
-            Commands.sequence(
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
-                new WaitUntilCommand(shooter::isAtTarget),
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
-                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .onFalse(
-            Commands.sequence(
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
+    // driver
+    //     .y()
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+    //             new WaitUntilCommand(shooter::isAtTarget),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    driver
-        .leftBumper()
-        .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
-        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    // driver
+    //     .leftBumper()
+    //     .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
+    //     .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
 
-    driver
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-                }));
+    // driver
+    //     .start()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+    //             }));
 
-    driver
-        .back()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-                }));
+    // driver
+    //     .back()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+    //             }));
   }
 
   @Override
