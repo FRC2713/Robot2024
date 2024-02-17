@@ -12,7 +12,7 @@ public class IntakeIOSparks implements IntakeIO {
   private CANSparkMax leftMotor, rightMotor;
 
   public IntakeIOSparks() {
-    this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
+    // this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
     // this.sensor.setRangingMode(RangingMode.Medium, 24);
     this.leftMotor =
         new CANSparkMax(Constants.RobotMap.INTAKE_LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
@@ -50,17 +50,18 @@ public class IntakeIOSparks implements IntakeIO {
     inputs.rightCurrentAmps = rightMotor.getOutputCurrent();
     inputs.rightPositionRad = leftMotor.getEncoder().getPosition() * Math.PI * 2;
 
-    inputs.sensorRange = sensor.getRange();
-    inputs.sensorStatus = sensor.getStatus().name();
-    inputs.sensorAmbientLightLevel = sensor.getAmbientLightLevel();
-    inputs.sensorRangeStdev = sensor.getRangeSigma();
-    inputs.sensorRangingMode = sensor.getRangingMode().name();
-    inputs.sensorSampleTime = sensor.getSampleTime();
+    // inputs.sensorRange = sensor.getRange();
+    // inputs.sensorStatus = sensor.getStatus().name();
+    // inputs.sensorAmbientLightLevel = sensor.getAmbientLightLevel();
+    // inputs.sensorRangeStdev = sensor.getRangeSigma();
+    // inputs.sensorRangingMode = sensor.getRangingMode().name();
+    // inputs.sensorSampleTime = sensor.getSampleTime();
   }
 
   @Override
   public boolean hasGamepiece() {
-    return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    // return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
+    return false;
   }
 
   @Override
