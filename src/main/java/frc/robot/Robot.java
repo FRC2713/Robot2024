@@ -84,11 +84,11 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // elevator = new Elevator(true ? new ElevatorIOSim() : null);
-    shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
-    shooterPivot =
-        new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
-    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
+    // shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
+    // shooterPivot =
+    //     new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
+    // intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    // feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         isSimulation()
@@ -122,43 +122,43 @@ public class Robot extends LoggedRobot {
 
     buildAutoChooser();
 
-    driver
-        .rightBumper()
-        .onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP))
-        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    // driver
+    //     .rightBumper()
+    //     .onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP))
+    //     .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
 
-    driver
-        .rightTrigger(0.5)
-        .whileTrue(
-            Commands.sequence(
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
-                new WaitUntilCommand(shooter::isAtTarget),
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
-                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .onFalse(
-            Commands.sequence(
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
+    // driver
+    //     .rightTrigger(0.5)
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+    //             new WaitUntilCommand(shooter::isAtTarget),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    driver
-        .y()
-        .whileTrue(
-            Commands.sequence(
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
-                new WaitUntilCommand(shooter::isAtTarget),
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
-                Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .onFalse(
-            Commands.sequence(
-                Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
-                Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
+    // driver
+    //     .y()
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP),
+    //             new WaitUntilCommand(shooter::isAtTarget),
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
+    //             Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
+    //             Intake.Commands.setMotionMode(Intake.MotionMode.OFF)));
 
-    driver
-        .leftBumper()
-        .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
-        .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    // driver
+    //     .leftBumper()
+    //     .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
+    //     .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
 
     driver
         .start()
