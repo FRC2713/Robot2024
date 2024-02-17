@@ -166,17 +166,21 @@ public class Robot extends LoggedRobot {
         .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
         .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
 
-        driver.start().onTrue(new InstantCommand(() -> {
-          
-          swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
-        }
-        ));
+    driver
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+                }));
 
-        driver.back().onTrue(new InstantCommand( () -> {
-          
-          swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
-        }
-        ));
+    driver
+        .back()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+                }));
   }
 
   @Override
