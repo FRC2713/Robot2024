@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRPM(double rpm) {
-    setRPM(rpm, rpm);
+    // setRPM(rpm, rpm);
   }
 
   public void setRPM(double leftRpm, double rightRPM) {
@@ -52,7 +52,7 @@ public class Intake extends SubsystemBase {
 
     // Logger.recordOutput("Intake/Left Applied Volts", lDesiredVoltage);
     // Logger.recordOutput("Intake/Right Applied Volts", rDesiredVoltage);
-    IO.setVoltage(0, 0);
+    // IO.setVoltage(0, 0);
   }
 
   public boolean hasGamepiece() {
