@@ -89,7 +89,7 @@ public final class Constants {
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 30;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
-    public static final int INTAKE_TOF_SENSOR_ID = 0;
+    public static final int INTAKE_TOF_SENSOR_ID = 71;
     public static final int INTAKE_LEFT_MOTOR_CAN_ID = 8;
     public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 9;
 
