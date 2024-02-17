@@ -81,7 +81,7 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
       azimuth.setInverted(true);
     }
 
-    cOk(azimuth.setIdleMode(IdleMode.kCoast));
+    cOk(azimuth.setIdleMode(IdleMode.kBrake));
 
     cOk(getAziEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0));
     cOk(getAziEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));

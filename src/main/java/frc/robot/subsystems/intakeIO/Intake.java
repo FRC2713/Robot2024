@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intakeIO;
 
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -81,7 +82,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
     Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
-
+    SmartDashboard.putBoolean("Has gamepiece?", hasGamepiece);
     Logger.recordOutput("Intake/Mode", motionMode);
 
     switch (motionMode) {

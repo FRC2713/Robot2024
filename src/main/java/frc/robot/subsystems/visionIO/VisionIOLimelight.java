@@ -148,10 +148,11 @@ public class VisionIOLimelight implements VisionIO {
     // inputs.activePipeline = getpipe.get();
     // inputs.neuralNetClassId = tclass.get();
 
-    var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
-    var botPoseBluePair = timestampedPoseFromLLArray(jsonResults.targetingResults.botpose_wpiblue);
-    inputs.botPoseBlue = botPoseBluePair.getFirst();
-    inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
+    // var jsonResults = LimelightHelpers.getLatestResults(getInfo().getNtTableName());
+    // var botPoseBluePair =
+    // timestampedPoseFromLLArray(jsonResults.targetingResults.botpose_wpiblue);
+    // inputs.botPoseBlue = botPoseBluePair.getFirst();
+    // inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
   }
 
   @Override

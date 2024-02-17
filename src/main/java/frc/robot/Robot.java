@@ -16,11 +16,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
-import frc.robot.commands.fullRoutines.SelfishAuto;
-import frc.robot.commands.fullRoutines.SimpleChoreo;
 import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
-import frc.robot.commands.fullRoutines.ThreePiece;
-import frc.robot.commands.fullRoutines.ThreePieceChoreo;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -46,11 +42,13 @@ import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
@@ -85,7 +83,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
     }
 
     Logger.start();
@@ -262,10 +260,10 @@ public class Robot extends LoggedRobot {
   public void buildAutoChooser() {
     RHRNamedCommands.registerGenericCommands();
 
-    autoChooser.addOption("ThreePiece", ThreePiece.getAutonomousCommand());
-    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
-    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
-    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
+    // autoChooser.addOption("ThreePiece", ThreePiece.getAutonomousCommand());
+    // autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
+    // autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
+    // autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
     autoChooser.addDefaultOption("SimpleWeekZero", new SimpleWeekZeroAuto());
   }
 
@@ -282,13 +280,13 @@ public class Robot extends LoggedRobot {
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
     }
   }
 }

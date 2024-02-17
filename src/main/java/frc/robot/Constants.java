@@ -79,7 +79,7 @@ public final class Constants {
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 60;
+    public static final int PIGEON_CAN_ID = 20;
     public static final int LEFT_ELEVATOR_CAN_ID = 3;
     public static final int RIGHT_ELEVATOR_CAN_ID = 4;
 
