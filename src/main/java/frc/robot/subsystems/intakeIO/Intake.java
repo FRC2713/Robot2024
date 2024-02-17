@@ -1,15 +1,12 @@
 package frc.robot.subsystems.intakeIO;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import lombok.Setter;
-import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   public enum MotionMode {
@@ -61,7 +58,8 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasGamepiece() {
-    return IO.hasGamepiece();
+    return false;
+    // return IO.hasGamepiece();
   }
 
   public void periodic() {
