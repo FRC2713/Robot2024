@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    // intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
     // feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
