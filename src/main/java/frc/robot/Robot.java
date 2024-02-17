@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
 import frc.robot.commands.otf.OTF;
@@ -40,8 +39,6 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIOLimelight;
-import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
 import java.util.Optional;
@@ -256,7 +253,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+    // RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
   }
 
   @Override
