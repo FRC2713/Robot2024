@@ -114,7 +114,7 @@ public final class Constants {
     public static final double LEFT_GEARING = 5.0;
     public static final double RIGHT_GEARING = 5.0;
 
-    public static final double SENSOR_THRESHOLD = 325;
+    public static final double SENSOR_THRESHOLD = 225;
     public static final double MAX_RPM = 5000;
   }
 
