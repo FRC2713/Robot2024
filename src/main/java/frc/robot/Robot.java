@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.LimeLightConstants;
@@ -164,6 +165,18 @@ public class Robot extends LoggedRobot {
         .leftBumper()
         .onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.MotionMode.OUTAKE_GP)))
         .onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+
+        driver.start().onTrue(new InstantCommand(() -> {
+          
+          swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+        }
+        ));
+
+        driver.back().onTrue(new InstantCommand( () -> {
+          
+          swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+        }
+        ));
   }
 
   @Override
