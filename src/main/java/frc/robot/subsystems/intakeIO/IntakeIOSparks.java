@@ -14,7 +14,7 @@ public class IntakeIOSparks implements IntakeIO {
 
   public IntakeIOSparks() {
     this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
-    this.sensor.setRangingMode(RangingMode.Medium, 24);
+    // this.sensor.setRangingMode(RangingMode.Medium, 24);
     this.leftMotor =
         new CANSparkMax(Constants.RobotMap.INTAKE_LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
     this.rightMotor =
