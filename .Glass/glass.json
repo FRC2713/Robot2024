@@ -1,4 +1,22 @@
 {
+  "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Autonomous Routine": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Autonomous Routine": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
   "NetworkTables Info": {
     "visible": true
   },

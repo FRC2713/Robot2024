@@ -111,16 +111,16 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionFront =
-        new Vision(
-            isSimulation()
-                ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
-    visionRear =
-        new Vision(
-            isSimulation()
-                ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+    // visionFront =
+    //     new Vision(
+    //         isSimulation()
+    //             ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //             : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+    // visionRear =
+    //     new Vision(
+    //         isSimulation()
+    //             ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    //             : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     // mechManager = new MechanismManager();
 
