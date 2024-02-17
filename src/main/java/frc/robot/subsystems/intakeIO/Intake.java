@@ -66,58 +66,58 @@ public class Intake extends SubsystemBase {
   }
 
   public void periodic() {
-    IO.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
+    // IO.updateInputs(inputs);
+    // Logger.processInputs("Intake", inputs);
 
-    boolean hasGamepiece = hasGamepiece();
-    boolean leftIsAtTarget = leftIsAtTarget();
-    boolean rightIsAtTarget = rightIsAtTarget();
+    // boolean hasGamepiece = hasGamepiece();
+    // boolean leftIsAtTarget = leftIsAtTarget();
+    // boolean rightIsAtTarget = rightIsAtTarget();
 
-    Logger.recordOutput("Intake/Sensor Range", this.inputs.sensorRange);
+    // Logger.recordOutput("Intake/Sensor Range", this.inputs.sensorRange);
 
-    Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
-    Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);
+    // Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
+    // Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);
 
-    Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
-    Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
+    // Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
+    // Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
-    Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
-    SmartDashboard.putBoolean("Has gamepiece?", hasGamepiece);
-    Logger.recordOutput("Intake/Mode", motionMode);
+    // Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
+    // SmartDashboard.putBoolean("Has gamepiece?", hasGamepiece);
+    // Logger.recordOutput("Intake/Mode", motionMode);
 
-    switch (motionMode) {
-      case HOLDING_GP:
-        setRPM(0);
-        break;
-      case INTAKE_GP:
-        // setRPM(4000);
-        IO.setVoltage(7, 7);
-        if (hasGamepiece()) {
-          motionMode = MotionMode.HOLDING_GP;
-          // RumbleManager.getInstance().setDriver(1, 2);
-        }
-        break;
-      case SEND_GP_TO_FEEDER:
-        // setRPM(2000);
-        IO.setVoltage(5, 5);
-        // if (!hasGamepiece()) {
-        //   motionMode = MotionMode.OFF;
-        // }
-        break;
-      case OUTAKE_GP:
-        IO.setVoltage(-6, -6);
-        // if (!hasGamepiece()) {
-        // motionMode = MotionMode.OFF;
-        // }
-        break;
-      case OFF:
-        if (hasGamepiece()) {
-          motionMode = MotionMode.HOLDING_GP;
-        }
-      default:
-        IO.setVoltage(0, 0);
-        break;
-    }
+    // switch (motionMode) {
+    //   case HOLDING_GP:
+    //     setRPM(0);
+    //     break;
+    //   case INTAKE_GP:
+    //     // setRPM(4000);
+    //     IO.setVoltage(7, 7);
+    //     if (hasGamepiece()) {
+    //       motionMode = MotionMode.HOLDING_GP;
+    //       // RumbleManager.getInstance().setDriver(1, 2);
+    //     }
+    //     break;
+    //   case SEND_GP_TO_FEEDER:
+    //     // setRPM(2000);
+    //     IO.setVoltage(5, 5);
+    //     // if (!hasGamepiece()) {
+    //     //   motionMode = MotionMode.OFF;
+    //     // }
+    //     break;
+    //   case OUTAKE_GP:
+    //     IO.setVoltage(-6, -6);
+    //     // if (!hasGamepiece()) {
+    //     // motionMode = MotionMode.OFF;
+    //     // }
+    //     break;
+    //   case OFF:
+    //     if (hasGamepiece()) {
+    //       motionMode = MotionMode.HOLDING_GP;
+    //     }
+    //   default:
+    //     IO.setVoltage(0, 0);
+    //     break;
+    // }
   }
 
   public void setCurrentLimit(int currentLimit) {
