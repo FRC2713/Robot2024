@@ -20,6 +20,8 @@ import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
 import frc.robot.commands.otf.OTF;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.feederIO.Feeder;
+import frc.robot.subsystems.feederIO.FeederIOSim;
+import frc.robot.subsystems.feederIO.FeederIOSparks;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.intakeIO.IntakeIOSim;
 import frc.robot.subsystems.intakeIO.IntakeIOSparks;
@@ -86,7 +88,7 @@ public class Robot extends LoggedRobot {
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
-    // feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
+    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         isSimulation()
