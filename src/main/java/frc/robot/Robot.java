@@ -11,9 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SimpleWeekZeroAuto;
@@ -84,11 +81,11 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // elevator = new Elevator(true ? new ElevatorIOSim() : null);
-    shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
-    shooterPivot =
-        new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
-    intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
-    feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
+    // shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
+    // shooterPivot =
+    //     new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
+    // intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    // feeder = new Feeder(isSimulation() ? new FeederIOSim() : new FeederIOSparks());
 
     swerveDrive =
         isSimulation()
