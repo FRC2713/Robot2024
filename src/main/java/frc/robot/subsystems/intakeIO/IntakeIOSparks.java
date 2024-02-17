@@ -9,13 +9,13 @@ import frc.robot.Constants;
 
 public class IntakeIOSparks implements IntakeIO {
 
-  private TimeOfFlight sensor;
+  //private TimeOfFlight sensor;
   private CANSparkMax leftMotor, rightMotor;
 
   public IntakeIOSparks() {
-    this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
-    this.sensor.setRangingMode(RangingMode.Medium, 24);
-    this.sensor.setRangeOfInterest(8, 8, 12, 12);
+    //this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
+    //this.sensor.setRangingMode(RangingMode.Medium, 24);
+    //this.sensor.setRangeOfInterest(8, 8, 12, 12);
     this.leftMotor =
         new CANSparkMax(Constants.RobotMap.INTAKE_LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
     this.rightMotor =
