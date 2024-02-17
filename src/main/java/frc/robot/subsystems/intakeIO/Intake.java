@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intakeIO;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -49,16 +48,16 @@ public class Intake extends SubsystemBase {
     this.leftTargetRPM = leftRpm;
     this.rightTargetRPM = rightRPM;
 
-    double lDesiredVoltage =
-        leftRpm
-            / (Constants.IntakeConstants.MAX_RPM)
-            * RobotController.getBatteryVoltage(); // is this what we want to do?
-    double rDesiredVoltage =
-        rightRPM / (Constants.IntakeConstants.MAX_RPM) * RobotController.getBatteryVoltage();
+    // double lDesiredVoltage =
+    //     leftRpm
+    //         / (Constants.IntakeConstants.MAX_RPM)
+    //         * RobotController.getBatteryVoltage(); // is this what we want to do?
+    // double rDesiredVoltage =
+    //     rightRPM / (Constants.IntakeConstants.MAX_RPM) * RobotController.getBatteryVoltage();
 
-    Logger.recordOutput("Intake/Left Applied Volts", lDesiredVoltage);
-    Logger.recordOutput("Intake/Right Applied Volts", rDesiredVoltage);
-    IO.setVoltage(lDesiredVoltage, rDesiredVoltage);
+    // Logger.recordOutput("Intake/Left Applied Volts", lDesiredVoltage);
+    // Logger.recordOutput("Intake/Right Applied Volts", rDesiredVoltage);
+    IO.setVoltage(0, 0);
   }
 
   public boolean hasGamepiece() {
