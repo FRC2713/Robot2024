@@ -61,7 +61,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void periodic() {
-    // IO.updateInputs(inputs);
+    IO.updateInputs(inputs);
     // Logger.processInputs("Intake", inputs);
 
     // boolean hasGamepiece = hasGamepiece();
