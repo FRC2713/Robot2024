@@ -137,7 +137,7 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(shooter::isAtTarget),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
                 Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .whileFalse(
+        .onFalse(
             Commands.sequence(
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
@@ -151,7 +151,7 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(shooter::isAtTarget),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.SEND_TO_SHOOTER),
                 Intake.Commands.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER)))
-        .whileFalse(
+        .onFalse(
             Commands.sequence(
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
                 Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
