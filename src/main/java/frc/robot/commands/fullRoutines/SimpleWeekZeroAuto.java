@@ -2,8 +2,6 @@ package frc.robot.commands.fullRoutines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Robot;
 import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
@@ -18,7 +16,6 @@ public class SimpleWeekZeroAuto extends SequentialCommandGroup {
         new WaitCommand(3),
         Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF),
         Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF),
-        Intake.Commands.setMotionMode(Intake.MotionMode.OFF)
-        );
+        Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
   }
 }

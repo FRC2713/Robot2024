@@ -19,6 +19,8 @@ import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.feederIO.Feeder;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.ShooterIOSim;
+import frc.robot.subsystems.shooterIO.ShooterIOVortex;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveIOPigeon2;
 import frc.robot.subsystems.swerveIO.SwerveIOSim;
@@ -73,7 +75,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // elevator = new Elevator(true ? new ElevatorIOSim() : null);
-    // shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
+    shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     // shooterPivot =
     //     new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     // intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
