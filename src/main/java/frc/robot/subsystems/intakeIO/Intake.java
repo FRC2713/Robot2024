@@ -1,12 +1,11 @@
 package frc.robot.subsystems.intakeIO;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   public enum MotionMode {
@@ -82,39 +81,39 @@ public class Intake extends SubsystemBase {
     // SmartDashboard.putBoolean("Has gamepiece?", hasGamepiece);
     Logger.recordOutput("Intake/Mode", motionMode);
 
-    // switch (motionMode) {
-    //   case HOLDING_GP:
-    //     setRPM(0);
-    //     break;
-    //   case INTAKE_GP:
-    //     // setRPM(4000);
-    //     IO.setVoltage(7, 7);
-    //     if (hasGamepiece()) {
-    //       motionMode = MotionMode.HOLDING_GP;
-    //       // RumbleManager.getInstance().setDriver(1, 2);
-    //     }
-    //     break;
-    //   case SEND_GP_TO_FEEDER:
-    //     // setRPM(2000);
-    //     IO.setVoltage(5, 5);
-    //     // if (!hasGamepiece()) {
-    //     //   motionMode = MotionMode.OFF;
-    //     // }
-    //     break;
-    //   case OUTAKE_GP:
-    //     IO.setVoltage(-6, -6);
-    //     // if (!hasGamepiece()) {
-    //     // motionMode = MotionMode.OFF;
-    //     // }
-    //     break;
-    //   case OFF:
-    //     if (hasGamepiece()) {
-    //       motionMode = MotionMode.HOLDING_GP;
-    //     }
-    //   default:
-    //     IO.setVoltage(0, 0);
-    //     break;
-    // }
+    switch (motionMode) {
+      case HOLDING_GP:
+        setRPM(0);
+        break;
+      case INTAKE_GP:
+        // setRPM(4000);
+        IO.setVoltage(7, 7);
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+          // RumbleManager.getInstance().setDriver(1, 2);
+        }
+        break;
+      case SEND_GP_TO_FEEDER:
+        // setRPM(2000);
+        IO.setVoltage(5, 5);
+        // if (!hasGamepiece()) {
+        //   motionMode = MotionMode.OFF;
+        // }
+        break;
+      case OUTAKE_GP:
+        IO.setVoltage(-6, -6);
+        // if (!hasGamepiece()) {
+        // motionMode = MotionMode.OFF;
+        // }
+        break;
+      case OFF:
+        if (hasGamepiece()) {
+          motionMode = MotionMode.HOLDING_GP;
+        }
+      default:
+        IO.setVoltage(0, 0);
+        break;
+    }
   }
 
   public static class Commands {
