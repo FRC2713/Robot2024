@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intakeIO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -62,23 +64,23 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     IO.updateInputs(inputs);
-    // Logger.processInputs("Intake", inputs);
+    Logger.processInputs("Intake", inputs);
 
-    // boolean hasGamepiece = hasGamepiece();
-    // boolean leftIsAtTarget = leftIsAtTarget();
-    // boolean rightIsAtTarget = rightIsAtTarget();
+    boolean hasGamepiece = hasGamepiece();
+    boolean leftIsAtTarget = leftIsAtTarget();
+    boolean rightIsAtTarget = rightIsAtTarget();
 
-    // Logger.recordOutput("Intake/Sensor Range", this.inputs.sensorRange);
+    Logger.recordOutput("Intake/Sensor Range", this.inputs.sensorRange);
 
-    // Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
-    // Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);
+    Logger.recordOutput("Intake/Left Target RPM", leftTargetRPM);
+    Logger.recordOutput("Intake/Left Has reached target", leftIsAtTarget);
 
-    // Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
-    // Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
+    Logger.recordOutput("Intake/Right Target RPM", rightTargetRPM);
+    Logger.recordOutput("Intake/Right Has reached target", rightIsAtTarget);
 
-    // Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
+    Logger.recordOutput("Intake/Has gamepiece", hasGamepiece);
     // SmartDashboard.putBoolean("Has gamepiece?", hasGamepiece);
-    // Logger.recordOutput("Intake/Mode", motionMode);
+    Logger.recordOutput("Intake/Mode", motionMode);
 
     // switch (motionMode) {
     //   case HOLDING_GP:
