@@ -1,15 +1,18 @@
 package frc.robot.subsystems.feederIO;
 
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.Constants.RobotMap;
 
 public class FeederIOSparks implements FeederIO {
   CANSparkMax motor;
   double setpoint = 0;
-  // private TimeOfFlight sensor;
+  private TimeOfFlight sensor;
 
   public FeederIOSparks() {
     motor = new CANSparkMax(RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
@@ -19,7 +22,8 @@ public class FeederIOSparks implements FeederIO {
 
     // motor.getPIDController().setP(FeederConstants.FEEDER_GAINS.getKP());
     // motor.getPIDController().setD(FeederConstants.FEEDER_GAINS.getKD());
-    // sensor = new TimeOfFlight(71);
+    this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
+    this.sensor.setRangingMode(RangingMode.Medium, 24);
   }
 
   @Override
