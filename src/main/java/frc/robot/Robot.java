@@ -127,8 +127,8 @@ public class Robot extends LoggedRobot {
     checkAlliance();
     buildAutoChooser();
 
-    driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP));
-    driver.leftBumper().onFalse(Intake.Commands.setMotionMode(Intake.MotionMode.OFF));
+    driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.State.INTAKE_GP));
+    driver.leftBumper().onFalse(Intake.Commands.setMotionMode(Intake.State.OFF));
     // driver
     //     .leftTrigger(0.1)
     //     .onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP));
@@ -143,7 +143,7 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.1)
         .onFalse(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
+                Intake.Commands.setMotionMode(Intake.State.OFF),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
     driver.rightBumper().onTrue(Shooter.Commands.setState(Shooter.State.FENDER_SHOT));
     driver.rightBumper().onFalse(Shooter.Commands.setState(Shooter.State.OFF));

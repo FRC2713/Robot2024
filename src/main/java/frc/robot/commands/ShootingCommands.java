@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.feederIO.Feeder;
-import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 
 public class ShootingCommands {
@@ -16,7 +15,7 @@ public class ShootingCommands {
 
   public static SequentialCommandGroup FullShotCommands() {
     return new SequentialCommandGroup(
-        new WaitUntilCommand(() -> Robot.intake.motionMode == Intake.MotionMode.HOLDING_GP),
+        // new WaitUntilCommand(() -> Robot.intake.state == Intake.State.HOLDING_GP),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.MotionMode.FEED_CLOSED_LOOP),
         FeederShotCommands());
   }

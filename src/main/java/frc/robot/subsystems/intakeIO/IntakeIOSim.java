@@ -24,11 +24,6 @@ public class IntakeIOSim implements IntakeIO {
   public IntakeIOSim() {}
 
   @Override
-  public void setCurrentLimit(int currentLimit) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
   public void updateInputs(IntakeInputsAutoLogged inputs) {
 
     simLeft.update(0.02);
@@ -48,8 +43,7 @@ public class IntakeIOSim implements IntakeIO {
     inputs.rightCurrentAmps = simRight.getCurrentDrawAmps();
     inputs.rightPositionRad = simRight.getAngularPositionRad();
 
-    inputs.sensorRange = 0.0;
-    inputs.sensorStatus = "Short";
+    inputs.sensorVoltage = 0.0;
   }
 
   @Override

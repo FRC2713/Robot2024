@@ -23,7 +23,7 @@ public class Week0MobilityChoreo extends SequentialCommandGroup {
         ShootingCommands.FeederShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(Traj),
-            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+            Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
         ShootingCommands.FullShotCommands(),
         new InstantCommand(
             () -> {

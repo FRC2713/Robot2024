@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intakeIO;
 
-import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
@@ -10,59 +8,48 @@ import frc.robot.Constants;
 
 public class IntakeIOSparks implements IntakeIO {
 
-  private TimeOfFlight sensor;
-  private CANSparkMax leftMotor, rightMotor;
+  private CANSparkMax bottomMotor, topMotor;
 
   public IntakeIOSparks() {
-    this.sensor = new TimeOfFlight(Constants.RobotMap.INTAKE_TOF_SENSOR_ID);
-    this.sensor.setRangingMode(RangingMode.Medium, 24);
-    this.leftMotor =
-        new CANSparkMax(Constants.RobotMap.INTAKE_LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
-    this.rightMotor =
-        new CANSparkMax(Constants.RobotMap.INTAKE_RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
+    this.bottomMotor =
+        new CANSparkMax(Constants.RobotMap.INTAKE_BOTTOM_MOTOR_CAN_ID, MotorType.kBrushless);
+    this.topMotor =
+        new CANSparkMax(Constants.RobotMap.INTAKE_TOP_MOTOR_CAN_ID, MotorType.kBrushless);
 
-    leftMotor.restoreFactoryDefaults();
-    rightMotor.restoreFactoryDefaults();
+    bottomMotor.restoreFactoryDefaults();
+    topMotor.restoreFactoryDefaults();
 
-    leftMotor.setSmartCurrentLimit(40);
-    rightMotor.setSmartCurrentLimit(40);
+    bottomMotor.setSmartCurrentLimit(40);
+    topMotor.setSmartCurrentLimit(40);
 
-    rightMotor.setInverted(false);
-    leftMotor.setInverted(true);
-  }
-
-  @Override
-  public void setCurrentLimit(int currentLimit) {
-    leftMotor.setSmartCurrentLimit(currentLimit);
+    topMotor.setInverted(false);
+    bottomMotor.setInverted(true);
   }
 
   @Override
   public void updateInputs(IntakeInputsAutoLogged inputs) {
-    inputs.leftOutputVoltage = MathUtil.clamp(leftMotor.getAppliedOutput() * 12, -12.0, 12.0);
+    inputs.leftOutputVoltage = MathUtil.clamp(bottomMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.leftIsOn =
-        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(leftMotor.getEncoder().getVelocity()))
+        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(bottomMotor.getEncoder().getVelocity()))
             > 0.005;
-    inputs.leftVelocityRPM = leftMotor.getEncoder().getVelocity();
-    inputs.leftTempCelcius = leftMotor.getMotorTemperature();
-    inputs.leftCurrentAmps = leftMotor.getOutputCurrent();
-    inputs.leftPositionRad = leftMotor.getEncoder().getPosition() * Math.PI * 2;
+    inputs.leftVelocityRPM = bottomMotor.getEncoder().getVelocity();
+    inputs.leftTempCelcius = bottomMotor.getMotorTemperature();
+    inputs.leftCurrentAmps = bottomMotor.getOutputCurrent();
+    inputs.leftPositionRad = bottomMotor.getEncoder().getPosition() * Math.PI * 2;
 
-    inputs.rightOutputVoltage = MathUtil.clamp(rightMotor.getAppliedOutput() * 12, -12.0, 12.0);
+    inputs.rightOutputVoltage = MathUtil.clamp(topMotor.getAppliedOutput() * 12, -12.0, 12.0);
     inputs.rightIsOn =
-        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(rightMotor.getEncoder().getVelocity()))
+        Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(topMotor.getEncoder().getVelocity()))
             > 0.005;
-    inputs.rightVelocityRPM = rightMotor.getEncoder().getVelocity();
-    inputs.rightTempCelcius = rightMotor.getMotorTemperature();
-    inputs.rightCurrentAmps = rightMotor.getOutputCurrent();
-    inputs.rightPositionRad = leftMotor.getEncoder().getPosition() * Math.PI * 2;
-
-    inputs.sensorRange = sensor.getRange();
-    inputs.sensorStatus = sensor.getStatus().toString();
+    inputs.rightVelocityRPM = topMotor.getEncoder().getVelocity();
+    inputs.rightTempCelcius = topMotor.getMotorTemperature();
+    inputs.rightCurrentAmps = topMotor.getOutputCurrent();
+    inputs.rightPositionRad = bottomMotor.getEncoder().getPosition() * Math.PI * 2;
   }
 
   @Override
-  public void setVoltage(double leftVolts, double rightVolts) {
-    leftMotor.setVoltage(leftVolts);
-    rightMotor.setVoltage(rightVolts);
+  public void setVoltage(double bottomVolts, double topVolts) {
+    bottomMotor.setVoltage(bottomVolts);
+    topMotor.setVoltage(topVolts);
   }
 }

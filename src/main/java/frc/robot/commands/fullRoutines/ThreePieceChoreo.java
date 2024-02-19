@@ -24,15 +24,15 @@ public class ThreePieceChoreo extends SequentialCommandGroup {
         ShootingCommands.FeederShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(firstTraj),
-            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+            Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
         ShootingCommands.FullShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(secondTraj),
-            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+            Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
         ShootingCommands.FullShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(thirdTraj),
-            Intake.Commands.setMotionMode(Intake.MotionMode.INTAKE_GP)),
+            Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
         ShootingCommands.FullShotCommands(),
         new InstantCommand(
             () -> {

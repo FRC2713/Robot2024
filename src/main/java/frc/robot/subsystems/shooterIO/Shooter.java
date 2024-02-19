@@ -16,6 +16,8 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Flywheel/Fender Shot RPM", 3500);
   private static final LoggedTunableNumber restingRpm =
       new LoggedTunableNumber("Flywheel/Resting RPM", 500);
+  private static final LoggedTunableNumber atGoalThresholdRPM =
+      new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 50);
 
   @RequiredArgsConstructor
   public enum State {
@@ -29,8 +31,6 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIO IO;
   private final ShooterInputsAutoLogged inputs;
-
-  private double targetRPM;
 
   public Shooter(ShooterIO IO) {
     this.IO = IO;
@@ -49,7 +49,10 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    return Math.abs(inputs.leftSpeedRPM - targetRPM) < 90;
+    return Math.abs(inputs.leftSpeedRPM - motionMode.leftGoal.getAsDouble())
+            < atGoalThresholdRPM.getAsDouble()
+        && Math.abs(inputs.rightSpeedRPM - motionMode.rightGoal.getAsDouble())
+            < atGoalThresholdRPM.getAsDouble();
   }
 
   public static class Commands {

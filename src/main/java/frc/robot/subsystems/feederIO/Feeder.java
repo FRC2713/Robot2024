@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.util.LoggableMotor;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +48,7 @@ public class Feeder extends SubsystemBase {
 
     switch (motionMode) {
       case INTAKE_GP:
-        Robot.intake.setMotionMode(Intake.MotionMode.SEND_GP_TO_FEEDER);
+        // Robot.intake.setState(Intake.State.SEND_GP_TO_FEEDER);
         // setTarget(2000);
         IO.setVoltage(6);
         if (hasGamepiece()) {
