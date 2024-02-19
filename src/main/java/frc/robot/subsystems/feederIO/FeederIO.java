@@ -11,6 +11,8 @@ public interface FeederIO {
     public double tempCelcius = 0.0;
     public double currentAmps = 0.0;
     public double positionDeg = 0.0;
+    public double sensorRange = 0.0;
+    public String sensorStatus = "";
   }
 
   public void setSetpoint(double setpointRPM);
@@ -20,6 +22,4 @@ public interface FeederIO {
   public boolean atTarget();
 
   public void updateInputs(FeederInputsAutoLogged inputs);
-
-  public boolean hasGamepiece();
 }

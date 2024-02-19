@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.util.LoggableMotor;
@@ -80,7 +81,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public boolean hasGamepiece() {
-    return IO.hasGamepiece();
+    return inputs.sensorRange < Constants.FeederConstants.SENSOR_THRESHOLD;
   }
 
   public boolean atTarget() {
