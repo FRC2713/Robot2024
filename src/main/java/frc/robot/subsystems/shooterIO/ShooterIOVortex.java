@@ -23,17 +23,19 @@ public class ShooterIOVortex implements ShooterIO {
 
     leftMotor.setSmartCurrentLimit(60);
     rightMotor.setSmartCurrentLimit(60);
+    leftMotor.enableVoltageCompensation(12.0);
+    rightMotor.enableVoltageCompensation(12.0);
+
+    leftMotor.getEncoder().setMeasurementPeriod(10);
+    rightMotor.getEncoder().setMeasurementPeriod(10);
+    leftMotor.getEncoder().setAverageDepth(2);
+    rightMotor.getEncoder().setAverageDepth(2);
 
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
 
-    leftMotor.getPIDController().setP(ShooterConstants.SHOOTER_GAINS.getKP());
-    leftMotor.getPIDController().setD(ShooterConstants.SHOOTER_GAINS.getKD());
-    leftMotor.getPIDController().setFF(ShooterConstants.SHOOTER_GAINS.getKV());
-
-    rightMotor.getPIDController().setP(ShooterConstants.SHOOTER_GAINS.getKP());
-    rightMotor.getPIDController().setD(ShooterConstants.SHOOTER_GAINS.getKD());
-    rightMotor.getPIDController().setFF(ShooterConstants.SHOOTER_GAINS.getKV());
+    ShooterConstants.SHOOTER_GAINS.applyTo(leftMotor.getPIDController());
+    ShooterConstants.SHOOTER_GAINS.applyTo(rightMotor.getPIDController());
   }
 
   @Override
@@ -55,18 +57,8 @@ public class ShooterIOVortex implements ShooterIO {
   }
 
   @Override
-  public void setLeftVoltage(double voltage) {
-    leftMotor.setVoltage(voltage);
-  }
-
-  @Override
-  public void setRightVoltage(double voltage) {
-    rightMotor.setVoltage(voltage);
-  }
-
-  @Override
-  public void setMotorSetPoint(double setpointRPM) {
-    leftMotor.getPIDController().setReference(setpointRPM, ControlType.kVelocity, 0);
-    rightMotor.getPIDController().setReference(setpointRPM, ControlType.kVelocity, 0);
+  public void setMotorSetPoint(double leftRPM, double rightRPM) {
+    leftMotor.getPIDController().setReference(leftRPM, ControlType.kVelocity, 0);
+    rightMotor.getPIDController().setReference(rightRPM, ControlType.kVelocity, 0);
   }
 }

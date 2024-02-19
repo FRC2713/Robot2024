@@ -12,67 +12,15 @@ import lombok.Getter;
 
 @Builder
 public class PIDFFGains {
-  @Getter
-  private double kP, kI, kD, kS, kV, kG; // TODO: apply kg (or make seperate ElevatorGains class)
+  @Getter private double kP, kI, kD, kS, kV, kG;
   @Getter private String name;
-  @Getter private TunableNT4 tunableKP, tunableKI, tunableKD, tunableKS, tunableKV, tunableKG;
 
   public PIDFFGains buildTunables() {
-    // tunableKP =
-    //     new TunableNT4(
-    //         name + "/kP",
-    //         kP,
-    //         x -> {
-    //           this.kP = x;
-    //         });
-    // tunableKI =
-    //     new TunableNT4(
-    //         name + "/kI",
-    //         kI,
-    //         x -> {
-    //           this.kI = x;
-    //         });
-    // tunableKD =
-    //     new TunableNT4(
-    //         name + "/kD",
-    //         kD,
-    //         x -> {
-    //           this.kD = x;
-    //         });
-    // tunableKS =
-    //     new TunableNT4(
-    //         name + "/kS",
-    //         kS,
-    //         x -> {
-    //           this.kS = x;
-    //         });
-    // tunableKV =
-    //     new TunableNT4(
-    //         name + "/kV",
-    //         kV,
-    //         x -> {
-    //           this.kV = x;
-    //         });
-
-    tunableKG =
-        new TunableNT4(
-            name + "/kG",
-            kG,
-            x -> {
-              this.kG = x;
-            });
-
     return this;
   }
 
   public PIDController createWpilibController() {
     PIDController controller = new PIDController(kP, kI, kD);
-
-    if (tunableKP != null) {
-      tunableKP.addHook(x -> controller.setP(x));
-      tunableKI.addHook(x -> controller.setI(x));
-      tunableKD.addHook(x -> controller.setD(x));
-    }
 
     return controller;
   }
@@ -81,11 +29,6 @@ public class PIDFFGains {
 
   public RHRFeedForward createRHRFeedForward() {
     RHRFeedForward ff = RHRFeedForward.builder().kS(kS).kV(kV).build();
-
-    if (tunableKS != null) {
-      tunableKS.addHook(x -> ff.setKS(x));
-      tunableKV.addHook(x -> ff.setKV(x));
-    }
 
     return ff;
   }
@@ -106,13 +49,6 @@ public class PIDFFGains {
   public RHRPIDFFController createRHRController() {
     RHRPIDFFController controller = new RHRPIDFFController(this);
 
-    if (tunableKP != null) {
-      tunableKP.addHook(x -> controller.setP(x));
-      tunableKI.addHook(x -> controller.setI(x));
-      tunableKD.addHook(x -> controller.setD(x));
-      tunableKS.addHook(x -> controller.getFeedForward().setKS(x));
-      tunableKV.addHook(x -> controller.getFeedForward().setKV(x));
-    }
     return controller;
   }
 
@@ -129,13 +65,6 @@ public class PIDFFGains {
     controller.setI(kI);
     controller.setD(kD);
     controller.setFF(kV);
-
-    if (tunableKS != null) {
-      tunableKP.addHook(x -> controller.setP(x));
-      tunableKI.addHook(x -> controller.setI(x));
-      tunableKD.addHook(x -> controller.setD(x));
-      tunableKV.addHook(x -> controller.setFF(x));
-    }
   }
 
   public String toString() {

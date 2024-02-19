@@ -1,9 +1,6 @@
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.elevatorIO.Elevator;
-import frc.robot.subsystems.shooterIO.Shooter;
-import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,10 +14,10 @@ public class SuperStructureBuilder extends SequentialCommandGroup {
       shooterMotorSpeed;
 
   public SuperStructureBuilder run() {
-    addCommands(
-        Elevator.Commands.toHeight(this),
-        ShooterPivot.Commands.setTargetAngle(this),
-        Shooter.Commands.toRPM(this));
+    // addCommands(
+    //     Elevator.Commands.toHeight(this),
+    //     ShooterPivot.Commands.setTargetAngle(this),
+    //     Shooter.Commands.toRPM(this));
     return this;
   }
 }

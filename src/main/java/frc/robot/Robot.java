@@ -145,10 +145,8 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.MotionMode.OFF),
                 Feeder.Commands.setMotionMode(Feeder.MotionMode.OFF)));
-    driver
-        .rightBumper()
-        .onTrue(Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP));
-    driver.rightBumper().onFalse(Shooter.Commands.setMotionMode(Shooter.MotionMode.OFF));
+    driver.rightBumper().onTrue(Shooter.Commands.setState(Shooter.State.FENDER_SHOT));
+    driver.rightBumper().onFalse(Shooter.Commands.setState(Shooter.State.OFF));
 
     driver.povUp().onTrue(ShooterPivot.Commands.setTargetAndWait(60));
     driver.povDown().onTrue(ShooterPivot.Commands.setTargetAndWait(0));
@@ -459,7 +457,6 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
     autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
-    
   }
 
   public void checkAlliance() {

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
 import frc.robot.rhr.RHRPIDFFController;
+import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveHeadingController {
@@ -16,18 +17,14 @@ public class SwerveHeadingController {
   private Rotation2d setpoint;
   private RHRPIDFFController controller;
   private double error;
-  private TunableNT4 tunableSetpoint;
+  private LoggedTunableNumber tunableSetpoint;
 
   private SwerveHeadingController() {
     controller = DriveConstants.K_HEADING_CONTROLLER_GAINS.createRHRController();
     controller.enableContinuousInput(0, 360);
 
     setpoint = Robot.swerveDrive.getUsablePose().getRotation();
-    tunableSetpoint = new TunableNT4("Heading Controller/Setpoint", setpoint.getDegrees());
-    tunableSetpoint.addHook(
-        x -> {
-          setSetpoint(Rotation2d.fromDegrees(x));
-        });
+    tunableSetpoint = new LoggedTunableNumber("Heading Controller/Setpoint", setpoint.getDegrees());
   }
 
   /**

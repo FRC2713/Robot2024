@@ -19,9 +19,5 @@ public interface ShooterIO {
 
   public void updateInputs(ShooterInputsAutoLogged inputs);
 
-  public void setLeftVoltage(double voltage);
-
-  public void setRightVoltage(double voltage);
-
-  public void setMotorSetPoint(double setpointRPM);
+  public void setMotorSetPoint(double leftRPM, double rightRPM);
 }

@@ -59,7 +59,7 @@ public class ShooterPivot extends SubsystemBase {
       case SHORT_AUTO_SHOTS:
         setTargetAngle((ShooterPivotConstants.SHORT_AUTO_SHOTS));
         if (isAtTargetAngle()) {
-          Shooter.Commands.setMotionMode(Shooter.MotionMode.FENDER_SHOT_CLOSED_LOOP);
+          Shooter.Commands.setState(Shooter.State.FENDER_SHOT);
         }
         break;
       case CLOSED_LOOP:

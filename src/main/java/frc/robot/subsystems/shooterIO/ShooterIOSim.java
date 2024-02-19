@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
@@ -7,7 +8,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.rhr.RHRPIDFFController;
 
 public class ShooterIOSim implements ShooterIO {
-  RHRPIDFFController shooterController;
+  RHRPIDFFController leftController, rightController;
 
   private static final FlywheelSim leftFlyWheel =
       new FlywheelSim(
@@ -21,18 +22,25 @@ public class ShooterIOSim implements ShooterIO {
           Constants.ShooterConstants.GEARING,
           Constants.ShooterConstants.MOI);
 
-  private double leftVolts;
-
-  private double rightVolts;
+  private double leftVolts, rightVolts;
 
   public ShooterIOSim() {
-    shooterController = ShooterConstants.SHOOTER_GAINS.createRHRController();
+    leftController = ShooterConstants.SHOOTER_GAINS.createRHRController();
+    rightController = ShooterConstants.SHOOTER_GAINS.createRHRController();
   }
 
   @Override
   public void updateInputs(ShooterInputsAutoLogged inputs) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
+
+    leftVolts =
+        MathUtil.clamp(leftController.calculate(leftFlyWheel.getAngularVelocityRPM()), -12, 12);
+    rightVolts =
+        MathUtil.clamp(rightController.calculate(rightFlyWheel.getAngularVelocityRPM()), -12, 12);
+
+    leftFlyWheel.setInputVoltage(leftVolts);
+    rightFlyWheel.setInputVoltage(rightVolts);
 
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
@@ -51,22 +59,8 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setLeftVoltage(double voltage) {
-    leftFlyWheel.setInputVoltage(voltage);
-    this.leftVolts = voltage;
-  }
-
-  @Override
-  public void setRightVoltage(double voltage) {
-    rightFlyWheel.setInputVoltage(voltage);
-    this.rightVolts = voltage;
-  }
-
-  @Override
-  public void setMotorSetPoint(double setpointRPM) {
-    shooterController.setSetpoint(setpointRPM);
-    var voltage = shooterController.calculate(setpointRPM);
-    setLeftVoltage(voltage);
-    setRightVoltage(voltage);
+  public void setMotorSetPoint(double leftRPM, double rightRPM) {
+    leftController.setSetpoint(leftRPM);
+    rightController.setSetpoint(rightRPM);
   }
 }
