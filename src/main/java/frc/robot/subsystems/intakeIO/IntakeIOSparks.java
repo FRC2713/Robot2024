@@ -60,12 +60,6 @@ public class IntakeIOSparks implements IntakeIO {
   }
 
   @Override
-  public boolean hasGamepiece() {
-    // return (sensor.getRange() < Constants.IntakeConstants.SENSOR_THRESHOLD);
-    return false;
-  }
-
-  @Override
   public void setVoltage(double leftVolts, double rightVolts) {
     leftMotor.setVoltage(leftVolts);
     rightMotor.setVoltage(rightVolts);

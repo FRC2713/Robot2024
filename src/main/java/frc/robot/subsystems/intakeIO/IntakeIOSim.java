@@ -51,11 +51,6 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public boolean hasGamepiece() {
-    return false;
-  }
-
-  @Override
   public void setVoltage(double leftVolts, double rightVolts) {
     simLeft.setInputVoltage(leftVolts);
     this.leftVolts = leftVolts;

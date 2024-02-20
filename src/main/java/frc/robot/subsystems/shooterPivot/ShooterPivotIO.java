@@ -17,7 +17,7 @@ public interface ShooterPivotIO {
     public double targetAngle = 0.0;
   }
 
-  public void updateInputs(ShooterPivotInputs inputs);
+  public void updateInputs(ShooterPivotInputs inputs, double ffVolts);
 
   public void reseedPosition(double angleDeg);
 

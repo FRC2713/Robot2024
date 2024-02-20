@@ -38,7 +38,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs) {
+  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
     }
@@ -59,6 +59,7 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
     inputs.currentDraw = sim.getCurrentDrawAmps();
 
     double effort = motorController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
+    effort += ffVolts;
     effort = MathUtil.clamp(effort, -12, 12);
     setVoltage(effort);
   }
