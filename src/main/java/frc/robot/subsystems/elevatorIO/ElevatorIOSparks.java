@@ -1,8 +1,8 @@
 package frc.robot.subsystems.elevatorIO;
 
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
@@ -10,11 +10,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSparks implements ElevatorIO {
-  private CANSparkFlex left, right;
+  private CANSparkMax left, right;
 
   public ElevatorIOSparks() {
-    left = new CANSparkFlex(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
-    right = new CANSparkFlex(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    left = new CANSparkMax(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkMax(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
 
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();

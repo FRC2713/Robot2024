@@ -6,21 +6,23 @@ public interface ShooterPivotIO {
 
   @AutoLog
   public static class ShooterPivotInputs {
-    public double outputVoltage = 0.0;
-    public double angleDegreesOne = 0.0;
-    public double velocityDegreesPerSecondOne = 0.0;
-    public double tempCelciusOne = 0.0;
-    public double currentDrawOne = 0.0;
+    public double outputVoltageLeft = 0.0;
+    public double angleDegreesLeft = 0.0;
+    public double velocityDegreesPerSecondLeft = 0.0;
+    public double tempCelciusLeft = 0.0;
+    public double currentDrawAmpsLeft = 0.0;
+
+    public double outputVoltageRight = 0.0;
+    public double angleDegreesRight = 0.0;
+    public double velocityDegreesPerSecondRight = 0.0;
+    public double tempCelciusRight = 0.0;
+    public double currentDrawAmpsRight = 0.0;
+
     public double absoluteEncoderVolts = 0.0;
     public double absoluteEncoderAdjustedAngle = 0.0;
-    public double targetAngle = 0.0;
   }
 
-  public void updateInputs(ShooterPivotInputs inputs, double ffVolts);
+  public void updateInputs(ShooterPivotInputs inputs);
 
-  public void reseedPosition(double angleDeg);
-
-  public void setVoltage(double volts);
-
-  public void setTargetPosition(double angleDeg);
+  public void setTargetAngle(double degrees);
 }

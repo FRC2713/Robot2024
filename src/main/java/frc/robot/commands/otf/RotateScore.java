@@ -42,7 +42,7 @@ public class RotateScore extends SequentialCommandGroup {
           var optimalShooterAngle =
               getOptimalShooterAngle(Robot.swerveDrive.getUsablePose(), optimalHeight);
           Logger.recordOutput("OTF/Optimal Shooter Angle", optimalShooterAngle.getDegrees() + 90);
-          Robot.shooterPivot.setTargetAngle(optimalShooterAngle.getDegrees());
+          // Robot.shooterPivot.setTargetAngle(optimalShooterAngle.getDegrees());
           Rotation2d optimalRotation =
               RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
           SwerveHeadingController.getInstance().setSetpoint(optimalRotation);

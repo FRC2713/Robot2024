@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooterPivot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,44 +37,34 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
+  public void updateInputs(ShooterPivotInputs inputs) {
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
     }
 
     sim.update(0.02);
 
-    inputs.outputVoltage = this.voltage;
+    inputs.outputVoltageLeft = this.voltage;
+    inputs.angleDegreesLeft =
+        Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+    inputs.velocityDegreesPerSecondLeft = Units.radiansToDegrees(sim.getVelocityRadPerSec());
+    inputs.currentDrawAmpsLeft = sim.getCurrentDrawAmps();
 
-    inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+    inputs.outputVoltageLeft = inputs.outputVoltageRight;
+    inputs.angleDegreesLeft = inputs.angleDegreesRight;
+    inputs.velocityDegreesPerSecondLeft = inputs.velocityDegreesPerSecondRight;
+    inputs.currentDrawAmpsLeft = inputs.currentDrawAmpsRight;
 
     inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
 
-    inputs.velocityDegreesPerSecondOne = Units.radiansToDegrees(sim.getVelocityRadPerSec());
-
-    inputs.tempCelciusOne = 0.0;
-
-    inputs.currentDrawOne = sim.getCurrentDrawAmps();
-
     double effort = motorController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
-    effort += ffVolts;
+    effort += feedforward.calculate(inputs.absoluteEncoderAdjustedAngle);
     effort = MathUtil.clamp(effort, -12, 12);
-    setVoltage(effort);
+    this.voltage = effort;
   }
 
   @Override
-  public void reseedPosition(double angleDeg) {
-    sim.setState(VecBuilder.fill(Units.degreesToRadians(angleDeg), 0.0));
-  }
-
-  @Override
-  public void setTargetPosition(double angleDeg) {
-    this.targetAngle = angleDeg;
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    sim.setInputVoltage(volts);
-    this.voltage = volts;
+  public void setTargetAngle(double degrees) {
+    targetAngle = degrees;
   }
 }

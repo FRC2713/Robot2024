@@ -5,8 +5,8 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -186,10 +186,10 @@ public final class RedHawkUtil {
    * https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
    */
   public static void configureCANSparkMAXStatusFrames(
-      HashMap<PeriodicFrame, Integer> config, CANSparkMax... sparks) {
+      HashMap<PeriodicFrame, Integer> config, CANSparkBase... sparks) {
     config.forEach(
         (frame, ms) -> {
-          for (CANSparkMax spark : sparks) {
+          for (CANSparkBase spark : sparks) {
             cOk(spark.setPeriodicFramePeriod(frame, ms));
           }
         });

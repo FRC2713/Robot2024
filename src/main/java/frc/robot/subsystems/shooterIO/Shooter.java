@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooterIO;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FeederConstants;
 import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
 import lombok.RequiredArgsConstructor;
@@ -12,19 +13,31 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber fenderShotRpm =
+  private static final LoggedTunableNumber fenderShotShooterRpm =
       new LoggedTunableNumber("Flywheel/Fender Shot RPM", 3500);
-  private static final LoggedTunableNumber restingRpm =
-      new LoggedTunableNumber("Flywheel/Resting RPM", 500);
+  private static final LoggedTunableNumber fenderShotFeederVolts =
+      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 10);
+
+  private static final LoggedTunableNumber restingShooterRpm =
+      new LoggedTunableNumber("Flywheel/Resting RPM", 0);
+  private static final LoggedTunableNumber restingFeederVolts =
+      new LoggedTunableNumber("Flywheel/Resting Feeder Volts", 0);
+
+  private static final LoggedTunableNumber intakingShooterRpm =
+      new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
+  private static final LoggedTunableNumber intakingFeederVolts =
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 10);
+
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 50);
 
   @RequiredArgsConstructor
   public enum State {
-    FENDER_SHOT(fenderShotRpm, fenderShotRpm),
-    RESTING(restingRpm, restingRpm),
-    OFF(() -> 0, () -> 0);
-    private final DoubleSupplier leftGoal, rightGoal;
+    FENDER_SHOT(fenderShotShooterRpm, fenderShotShooterRpm, fenderShotFeederVolts),
+    RESTING(restingShooterRpm, restingShooterRpm, restingFeederVolts),
+    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts),
+    OFF(() -> 0, () -> 0, () -> 0);
+    private final DoubleSupplier leftRpm, rightRpm, feederRpm;
   }
 
   @Setter public State motionMode = State.OFF;
@@ -41,7 +54,13 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     IO.updateInputs(inputs);
-    IO.setMotorSetPoint(motionMode.leftGoal.getAsDouble(), motionMode.rightGoal.getAsDouble());
+    IO.setMotorSetPoint(motionMode.leftRpm.getAsDouble(), motionMode.rightRpm.getAsDouble());
+
+    if (!isAtTarget()) {
+      IO.setFeederVolts(0.0);
+    } else {
+      IO.setFeederVolts(motionMode.feederRpm.getAsDouble());
+    }
 
     Logger.recordOutput("Shooter/Mode", motionMode);
     Logger.processInputs("Shooter", inputs);
@@ -49,10 +68,15 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    return Math.abs(inputs.leftSpeedRPM - motionMode.leftGoal.getAsDouble())
+    return Math.abs(inputs.leftSpeedRPM - motionMode.leftRpm.getAsDouble())
             < atGoalThresholdRPM.getAsDouble()
-        && Math.abs(inputs.rightSpeedRPM - motionMode.rightGoal.getAsDouble())
+        && Math.abs(inputs.rightSpeedRPM - motionMode.rightRpm.getAsDouble())
             < atGoalThresholdRPM.getAsDouble();
+  }
+
+  @AutoLogOutput(key = "Flywheel/hasGamePiece")
+  public boolean hasGamePiece() {
+    return inputs.sensorVoltage >= FeederConstants.SENSOR_THRESHOLD;
   }
 
   public static class Commands {

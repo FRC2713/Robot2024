@@ -22,7 +22,9 @@ public class ShooterIOSim implements ShooterIO {
           Constants.ShooterConstants.GEARING,
           Constants.ShooterConstants.MOI);
 
-  private double leftVolts, rightVolts;
+  private static final FlywheelSim feeder = new FlywheelSim(DCMotor.getKrakenX60(1), 1.0, 0.0001);
+
+  private double leftVolts, rightVolts, feederVolts;
 
   public ShooterIOSim() {
     leftController = ShooterConstants.SHOOTER_GAINS.createRHRController();
@@ -33,6 +35,7 @@ public class ShooterIOSim implements ShooterIO {
   public void updateInputs(ShooterInputsAutoLogged inputs) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
+    feeder.update(0.02);
 
     leftVolts =
         MathUtil.clamp(leftController.calculate(leftFlyWheel.getAngularVelocityRPM()), -12, 12);
@@ -41,6 +44,7 @@ public class ShooterIOSim implements ShooterIO {
 
     leftFlyWheel.setInputVoltage(leftVolts);
     rightFlyWheel.setInputVoltage(rightVolts);
+    feeder.setInputVoltage(feederVolts);
 
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
@@ -56,11 +60,21 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.leftPosDeg = 0.0;
     inputs.rightPosDeg = 0.0;
+
+    inputs.feederOutputVolts = feederVolts;
+    inputs.feederVelocityRPM = feeder.getAngularVelocityRPM();
+    inputs.feederStatorCurrentAmps = feeder.getCurrentDrawAmps();
+    inputs.feederSupplyCurrentAmps = feeder.getCurrentDrawAmps();
   }
 
   @Override
   public void setMotorSetPoint(double leftRPM, double rightRPM) {
     leftController.setSetpoint(leftRPM);
     rightController.setSetpoint(rightRPM);
+  }
+
+  @Override
+  public void setFeederVolts(double volts) {
+    this.feederVolts = volts;
   }
 }

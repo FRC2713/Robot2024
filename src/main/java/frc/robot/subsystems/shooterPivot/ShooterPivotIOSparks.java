@@ -2,31 +2,35 @@ package frc.robot.subsystems.shooterPivot;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAnalogSensor;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
-  CANSparkMax spark;
+  CANSparkFlex left, right;
   SparkAnalogSensor analogSensor;
 
-  private double targetAngle;
-
   public ShooterPivotIOSparks() {
-    spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
-    analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+    left = new CANSparkFlex(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
+    right = new CANSparkFlex(0, MotorType.kBrushless);
 
-    spark.restoreFactoryDefaults();
-    spark.getPIDController().setFeedbackDevice(analogSensor);
+    left.restoreFactoryDefaults();
+    right.restoreFactoryDefaults();
 
-    spark.setSmartCurrentLimit(20);
+    analogSensor = left.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+    left.getPIDController().setFeedbackDevice(analogSensor);
+
+    left.setSmartCurrentLimit(20);
+    right.setSmartCurrentLimit(20);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
@@ -40,51 +44,40 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
             put(PeriodicFrame.kStatus6, 20);
           }
         },
-        spark);
+        left,
+        right);
 
-    spark.setIdleMode(IdleMode.kBrake);
-    spark.setInverted(false);
+    left.setIdleMode(IdleMode.kBrake);
+    right.setIdleMode(IdleMode.kBrake);
+    left.setInverted(false);
+    right.follow(left, true);
 
-    SparkPIDController pid = spark.getPIDController();
-    pid.setP(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKP());
-    pid.setI(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKI());
-    pid.setD(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKD());
+    ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(left.getPIDController());
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
-
-    inputs.absoluteEncoderAdjustedAngle =
-        Units.rotationsToDegrees(spark.getEncoder().getPosition());
-
-    inputs.angleDegreesOne = inputs.absoluteEncoderAdjustedAngle;
-
-    inputs.velocityDegreesPerSecondOne =
+  public void updateInputs(ShooterPivotInputs inputs) {
+    inputs.angleDegreesLeft = Units.rotationsToDegrees(left.getEncoder().getPosition());
+    inputs.velocityDegreesPerSecondLeft =
         Units.radiansToDegrees(
-            Units.rotationsPerMinuteToRadiansPerSecond(spark.getEncoder().getVelocity()));
+            Units.rotationsPerMinuteToRadiansPerSecond(left.getEncoder().getVelocity()));
+    inputs.tempCelciusLeft = left.getMotorTemperature();
+    inputs.currentDrawAmpsLeft = left.getOutputCurrent();
+    inputs.outputVoltageLeft = left.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.tempCelciusOne = spark.getMotorTemperature();
+    inputs.angleDegreesRight = Units.rotationsToDegrees(right.getEncoder().getPosition());
+    inputs.velocityDegreesPerSecondRight =
+        Units.radiansToDegrees(
+            Units.rotationsPerMinuteToRadiansPerSecond(right.getEncoder().getVelocity()));
+    inputs.tempCelciusRight = right.getMotorTemperature();
+    inputs.currentDrawAmpsRight = right.getOutputCurrent();
+    inputs.outputVoltageRight = right.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.currentDrawOne = spark.getOutputCurrent();
-
-    inputs.outputVoltage = spark.getBusVoltage();
-    spark.getPIDController().setReference(targetAngle, ControlType.kPosition, 0, ffVolts);
+    inputs.absoluteEncoderAdjustedAngle = analogSensor.getPosition();
   }
 
   @Override
-  public void reseedPosition(double angleDeg) {
-    double trueAngle = angleDeg - Constants.ShooterPivotConstants.OFFSET;
-    spark.getEncoder().setPosition(trueAngle);
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    spark.setVoltage(volts);
-  }
-
-  @Override
-  public void setTargetPosition(double angleDeg) {
-    this.targetAngle = angleDeg;
-    this.spark.getPIDController().setReference(angleDeg, ControlType.kPosition);
+  public void setTargetAngle(double degrees) {
+    left.getPIDController().setReference(degrees, ControlType.kPosition, 0, 0, ArbFFUnits.kVoltage);
   }
 }
