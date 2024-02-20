@@ -47,10 +47,4 @@ public class FeederIOSparks implements FeederIO {
     inputs.velocityRPM = motor.getEncoder().getVelocity();
     inputs.positionDeg = Units.rotationsToDegrees(motor.getEncoder().getPosition());
   }
-
-  @Override
-  public boolean hasGamepiece() {
-    // return (sensor.getRange() < Constants.FeederConstants.SENSOR_THRESHOLD);
-    return false;
-  }
 }

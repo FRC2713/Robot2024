@@ -33,7 +33,7 @@ public class ShooterPivot extends SubsystemBase {
   public ShooterPivot(ShooterPivotIO IO) {
     this.inputs = new ShooterPivotInputsAutoLogged();
     this.IO = IO;
-    this.IO.updateInputs(inputs);
+    this.IO.updateInputs(inputs, 0);
     mode = MotionMode.SHORT_AUTO_SHOTS;
   }
 
@@ -75,7 +75,7 @@ public class ShooterPivot extends SubsystemBase {
     var ffVolts =
         feedforward.calculate(
             Units.degreesToRadians(inputs.absoluteEncoderAdjustedAngle),
-            Units.degreesToRadians(inputs.velocityDegreesPerSecondOne));
+            Units.degreesToRadians(inputs.velocityDegreesPerSecondMotor));
     IO.updateInputs(inputs, ffVolts);
     Logger.recordOutput("ShooterPivot/FFVolts", ffVolts);
     Logger.recordOutput("ShooterPivot/isAtTarget", this.isAtTargetAngle());
