@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
@@ -110,7 +111,7 @@ public class Robot extends LoggedRobot {
     //     new VisionManager(
     //         new Vision(
     //             true
-    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO
     //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
     //         new Vision(
     //             true
@@ -122,14 +123,31 @@ public class Robot extends LoggedRobot {
     checkAlliance();
     buildAutoChooser();
 
-    driver.leftBumper().onTrue(Intake.Commands.setMotionMode(Intake.State.INTAKE_GP));
-    driver.leftBumper().onFalse(Intake.Commands.setMotionMode(Intake.State.OFF));
     driver
-        .leftTrigger(0.1)
-        .onFalse(Commands.sequence(Intake.Commands.setMotionMode(Intake.State.OFF)));
+        .leftBumper()
+        .onTrue(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                Shooter.Commands.setState(Shooter.State.INTAKING)));
+
+    driver
+        .leftBumper()
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    new InstantCommand(),
+                    () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver.rightBumper().onTrue(Shooter.Commands.setState(Shooter.State.FENDER_SHOT));
-    driver.rightBumper().onFalse(Shooter.Commands.setState(Shooter.State.OFF));
+    driver
+        .rightBumper()
+        .onFalse(
+            Commands.either(
+                Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                Shooter.Commands.setState(Shooter.State.OFF),
+                () -> shooter.getState() == Shooter.State.FENDER_SHOT));
   }
 
   @Override

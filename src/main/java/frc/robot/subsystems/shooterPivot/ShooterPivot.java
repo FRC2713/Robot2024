@@ -34,7 +34,7 @@ public class ShooterPivot extends SubsystemBase {
 
   @Getter
   @AutoLogOutput(key = "ShooterPivot/State")
-  private State state;
+  private State state = State.OFF;
 
   public final ShooterPivotInputsAutoLogged inputs;
   private final ShooterPivotIO IO;

@@ -1,11 +1,14 @@
 package frc.robot.subsystems.shooterIO;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FeederConstants;
 import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
@@ -18,9 +21,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotFeederVolts =
       new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 10);
 
-  private static final LoggedTunableNumber restingShooterRpm =
+  private static final LoggedTunableNumber holdingGpShooterRpm =
       new LoggedTunableNumber("Flywheel/Resting RPM", 0);
-  private static final LoggedTunableNumber restingFeederVolts =
+  private static final LoggedTunableNumber holdingFeederVolts =
       new LoggedTunableNumber("Flywheel/Resting Feeder Volts", 0);
 
   private static final LoggedTunableNumber intakingShooterRpm =
@@ -31,16 +34,23 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 50);
 
+  private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 1.0;
+  private final Debouncer debouncer =
+      new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kBoth);
+
   @RequiredArgsConstructor
   public enum State {
     FENDER_SHOT(fenderShotShooterRpm, fenderShotShooterRpm, fenderShotFeederVolts),
-    RESTING(restingShooterRpm, restingShooterRpm, restingFeederVolts),
+    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts),
     OFF(() -> 0, () -> 0, () -> 0);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
   }
 
-  @Setter public State motionMode = State.OFF;
+  @Setter
+  @Getter
+  @AutoLogOutput(key = "Shooter/State")
+  public State state = State.OFF;
 
   private final ShooterIO IO;
   private final ShooterInputsAutoLogged inputs;
@@ -48,29 +58,36 @@ public class Shooter extends SubsystemBase {
   public Shooter(ShooterIO IO) {
     this.IO = IO;
     this.inputs = new ShooterInputsAutoLogged();
-    this.IO.updateInputs(inputs);
+    this.IO.updateInputs(inputs, state);
   }
 
   @Override
   public void periodic() {
-    IO.updateInputs(inputs);
-    IO.setMotorSetPoint(motionMode.leftRpm.getAsDouble(), motionMode.rightRpm.getAsDouble());
+    IO.updateInputs(inputs, state);
 
     if (!isAtTarget()) {
       IO.setFeederVolts(0.0);
     } else {
-      IO.setFeederVolts(motionMode.feederRpm.getAsDouble());
+      IO.setFeederVolts(state.feederRpm.getAsDouble());
     }
 
-    Logger.recordOutput("Shooter/Mode", motionMode);
+    if (state == State.INTAKING && hasGamePiece()) {
+      state = State.HOLDING_GP;
+    }
+
+    if (state == State.FENDER_SHOT && !debouncer.calculate(hasGamePiece())) {
+      state = State.OFF;
+    }
+
+    IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
     Logger.processInputs("Shooter", inputs);
   }
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    return Math.abs(inputs.leftSpeedRPM - motionMode.leftRpm.getAsDouble())
+    return Math.abs(inputs.leftSpeedRPM - state.leftRpm.getAsDouble())
             < atGoalThresholdRPM.getAsDouble()
-        && Math.abs(inputs.rightSpeedRPM - motionMode.rightRpm.getAsDouble())
+        && Math.abs(inputs.rightSpeedRPM - state.rightRpm.getAsDouble())
             < atGoalThresholdRPM.getAsDouble();
   }
 
@@ -81,7 +98,7 @@ public class Shooter extends SubsystemBase {
 
   public static class Commands {
     public static Command setState(State mode) {
-      return new InstantCommand(() -> Robot.shooter.setMotionMode(mode));
+      return new InstantCommand(() -> Robot.shooter.setState(mode));
     }
   }
 }

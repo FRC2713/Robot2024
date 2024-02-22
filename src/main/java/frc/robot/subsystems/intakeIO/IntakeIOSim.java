@@ -42,15 +42,13 @@ public class IntakeIOSim implements IntakeIO {
     inputs.rightTempCelcius = 0.0;
     inputs.rightCurrentAmps = simRight.getCurrentDrawAmps();
     inputs.rightPositionRad = simRight.getAngularPositionRad();
-
-    inputs.sensorVoltage = 0.0;
   }
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
     simLeft.setInputVoltage(leftVolts);
     this.leftVolts = leftVolts;
-    simRight.setInputVoltage(-rightVolts);
-    this.rightVolts = -rightVolts;
+    simRight.setInputVoltage(rightVolts);
+    this.rightVolts = rightVolts;
   }
 }

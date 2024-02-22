@@ -18,8 +18,6 @@ public interface IntakeIO {
     public double rightTempCelcius = 0.0;
     public double rightCurrentAmps = 0.0;
     public double rightPositionRad = 0.0;
-
-    public double sensorVoltage = 0.0;
   }
 
   public void updateInputs(IntakeInputsAutoLogged inputs);

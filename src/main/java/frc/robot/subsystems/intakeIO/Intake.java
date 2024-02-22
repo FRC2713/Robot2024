@@ -3,7 +3,6 @@ package frc.robot.subsystems.intakeIO;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
 import lombok.RequiredArgsConstructor;
@@ -44,15 +43,9 @@ public class Intake extends SubsystemBase {
     this.IO = IO;
   }
 
-  @AutoLogOutput(key = "Intake/Has Gamepiece")
-  public boolean hasGamepiece() {
-    return inputs.sensorVoltage < Constants.IntakeConstants.SENSOR_THRESHOLD;
-  }
-
   public void periodic() {
     IO.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
-
     IO.setVoltage(state.bottomVolts.getAsDouble(), state.topVolts.getAsDouble());
   }
 

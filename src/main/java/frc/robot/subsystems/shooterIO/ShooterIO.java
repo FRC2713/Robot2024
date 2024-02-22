@@ -24,7 +24,7 @@ public interface ShooterIO {
     public double sensorVoltage = 0.0;
   }
 
-  public void updateInputs(ShooterInputsAutoLogged inputs);
+  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);
 
   public void setMotorSetPoint(double leftRPM, double rightRPM);
 
