@@ -50,6 +50,11 @@ public class ShooterPivot extends SubsystemBase {
     Logger.processInputs("ShooterPivot", inputs);
     Logger.recordOutput("ShooterPivot/Mode", state);
 
+
+    if (state != State.OFF) {
+      IO.setTargetAngle(state.pivotAngleDegrees.getAsDouble());
+    }
+    
     IO.updateInputs(inputs);
   }
 
