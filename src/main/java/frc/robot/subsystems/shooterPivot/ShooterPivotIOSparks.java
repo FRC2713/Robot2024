@@ -20,14 +20,21 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   SparkAnalogSensor analogSensor;
 
   public ShooterPivotIOSparks() {
-    left = new CANSparkFlex(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
-    right = new CANSparkFlex(0, MotorType.kBrushless);
+    left = new CANSparkFlex(Constants.RobotMap.PIVOT_LEFT_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkFlex(Constants.RobotMap.PIVOT_RIGHT_CAN_ID, MotorType.kBrushless);
 
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
     analogSensor = left.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-    left.getPIDController().setFeedbackDevice(analogSensor);
+
+    left.getEncoder().setPosition(0);
+    right.getEncoder().setPosition(0);
+
+    right.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
+    left.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
+
+    left.getPIDController().setFeedbackDevice(left.getEncoder()); // absolute encoder didnt work :(
 
     left.setSmartCurrentLimit(20);
     right.setSmartCurrentLimit(20);
@@ -57,7 +64,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   @Override
   public void updateInputs(ShooterPivotInputs inputs) {
-    inputs.angleDegreesLeft = Units.rotationsToDegrees(left.getEncoder().getPosition());
+    inputs.angleDegreesLeft = left.getEncoder().getPosition();
+
     inputs.velocityDegreesPerSecondLeft =
         Units.radiansToDegrees(
             Units.rotationsPerMinuteToRadiansPerSecond(left.getEncoder().getVelocity()));
@@ -65,7 +73,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     inputs.currentDrawAmpsLeft = left.getOutputCurrent();
     inputs.outputVoltageLeft = left.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.angleDegreesRight = Units.rotationsToDegrees(right.getEncoder().getPosition());
+    inputs.angleDegreesRight = right.getEncoder().getPosition();
+
     inputs.velocityDegreesPerSecondRight =
         Units.radiansToDegrees(
             Units.rotationsPerMinuteToRadiansPerSecond(right.getEncoder().getVelocity()));

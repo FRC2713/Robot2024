@@ -13,18 +13,18 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber intakingAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 45);
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 0);
   private static final LoggedTunableNumber fenderShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 45);
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 0);
   private static final LoggedTunableNumber podiumShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 45);
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 24);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 3);
 
   @RequiredArgsConstructor
   public enum State {
-    INTAKING(intakingAngleDegrees),
+    INTAKING(intakingAngleDegrees), // also for outtaking
     FENDER_SHOT(fenderShotAngleDegrees),
     PODIUM_SHOT(podiumShotAngleDegrees),
     OFF(() -> 0);
@@ -50,11 +50,12 @@ public class ShooterPivot extends SubsystemBase {
     Logger.processInputs("ShooterPivot", inputs);
     Logger.recordOutput("ShooterPivot/Mode", state);
 
+    Logger.recordOutput("ShooterPivot/Target", state.pivotAngleDegrees.getAsDouble());
 
     if (state != State.OFF) {
       IO.setTargetAngle(state.pivotAngleDegrees.getAsDouble());
     }
-    
+
     IO.updateInputs(inputs);
   }
 
@@ -62,15 +63,23 @@ public class ShooterPivot extends SubsystemBase {
     return inputs.absoluteEncoderAdjustedAngle;
   }
 
+  @AutoLogOutput(key = "ShooterPivot/isAtTargetAngle")
   public boolean isAtTargetAngle() {
-    return (Math.abs(
-            inputs.absoluteEncoderAdjustedAngle - this.state.pivotAngleDegrees.getAsDouble())
-        < atGoalThresholdDegrees.get());
+    return (Math.abs(inputs.angleDegreesLeft - this.state.pivotAngleDegrees.getAsDouble())
+            < atGoalThresholdDegrees.get())
+        && (Math.abs(inputs.angleDegreesRight - this.state.pivotAngleDegrees.getAsDouble())
+            < atGoalThresholdDegrees.get());
   }
 
   public static class Commands {
     public static Command setMotionMode(State mode) {
       return new InstantCommand(() -> Robot.shooterPivot.state = mode);
+    }
+
+    public static Command setModeAndWait(State mode) {
+      return Commands.setMotionMode(mode)
+          .repeatedly()
+          .until(() -> (Robot.shooterPivot.isAtTargetAngle()));
     }
   }
 }

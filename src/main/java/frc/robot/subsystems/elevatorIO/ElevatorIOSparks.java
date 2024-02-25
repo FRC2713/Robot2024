@@ -55,6 +55,8 @@ public class ElevatorIOSparks implements ElevatorIO {
   public void reset() {
     left.getEncoder().setPosition(0);
     right.getEncoder().setPosition(0);
+
+    left.getEncoder().setPositionConversionFactor(0);
   }
 
   @Override

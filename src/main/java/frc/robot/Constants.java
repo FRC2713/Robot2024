@@ -60,8 +60,8 @@ public final class Constants {
   @UtilityClass
   public static final class RobotMap {
     public static final int PIGEON_CAN_ID = 60;
-    public static final int LEFT_ELEVATOR_CAN_ID = 3;
-    public static final int RIGHT_ELEVATOR_CAN_ID = 4;
+    public static final int LEFT_ELEVATOR_CAN_ID = 10;
+    public static final int RIGHT_ELEVATOR_CAN_ID = 11;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
@@ -69,11 +69,12 @@ public final class Constants {
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 30;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
-    public static final int INTAKE_BOTTOM_MOTOR_CAN_ID = 8;
-    public static final int INTAKE_TOP_MOTOR_CAN_ID = 9;
+    public static final int INTAKE_BOTTOM_MOTOR_CAN_ID = 9;
+    public static final int INTAKE_TOP_MOTOR_CAN_ID = 8;
 
     public static final int FEEDER_CAN_ID = 6;
-    public static final int PIVOT_ID = 5;
+    public static final int PIVOT_LEFT_CAN_ID = 12;
+    public static final int PIVOT_RIGHT_CAN_ID = 13;
 
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
@@ -105,7 +106,8 @@ public final class Constants {
     public static final double MAX_RPM = 5000;
     // TODO: FIX
     public static final double MOI = 0.000001;
-    public static final double SENSOR_THRESHOLD = 3;
+
+    public static final double SENSOR_THRESHOLD = 1.6;
   }
 
   public static final class ShooterPivotConstants {
@@ -119,7 +121,7 @@ public final class Constants {
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
     public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
+        PIDFFGains.builder().name("ShooterPivot Controller").kP(1.0).kD(0).kG(0.0).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;

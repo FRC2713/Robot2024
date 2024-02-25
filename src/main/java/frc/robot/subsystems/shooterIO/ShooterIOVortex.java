@@ -2,8 +2,11 @@ package frc.robot.subsystems.shooterIO;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -13,13 +16,16 @@ import com.revrobotics.SparkAnalogSensor.Mode;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.RedHawkUtil;
 
 public class ShooterIOVortex implements ShooterIO {
   private final CANSparkFlex leftMotor =
-      new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
+      new CANSparkFlex(
+          Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID,
+          MotorType.kBrushless); // left and right should swap
   private final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
-  private final TalonFX feeder = new TalonFX(0);
+  private final TalonFX feeder = new TalonFX(Constants.RobotMap.FEEDER_CAN_ID);
   private final SparkAnalogSensor sensor;
 
   private StatusSignal<Double> feederMotorVoltage = feeder.getMotorVoltage();
@@ -47,10 +53,21 @@ public class ShooterIOVortex implements ShooterIO {
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
 
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Voltage.PeakForwardVoltage = 12;
+    config.Voltage.PeakReverseVoltage = -12;
+    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+    RedHawkUtil.applyConfigs(feeder, config);
+
     ShooterConstants.SHOOTER_GAINS.applyTo(leftMotor.getPIDController());
     ShooterConstants.SHOOTER_GAINS.applyTo(rightMotor.getPIDController());
 
-    sensor = leftMotor.getAnalog(Mode.kAbsolute);
+    sensor = rightMotor.getAnalog(Mode.kAbsolute);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50, feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);

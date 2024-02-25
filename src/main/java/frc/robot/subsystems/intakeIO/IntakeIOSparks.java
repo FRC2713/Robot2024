@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeIO;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
@@ -19,11 +20,14 @@ public class IntakeIOSparks implements IntakeIO {
     bottomMotor.restoreFactoryDefaults();
     topMotor.restoreFactoryDefaults();
 
+    bottomMotor.setIdleMode(IdleMode.kCoast);
+    bottomMotor.setIdleMode(IdleMode.kCoast);
+
     bottomMotor.setSmartCurrentLimit(40);
     topMotor.setSmartCurrentLimit(40);
 
     topMotor.setInverted(false);
-    bottomMotor.setInverted(true);
+    bottomMotor.setInverted(false);
   }
 
   @Override

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
@@ -86,7 +87,7 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : new ElevatorIOSparks());
+    elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
@@ -128,26 +129,89 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-                Shooter.Commands.setState(Shooter.State.INTAKING)));
+                Shooter.Commands.setState(Shooter.State.INTAKING),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
 
     driver
         .leftBumper()
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
+                Shooter.Commands.setState(Shooter.State.BACK_GP_UP),
+                new WaitCommand(0.5),
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    new InstantCommand(),
+                    () ->
+                        shooter.getState() == Shooter.State.INTAKING
+                            || shooter.getState() == Shooter.State.BACK_GP_UP)));
+
+    driver
+        .povUp()
+        .onTrue(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
+                Shooter.Commands.setState(Shooter.State.OUTAKING),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
+
+    driver
+        .povUp()
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.OFF),
                     new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING)));
+                    () -> shooter.getState() == Shooter.State.OUTAKING)));
 
-    driver.rightBumper().onTrue(Shooter.Commands.setState(Shooter.State.FENDER_SHOT));
+    driver
+        .rightBumper()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FENDER_SHOT)));
+
     driver
         .rightBumper()
         .onFalse(
-            Commands.either(
-                Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                Shooter.Commands.setState(Shooter.State.OFF),
-                () -> shooter.getState() == Shooter.State.FENDER_SHOT));
+            Commands.sequence(
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
+    driver
+        .a()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.FENDER_SHOT),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                Shooter.Commands.setState(Shooter.State.FENDER_SHOT)));
+
+    driver
+        .a()
+        .onFalse(
+            Commands.sequence(
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING),
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Shooter.Commands.setState(Shooter.State.OFF)));
+
+    driver
+        .b()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.PODIUM_SHOT),
+                Shooter.Commands.setState(Shooter.State.FENDER_SHOT)));
+
+    driver
+        .b()
+        .onFalse(
+            Commands.sequence(
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING),
+                Shooter.Commands.setState(Shooter.State.OFF)));
   }
 
   @Override
