@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.SparkAnalogSensor;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   CANSparkFlex left, right;
-  SparkAnalogSensor analogSensor;
+  SparkAbsoluteEncoder throughBore;
 
   public ShooterPivotIOSparks() {
     left = new CANSparkFlex(Constants.RobotMap.PIVOT_LEFT_CAN_ID, MotorType.kBrushless);
@@ -26,15 +26,13 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
-    analogSensor = left.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+    throughBore = left.getAbsoluteEncoder();
 
-    left.getEncoder().setPosition(0);
-    right.getEncoder().setPosition(0);
+    left.getEncoder().setPosition(54);
+    right.getEncoder().setPosition(54);
 
     right.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
     left.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
-
-    left.getPIDController().setFeedbackDevice(left.getEncoder()); // absolute encoder didnt work :(
 
     left.setSmartCurrentLimit(20);
     right.setSmartCurrentLimit(20);
@@ -82,7 +80,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     inputs.currentDrawAmpsRight = right.getOutputCurrent();
     inputs.outputVoltageRight = right.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.absoluteEncoderAdjustedAngle = analogSensor.getPosition();
+    inputs.absoluteEncoderAdjustedAngle = throughBore.getPosition();
   }
 
   @Override
