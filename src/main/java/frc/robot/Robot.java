@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
@@ -41,7 +43,10 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
-import frc.robot.subsystems.visionIO.VisionManager;
+import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
+import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -53,8 +58,7 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
-  public static VisionManager visionManager;
-
+  public static Vision visionFront, visionRear;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
@@ -108,16 +112,30 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    // visionManager =
-    //     new VisionManager(
-    //         new Vision(
-    //             true
-    //                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO
-    //                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO)),
-    //         new Vision(
-    //             true
-    //                 ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    //                 : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO)));
+    // visionFront =
+    //     new Vision(
+    //         isSimulation()
+    //             ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //             : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+
+    visionRear =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+
+    new Trigger(() -> shooter.hasGamePiece())
+        .onTrue(
+            Commands.sequence(
+                new InstantCommand(
+                    () -> {
+                      visionRear.setLEDMode(LEDMode.FORCE_BLINK);
+                    }),
+                new WaitCommand(2),
+                new InstantCommand(
+                    () -> {
+                      visionRear.setLEDMode(LEDMode.PIPELINE);
+                    })));
 
     mechManager = new MechanismManager();
 

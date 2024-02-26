@@ -1,6 +1,8 @@
 package frc.robot.subsystems.visionIO;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
+import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -25,4 +27,14 @@ public class Vision extends SubsystemBase {
 
     Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPose.toPose2d());
   }
+
+  public VisionInfo getInfo() {
+    return io.getInfo();
+  }
+
+  public VisionInputs getInputs() {
+    return inputs;
+  }
+
+  public void setLEDMode(LEDMode leds) {}
 }
