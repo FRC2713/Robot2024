@@ -29,10 +29,10 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 3);
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 5);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
-      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", -500);
+      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
   private static final LoggedTunableNumber outtakingFeederVolts =
       new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
 
@@ -42,6 +42,8 @@ public class Shooter extends SubsystemBase {
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.5;
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
+
+  private final Debouncer hasGamePieceDebouncer = new Debouncer(0.25);
 
   @RequiredArgsConstructor
   public enum State {
@@ -108,7 +110,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
   public boolean hasGamePiece() {
-    return inputs.sensorVoltage > 0.7;
+    return (inputs.sensorVoltage > 0.7);
   }
 
   public static class Commands {

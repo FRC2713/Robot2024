@@ -21,10 +21,10 @@ public class IntakeIOSparks implements IntakeIO {
     topMotor.restoreFactoryDefaults();
 
     bottomMotor.setIdleMode(IdleMode.kCoast);
-    bottomMotor.setIdleMode(IdleMode.kCoast);
+    topMotor.setIdleMode(IdleMode.kCoast);
 
-    bottomMotor.setSmartCurrentLimit(20);
-    topMotor.setSmartCurrentLimit(20);
+    bottomMotor.setSmartCurrentLimit(25);
+    topMotor.setSmartCurrentLimit(25);
 
     topMotor.setInverted(false);
     bottomMotor.setInverted(false);

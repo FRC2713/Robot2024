@@ -73,7 +73,7 @@ public class ShooterIOVortex implements ShooterIO {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 20;
+    config.CurrentLimits.SupplyCurrentLimit = 30;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
