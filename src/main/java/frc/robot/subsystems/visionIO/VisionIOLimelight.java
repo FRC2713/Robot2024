@@ -151,7 +151,7 @@ public class VisionIOLimelight implements VisionIO {
     // timestampedPoseFromLLArray(jsonResults.targetingResults.botpose_wpiblue);
     // inputs.botPoseBlue = botPoseBluePair.getFirst();
     // inputs.botPoseBlueTimestamp = botPoseBluePair.getSecond();
-    }
+  }
 
   @Override
   public VisionInfo getInfo() {

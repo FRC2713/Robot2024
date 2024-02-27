@@ -230,6 +230,9 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING),
                 Shooter.Commands.setState(Shooter.State.OFF)));
+
+    operator.povUp().onTrue(Elevator.Commands.setState(Elevator.State.MAX_HEIGHT));
+    operator.povDown().onTrue(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT));
   }
 
   @Override
