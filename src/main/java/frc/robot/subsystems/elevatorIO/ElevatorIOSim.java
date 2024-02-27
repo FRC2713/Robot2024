@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevatorIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,6 +30,7 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorInputs inputs) {
     double desiredVoltage = heightControllerRight.calculate(inputs.heightInchesRight);
+    desiredVoltage = MathUtil.clamp(desiredVoltage, -12, 12);
     if (DriverStation.isDisabled()) {
       desiredVoltage = 0.;
     }

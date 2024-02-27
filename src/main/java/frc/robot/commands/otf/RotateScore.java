@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.SwerveHeadingController;
@@ -38,7 +37,7 @@ public class RotateScore extends SequentialCommandGroup {
         () -> {
           var optimalHeight = getOptimalElevatorHeightMetres(Robot.swerveDrive.getUsablePose());
           Logger.recordOutput("OTF/Optimal Height", optimalHeight);
-          Elevator.Commands.setToHeightAndWait(optimalHeight).schedule();
+          // Elevator.Commands.setToHeightAndWait(optimalHeight).schedule();
           var optimalShooterAngle =
               getOptimalShooterAngle(Robot.swerveDrive.getUsablePose(), optimalHeight);
           Logger.recordOutput("OTF/Optimal Shooter Angle", optimalShooterAngle.getDegrees() + 90);
