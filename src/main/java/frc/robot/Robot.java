@@ -112,29 +112,29 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    // visionFront =
-    //     new Vision(
-    //         isSimulation()
-    //             ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-    //             : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
-
-    visionRear =
+    visionFront =
         new Vision(
             isSimulation()
-                ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+                ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+
+    // visionRear =
+    //     new Vision(
+    //         isSimulation()
+    //             ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    //             : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
             Commands.sequence(
                 new InstantCommand(
                     () -> {
-                      visionRear.setLEDMode(LEDMode.FORCE_BLINK);
+                      visionFront.setLEDMode(LEDMode.FORCE_BLINK);
                     }),
                 new WaitCommand(2),
                 new InstantCommand(
                     () -> {
-                      visionRear.setLEDMode(LEDMode.PIPELINE);
+                      visionFront.setLEDMode(LEDMode.PIPELINE);
                     })));
 
     mechManager = new MechanismManager();
@@ -146,24 +146,28 @@ public class Robot extends LoggedRobot {
         .leftBumper()
         .onTrue(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-                Shooter.Commands.setState(Shooter.State.INTAKING),
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
+                    Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                    Shooter.Commands.setState(Shooter.State.INTAKING),
+                    ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
+                .repeatedly()
+                .onlyWhile(() -> !shooter.hasGamePiece())
+                .andThen(
+                    Commands.sequence(
+                        Intake.Commands.setMotionMode(Intake.State.OFF),
+                        Commands.either(
+                            Shooter.Commands.setState(Shooter.State.OFF),
+                            new InstantCommand(),
+                            () -> shooter.getState() == Shooter.State.INTAKING))));
 
     driver
         .leftBumper()
         .onFalse(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
-                Shooter.Commands.setState(Shooter.State.BACK_GP_UP),
-                new WaitCommand(0.5),
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.OFF),
                     new InstantCommand(),
-                    () ->
-                        shooter.getState() == Shooter.State.INTAKING
-                            || shooter.getState() == Shooter.State.BACK_GP_UP)));
+                    () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver
         .povUp()
@@ -230,6 +234,21 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING),
                 Shooter.Commands.setState(Shooter.State.OFF)));
+
+    driver
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+                }));
+    driver
+        .back()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+                }));
   }
 
   @Override
@@ -341,13 +360,13 @@ public class Robot extends LoggedRobot {
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
     }
   }
 }

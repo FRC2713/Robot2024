@@ -11,12 +11,14 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkAnalogSensor.Mode;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.RedHawkUtil;
+import java.util.HashMap;
 
 public class ShooterIOVortex implements ShooterIO {
   private final CANSparkFlex leftMotor =
@@ -40,8 +42,8 @@ public class ShooterIOVortex implements ShooterIO {
     leftMotor.setIdleMode(IdleMode.kCoast);
     rightMotor.setIdleMode(IdleMode.kCoast);
 
-    leftMotor.setSmartCurrentLimit(60);
-    rightMotor.setSmartCurrentLimit(60);
+    leftMotor.setSmartCurrentLimit(40);
+    rightMotor.setSmartCurrentLimit(40);
     leftMotor.enableVoltageCompensation(12.0);
     rightMotor.enableVoltageCompensation(12.0);
 
@@ -53,10 +55,25 @@ public class ShooterIOVortex implements ShooterIO {
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
 
+    RedHawkUtil.configureCANSparkMAXStatusFrames(
+        new HashMap<>() {
+          {
+            put(PeriodicFrame.kStatus0, 60);
+            put(PeriodicFrame.kStatus1, 40);
+            put(PeriodicFrame.kStatus2, 40);
+            put(PeriodicFrame.kStatus3, 20);
+            put(PeriodicFrame.kStatus4, 65535);
+            put(PeriodicFrame.kStatus5, 20);
+            put(PeriodicFrame.kStatus6, 20);
+          }
+        },
+        leftMotor,
+        rightMotor);
+
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 30;
+    config.CurrentLimits.SupplyCurrentLimit = 20;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

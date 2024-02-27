@@ -40,7 +40,7 @@ public final class Constants {
     public static final String sda1Dir = "/media/sda1";
     public static final String sda2Dir = "/media/sda2";
   }
-  
+
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
     public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
@@ -79,7 +79,7 @@ public final class Constants {
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 60;
+    public static final int PIGEON_CAN_ID = 20;
     public static final int LEFT_ELEVATOR_CAN_ID = 10;
     public static final int RIGHT_ELEVATOR_CAN_ID = 11;
 
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.0001875).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.00015).build();
   }
 
   @UtilityClass
@@ -315,12 +315,7 @@ public final class Constants {
               .build();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
-          PIDFFGains.builder()
-              .name("Swerve/Defaults/Driving")
-              .kP(0.00)
-              .kS(0.09)
-              .kV(0.11)
-              .build();
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.00).kS(0.09).kV(0.11).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(3).build();

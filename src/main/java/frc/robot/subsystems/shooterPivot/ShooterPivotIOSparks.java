@@ -28,14 +28,14 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     throughBore = left.getAbsoluteEncoder();
 
-    left.getEncoder().setPosition(54);
-    right.getEncoder().setPosition(54);
-
     right.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
     left.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
 
-    left.setSmartCurrentLimit(20);
-    right.setSmartCurrentLimit(20);
+    left.getEncoder().setPosition(54.255);
+    right.getEncoder().setPosition(54.255);
+
+    left.setSmartCurrentLimit(10);
+    right.setSmartCurrentLimit(10);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
@@ -54,7 +54,7 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     left.setIdleMode(IdleMode.kBrake);
     right.setIdleMode(IdleMode.kBrake);
-    left.setInverted(false);
+    left.setInverted(true);
     right.follow(left, true);
 
     ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(left.getPIDController());

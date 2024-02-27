@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotShooterRpm =
       new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
   private static final LoggedTunableNumber fenderShotFeederVolts =
-      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 10);
+      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
   private static final LoggedTunableNumber holdingGpShooterRpm =
       new LoggedTunableNumber("Flywheel/Resting RPM", 0);
@@ -29,24 +29,19 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 10);
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 3);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
-      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
+      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", -500);
   private static final LoggedTunableNumber outtakingFeederVolts =
       new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
-
-  private static final LoggedTunableNumber backGPShooterRpm =
-      new LoggedTunableNumber("Flywheel/Back GP UP Shooter RPM", -2000);
-  private static final LoggedTunableNumber backGPFeederVolts =
-      new LoggedTunableNumber("Flywheel/Back GP UP Feeder Volts", -6);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 100);
 
-  private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 1.0;
+  private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.5;
   private final Debouncer debouncer =
-      new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kBoth);
+      new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
 
   @RequiredArgsConstructor
   public enum State {
@@ -58,7 +53,6 @@ public class Shooter extends SubsystemBase {
     HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
     OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
-    BACK_GP_UP(backGPShooterRpm, backGPShooterRpm, backGPFeederVolts, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
@@ -82,7 +76,10 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     IO.updateInputs(inputs, state);
 
-    if (debouncer.calculate(isAtTarget()) && state.additionalFeederCondition.getAsBoolean()) {
+    boolean shouldSpin = debouncer.calculate(isAtTarget());
+    Logger.recordOutput("Flywheel/Should spin", shouldSpin);
+
+    if (shouldSpin && state.additionalFeederCondition.getAsBoolean()) {
       IO.setFeederVolts(state.feederRpm.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
@@ -111,7 +108,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
   public boolean hasGamePiece() {
-    return inputs.sensorVoltage > 1.4;
+    return inputs.sensorVoltage > 0.7;
   }
 
   public static class Commands {
