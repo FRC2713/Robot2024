@@ -26,6 +26,7 @@ import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
+import frc.robot.subsystems.Candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
@@ -70,6 +71,7 @@ public class Robot extends LoggedRobot {
   public static Elevator elevator;
   public static Shooter shooter;
   public static Intake intake;
+  public static Candle candle;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -106,6 +108,7 @@ public class Robot extends LoggedRobot {
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
+    candle = new Candle();
 
     swerveDrive =
         isSimulation()
@@ -618,8 +621,15 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addOption("BottomTwo", new BottomTwo());
-    autoChooser.addOption("NonAmpSide", new NonAmpSide());
+    RHRNamedCommands.registerGenericCommands();
+
+    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red
+    // ? -1 : 1;
+    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
+    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
+    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
+    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
+    autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
   }
 
   public void updatePreMatchDashboardValues() {

@@ -123,6 +123,8 @@ public final class Constants {
 
     public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
     public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
+
+    public static final int CANDLE_CAN_ID = 3000;
   }
 
   public static final class IntakeConstants {
