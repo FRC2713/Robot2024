@@ -151,7 +151,7 @@ public class Robot extends LoggedRobot {
                     Shooter.Commands.setState(Shooter.State.INTAKING),
                     ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
                 .repeatedly()
-                .onlyWhile(() -> !shooter.hasGamePiece())
+                .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
                 .andThen(
                     Commands.sequence(
                         Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -223,6 +223,27 @@ public class Robot extends LoggedRobot {
                 () -> {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
                 }));
+
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
+                Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
+
+    operator
+        .rightBumper()
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
   }
 
   @Override

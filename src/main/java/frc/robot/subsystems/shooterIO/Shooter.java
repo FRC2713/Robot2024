@@ -29,7 +29,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 5);
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 3);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 100);
 
-  private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.5;
+  private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
 
@@ -110,7 +110,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.sensorVoltage > 0.7);
+    return (inputs.sensorVoltage > 0.5);
   }
 
   public static class Commands {
