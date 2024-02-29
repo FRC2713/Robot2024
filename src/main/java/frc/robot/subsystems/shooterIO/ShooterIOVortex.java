@@ -1,5 +1,9 @@
 package frc.robot.subsystems.shooterIO;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.LaserCan.RangingMode;
+import au.grapplerobotics.LaserCan.TimingBudget;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,8 +16,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.SparkAnalogSensor;
-import com.revrobotics.SparkAnalogSensor.Mode;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
@@ -29,12 +31,13 @@ public class ShooterIOVortex implements ShooterIO {
   private final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
   private final TalonFX feeder = new TalonFX(Constants.RobotMap.FEEDER_CAN_ID);
-  private final SparkAnalogSensor sensor;
 
   private StatusSignal<Double> feederMotorVoltage = feeder.getMotorVoltage();
   private StatusSignal<Double> feederSupplyCurrent = feeder.getSupplyCurrent();
   private StatusSignal<Double> feederStatorCurrent = feeder.getStatorCurrent();
   private StatusSignal<Double> feederVelocity = feeder.getVelocity();
+
+  private LaserCan laserCan = new LaserCan(0);
 
   public ShooterIOVortex() {
     leftMotor.restoreFactoryDefaults();
@@ -91,10 +94,15 @@ public class ShooterIOVortex implements ShooterIO {
     ShooterConstants.SHOOTER_GAINS.applyTo(leftMotor.getPIDController());
     ShooterConstants.SHOOTER_GAINS.applyTo(rightMotor.getPIDController());
 
-    sensor = rightMotor.getAnalog(Mode.kAbsolute);
-
     BaseStatusSignal.setUpdateFrequencyForAll(
         50, feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
+
+    try {
+      laserCan.setRangingMode(RangingMode.SHORT);
+      laserCan.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
+    } catch (ConfigurationFailedException e) {
+      System.err.println("Could not configure LaserCAN!");
+    }
   }
 
   @Override
@@ -122,7 +130,10 @@ public class ShooterIOVortex implements ShooterIO {
     inputs.feederSupplyCurrentAmps = feederSupplyCurrent.getValue();
     inputs.feederVelocityRPM = feederVelocity.getValue();
 
-    inputs.sensorVoltage = sensor.getVoltage();
+    var sensorMeasurement = laserCan.getMeasurement();
+    inputs.laserCanAmbientLightLevel = sensorMeasurement.ambient;
+    inputs.laserCanDistanceMM = sensorMeasurement.distance_mm;
+    inputs.laserCanStatus = sensorMeasurement.status;
   }
 
   @Override
