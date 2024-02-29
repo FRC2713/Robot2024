@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class Constants {
 
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
   public static final boolean ENABLE_VISION_POSE_ESTIMATION = true;
   public static final int CAN_TIMEOUT_MS = 200;
 
