@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkAnalogSensor.Mode;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.RedHawkUtil;
@@ -44,13 +45,19 @@ public class ShooterIOVortex implements ShooterIO {
 
     leftMotor.setSmartCurrentLimit(40);
     rightMotor.setSmartCurrentLimit(40);
-    leftMotor.enableVoltageCompensation(12.0);
-    rightMotor.enableVoltageCompensation(12.0);
+    // leftMotor.enableVoltageCompensation(12.0);
+    // rightMotor.enableVoltageCompensation(12.0);
 
-    leftMotor.getEncoder().setMeasurementPeriod(10);
-    rightMotor.getEncoder().setMeasurementPeriod(10);
-    leftMotor.getEncoder().setAverageDepth(2);
-    rightMotor.getEncoder().setAverageDepth(2);
+    leftMotor.setClosedLoopRampRate(0.1);
+    rightMotor.setClosedLoopRampRate(0.1);
+
+    leftMotor.setOpenLoopRampRate(0.1);
+    rightMotor.setOpenLoopRampRate(0.1);
+
+    // leftMotor.getEncoder().setMeasurementPeriod(10);
+    // rightMotor.getEncoder().setMeasurementPeriod(10);
+    // leftMotor.getEncoder().setAverageDepth(2);
+    // rightMotor.getEncoder().setAverageDepth(2);
 
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
@@ -95,8 +102,8 @@ public class ShooterIOVortex implements ShooterIO {
     BaseStatusSignal.refreshAll(
         feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
 
-    inputs.leftOutputVoltage = leftMotor.getBusVoltage();
-    inputs.rightOutputVoltage = rightMotor.getBusVoltage();
+    inputs.leftOutputVoltage = RobotController.getBatteryVoltage() * leftMotor.getAppliedOutput();
+    inputs.rightOutputVoltage = RobotController.getBatteryVoltage() * rightMotor.getAppliedOutput();
 
     inputs.leftDrawAmp = leftMotor.getOutputCurrent();
     inputs.rightDrawAmp = rightMotor.getOutputCurrent();

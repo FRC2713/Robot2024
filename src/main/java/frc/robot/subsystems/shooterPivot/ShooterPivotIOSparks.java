@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
@@ -34,13 +33,16 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     left.getEncoder().setPosition(54.255);
     right.getEncoder().setPosition(54.255);
 
-    left.setSmartCurrentLimit(10);
-    right.setSmartCurrentLimit(10);
+    left.setSmartCurrentLimit(30);
+    right.setSmartCurrentLimit(30);
+
+    left.setSecondaryCurrentLimit(30);
+    right.setSecondaryCurrentLimit(30);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
           {
-            put(PeriodicFrame.kStatus0, 60);
+            put(PeriodicFrame.kStatus0, 5);
             put(PeriodicFrame.kStatus1, 40);
             put(PeriodicFrame.kStatus2, 40);
             put(PeriodicFrame.kStatus3, 65535);
@@ -54,10 +56,16 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     left.setIdleMode(IdleMode.kBrake);
     right.setIdleMode(IdleMode.kBrake);
-    left.setInverted(true);
-    right.follow(left, true);
 
-    ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(left.getPIDController());
+    left.setInverted(true);
+    right.setInverted(false);
+    // right.follow(left, true);
+
+    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(left.getPIDController(), 0);
+    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(right.getPIDController(), 0);
+
+    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(left.getPIDController(), 1);
+    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(right.getPIDController(), 1);
   }
 
   @Override
@@ -85,6 +93,14 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
   @Override
   public void setTargetAngle(double degrees) {
-    left.getPIDController().setReference(degrees, ControlType.kPosition, 0, 0, ArbFFUnits.kVoltage);
+    if (degrees > left.getEncoder().getPosition()) {
+      // if target is greater than current setpoint
+      // use the down gains (slot 1)
+      right.getPIDController().setReference(degrees, ControlType.kPosition, 1);
+      left.getPIDController().setReference(degrees, ControlType.kPosition, 1);
+    } else {
+      right.getPIDController().setReference(degrees, ControlType.kPosition, 0);
+      left.getPIDController().setReference(degrees, ControlType.kPosition, 0);
+    }
   }
 }

@@ -140,8 +140,10 @@ public final class Constants {
     public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(30);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
-    public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(1.0).kD(0).kG(0.0).build();
+    public static final PIDFFGains SHOOTER_PIVOT_UP_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Up Controller").kP(0.1).build();
+    public static final PIDFFGains SHOOTER_PIVOT_DOWN_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Down Controller").kP(0.1).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
@@ -195,7 +197,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.00015).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.00).kV(0.00017).build();
   }
 
   @UtilityClass

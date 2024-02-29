@@ -17,8 +17,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Fender Shot Angle Degrees", 48);
   private static final LoggedTunableNumber podiumShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 39);
-
+      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
 

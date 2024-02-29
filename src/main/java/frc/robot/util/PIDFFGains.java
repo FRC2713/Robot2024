@@ -67,6 +67,13 @@ public class PIDFFGains {
     controller.setFF(kV);
   }
 
+  public void applyTo(SparkPIDController controller, int slotId) {
+    controller.setP(kP, slotId);
+    controller.setI(kI, slotId);
+    controller.setD(kD, slotId);
+    controller.setFF(kV, slotId);
+  }
+
   public String toString() {
     return String.format("kP = %s / kD = %s", kP, kD);
   }

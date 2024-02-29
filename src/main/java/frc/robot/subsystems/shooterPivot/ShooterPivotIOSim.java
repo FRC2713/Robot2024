@@ -32,8 +32,8 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   private double voltage;
 
   public ShooterPivotIOSim() {
-    motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
-    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRFeedForward();
+    motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.createRHRController();
+    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.createRHRFeedForward();
   }
 
   @Override

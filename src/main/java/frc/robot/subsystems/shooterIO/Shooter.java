@@ -21,6 +21,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotFeederVolts =
       new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
+  private static final LoggedTunableNumber shooterDifferentialRpm =
+      new LoggedTunableNumber("Flywheel/Differential RPM", 00);
+
   private static final LoggedTunableNumber holdingGpShooterRpm =
       new LoggedTunableNumber("Flywheel/Resting RPM", 0);
   private static final LoggedTunableNumber holdingFeederVolts =
@@ -95,7 +98,9 @@ public class Shooter extends SubsystemBase {
     //   state = State.OFF;
     // }
 
-    IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
+    IO.setMotorSetPoint(
+        state.leftRpm.getAsDouble() + shooterDifferentialRpm.getAsDouble(),
+        state.rightRpm.getAsDouble() - +shooterDifferentialRpm.getAsDouble());
     Logger.processInputs("Shooter", inputs);
   }
 
@@ -110,7 +115,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.sensorVoltage > 0.5);
+    return (inputs.sensorVoltage > 0.8);
   }
 
   public static class Commands {
