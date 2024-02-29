@@ -13,11 +13,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber intakingAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 48);
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 45);
   private static final LoggedTunableNumber fenderShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Fender Shot Angle Degrees", 48);
   private static final LoggedTunableNumber podiumShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 48);
+      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
 

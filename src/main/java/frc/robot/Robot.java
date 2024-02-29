@@ -153,7 +153,7 @@ public class Robot extends LoggedRobot {
                     Shooter.Commands.setState(Shooter.State.INTAKING),
                     ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
                 .repeatedly()
-                .onlyWhile(() -> !shooter.hasGamePiece())
+                .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
                 .andThen(
                     Commands.sequence(
                         Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -190,6 +190,10 @@ public class Robot extends LoggedRobot {
                     new InstantCommand(),
                     () -> shooter.getState() == Shooter.State.OUTAKING)));
 
+    // driver.povLeft().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT));
+
+    // driver.povRight().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT));
+
     driver
         .rightBumper()
         .onTrue(
@@ -201,6 +205,27 @@ public class Robot extends LoggedRobot {
 
     driver
         .rightBumper()
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
+    driver
+        .rightTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
+                Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
+
+    driver
+        .rightTrigger(0.3)
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -269,6 +294,7 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
   }
 
   @Override
