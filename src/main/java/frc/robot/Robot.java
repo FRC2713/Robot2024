@@ -120,10 +120,10 @@ public class Robot extends LoggedRobot {
                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
 
     // visionRear =
-    //     new Vision(
-    //         isSimulation()
-    //             ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    //             : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+    // new Vision(
+    // isSimulation()
+    // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+    // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
@@ -142,6 +142,8 @@ public class Robot extends LoggedRobot {
 
     checkAlliance();
     buildAutoChooser();
+
+    // -- Drive controls --
 
     driver
         .leftBumper()
@@ -249,17 +251,19 @@ public class Robot extends LoggedRobot {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
                 }));
 
+    // -- Operator Controls --
+
     operator
-        .rightBumper()
+        .x()
         .onTrue(
             Commands.sequence(
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
 
     operator
-        .rightBumper()
+        .x()
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -269,6 +273,28 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.FENDER_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
+    operator
+        .a()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
+                Shooter.Commands.setState(Shooter.State.PODIUM_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
+
+    operator
+        .a()
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
   }
 
   @Override

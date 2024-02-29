@@ -264,6 +264,7 @@ public final class Constants {
             .aziEncoderCANId(0)
             .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo FRONT_RIGHT =
@@ -276,6 +277,7 @@ public final class Constants {
             .aziEncoderCANId(1)
             .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_LEFT =
@@ -288,6 +290,7 @@ public final class Constants {
             .aziEncoderCANId(2)
             .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_RIGHT =
@@ -300,6 +303,7 @@ public final class Constants {
             .aziEncoderCANId(3)
             .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     @UtilityClass

@@ -18,6 +18,9 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Fender Shot Angle Degrees", 48);
   private static final LoggedTunableNumber podiumShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
+  private static final LoggedTunableNumber ampShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
+
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
 
@@ -26,6 +29,7 @@ public class ShooterPivot extends SubsystemBase {
     INTAKING(intakingAngleDegrees), // also for outtaking
     FENDER_SHOT(fenderShotAngleDegrees),
     PODIUM_SHOT(podiumShotAngleDegrees),
+    AMP_SHOT(ampShotAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;
