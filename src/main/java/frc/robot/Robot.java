@@ -262,6 +262,8 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput(
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
+
+    VehicleState.getInstance().updateDynamicPivotAngle(visionFront.getInputs());
   }
 
   @Override
