@@ -327,4 +327,10 @@ public final class Constants {
           PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
   }
+
+  public static final class DynamicShooterConstants {
+    public static final double limelightMountingHeightMeters = 1;
+    public static final double limelightMouningAngleDegrees = 1;
+    public static final double tagMountingHeight = 1;
+  }
 }

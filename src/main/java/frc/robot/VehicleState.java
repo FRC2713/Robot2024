@@ -1,11 +1,17 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import lombok.Getter;
 
 public class VehicleState {
   private static VehicleState instance;
+  private static final InterpolatingDoubleTreeMap dynamicPivotMap =
+      new InterpolatingDoubleTreeMap();
+
+  static {
+    dynamicPivotMap.put(0.0, 0.0);
+  }
 
   @Getter Rotation2d dynamicPivotAngle;
 
@@ -19,5 +25,7 @@ public class VehicleState {
     return instance;
   }
 
-  public void updateDynamicPivotAngle(VisionInputs visionInputs) {}
+  public void updateDynamicPivotAngle(double estimateDistanceToTag) {
+    dynamicPivotMap.get(estimateDistanceToTag);
+  }
 }
