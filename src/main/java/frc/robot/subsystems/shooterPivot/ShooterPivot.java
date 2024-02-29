@@ -30,6 +30,8 @@ public class ShooterPivot extends SubsystemBase {
     FENDER_SHOT(fenderShotAngleDegrees),
     PODIUM_SHOT(podiumShotAngleDegrees),
     AMP_SHOT(ampShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_1(podiumShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_2(podiumShotAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;
@@ -51,8 +53,6 @@ public class ShooterPivot extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.processInputs("ShooterPivot", inputs);
-    Logger.recordOutput("ShooterPivot/Mode", state);
-
     Logger.recordOutput("ShooterPivot/Target", state.pivotAngleDegrees.getAsDouble());
 
     if (state != State.OFF) {

@@ -40,7 +40,7 @@ public class Elevator extends SubsystemBase {
     MAX_HEIGHT(maxHeight),
     CHAIN_APPROACH_HEIGHT(chainApproachHeight),
     ON_CHAIN_HEIGHT(onChainHeight),
-    APM(() -> 5),
+    AMP(() -> 5),
     OFF(() -> 0);
 
     private final DoubleSupplier height;

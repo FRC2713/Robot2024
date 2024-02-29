@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
+import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
 import frc.robot.commands.fullRoutines.SimpleChoreo;
@@ -294,7 +295,6 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
-
   }
 
   @Override
@@ -391,6 +391,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
     autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
     autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
+    autoChooser.addOption("NonAmpSide", new NonAmpSide());
   }
 
   public void checkAlliance() {
