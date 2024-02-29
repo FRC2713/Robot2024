@@ -26,8 +26,13 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber podiumShotFeederVolts =
       new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
+  /**
+   * Applies a differential speed to the left and right wheels.
+   * Positive values make the left wheel go faster and the right wheel slower
+   * Negative values make the left wheel slower and the right wheel faster.
+   */
   private static final LoggedTunableNumber shooterDifferentialRpm =
-      new LoggedTunableNumber("Flywheel/Differential RPM", 00);
+      new LoggedTunableNumber("Flywheel/Differential RPM", 250);
 
   private static final LoggedTunableNumber holdingGpShooterRpm =
       new LoggedTunableNumber("Flywheel/Resting RPM", 0);
@@ -55,8 +60,6 @@ public class Shooter extends SubsystemBase {
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
-
-  private final Debouncer hasGamePieceDebouncer = new Debouncer(0.25);
 
   @RequiredArgsConstructor
   public enum State {
@@ -124,19 +127,20 @@ public class Shooter extends SubsystemBase {
     // state = State.OFF;
     // }
 
+    double differential = shooterDifferentialRpm.getAsDouble();
+
     IO.setMotorSetPoint(
-        state.leftRpm.getAsDouble() + shooterDifferentialRpm.getAsDouble(),
-        state.rightRpm.getAsDouble() - +shooterDifferentialRpm.getAsDouble());
+        state.leftRpm.getAsDouble() + differential,
+        state.rightRpm.getAsDouble() - differential);
     Logger.processInputs("Shooter", inputs);
   }
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    return inputs.leftSpeedRPM > state.leftRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble()
-        && inputs.rightSpeedRPM > state.rightRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble();
+    double leftTarget = state.leftRpm.getAsDouble() + shooterDifferentialRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble() ;    
+    double rightTarget = state.rightRpm.getAsDouble() - shooterDifferentialRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble();
 
-    // && Math.abs(inputs.rightSpeedRPM - state.rightRpm.getAsDouble())
-    // < atGoalThresholdRPM.getAsDouble();
+    return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
   }
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
