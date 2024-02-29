@@ -25,7 +25,7 @@ public class Vision extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs(key, inputs);
 
-    Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPose.toPose2d());
+    Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPoseBlue.toPose2d());
   }
 
   public VisionInfo getInfo() {

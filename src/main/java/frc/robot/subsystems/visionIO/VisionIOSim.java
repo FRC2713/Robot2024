@@ -69,11 +69,11 @@ public class VisionIOSim implements VisionIO {
               layout.getTagPose(target.getFiducialId()).get(),
               new Transform3d());
 
-      inputs.botPose = robotPose;
-      inputs.botPoseTimestamp = imageCaptureTime;
+      inputs.botPoseBlue = robotPose;
+      inputs.botPoseBlueTimestamp = imageCaptureTime;
     } else {
-      inputs.botPose = new Pose3d();
-      inputs.botPoseTimestamp = 0.0;
+      inputs.botPoseBlue = new Pose3d();
+      inputs.botPoseBlueTimestamp = 0.0;
     }
   }
 
@@ -124,5 +124,11 @@ public class VisionIOSim implements VisionIO {
   @Override
   public VisionInfo getInfo() {
     return info;
+  }
+
+  @Override
+  public void setPriorityId(int tagId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setPriorityId'");
   }
 }
