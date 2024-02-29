@@ -16,40 +16,42 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber fenderShotShooterRpm = new LoggedTunableNumber("Flywheel/Fender Shot RPM",
-      4000);
-  private static final LoggedTunableNumber fenderShotFeederVolts = new LoggedTunableNumber(
-      "Flywheel/Fender Shot Feeder Volts", 12);
+  private static final LoggedTunableNumber fenderShotShooterRpm =
+      new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
+  private static final LoggedTunableNumber fenderShotFeederVolts =
+      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
-  private static final LoggedTunableNumber podiumShotShooterRpm = new LoggedTunableNumber("Flywheel/Fender Shot RPM",
-      4000);
-  private static final LoggedTunableNumber podiumShotFeederVolts = new LoggedTunableNumber(
-      "Flywheel/Fender Shot Feeder Volts", 12);
+  private static final LoggedTunableNumber podiumShotShooterRpm =
+      new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
+  private static final LoggedTunableNumber podiumShotFeederVolts =
+      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
-  private static final LoggedTunableNumber holdingGpShooterRpm = new LoggedTunableNumber("Flywheel/Resting RPM", 0);
-  private static final LoggedTunableNumber holdingFeederVolts = new LoggedTunableNumber("Flywheel/Resting Feeder Volts",
-      0);
+  private static final LoggedTunableNumber holdingGpShooterRpm =
+      new LoggedTunableNumber("Flywheel/Resting RPM", 0);
+  private static final LoggedTunableNumber holdingFeederVolts =
+      new LoggedTunableNumber("Flywheel/Resting Feeder Volts", 0);
 
-  private static final LoggedTunableNumber intakingShooterRpm = new LoggedTunableNumber("Flywheel/Intaking Feeder RPM",
-      0);
-  private static final LoggedTunableNumber intakingFeederVolts = new LoggedTunableNumber(
-      "Flywheel/Intaking Feeder Volts", 5);
+  private static final LoggedTunableNumber intakingShooterRpm =
+      new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
+  private static final LoggedTunableNumber intakingFeederVolts =
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 5);
 
-  private static final LoggedTunableNumber outtakingShooterRpm = new LoggedTunableNumber(
-      "Flywheel/Outtaking Shooter RPM", 0);
-  private static final LoggedTunableNumber outtakingFeederVolts = new LoggedTunableNumber(
-      "Flywheel/Outtaking Feeder Volts", -5);
+  private static final LoggedTunableNumber outtakingShooterRpm =
+      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
+  private static final LoggedTunableNumber outtakingFeederVolts =
+      new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
 
-  private static final LoggedTunableNumber ampShotShooterRMP = new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM",
-      0);
-  private static final LoggedTunableNumber ampShotFeederVolts = new LoggedTunableNumber(
-      "Flywheel/Outtaking Feeder Volts", -5);
+  private static final LoggedTunableNumber ampShotShooterRMP =
+      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
+  private static final LoggedTunableNumber ampShotFeederVolts =
+      new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
 
-  private static final LoggedTunableNumber atGoalThresholdRPM = new LoggedTunableNumber(
-      "Flywheel/At Goal Threshold RPM", 100);
+  private static final LoggedTunableNumber atGoalThresholdRPM =
+      new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 100);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.5;
-  private final Debouncer debouncer = new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
+  private final Debouncer debouncer =
+      new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
 
   private final Debouncer hasGamePieceDebouncer = new Debouncer(0.25);
 
@@ -70,7 +72,6 @@ public class Shooter extends SubsystemBase {
     OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
     AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true);
-
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }

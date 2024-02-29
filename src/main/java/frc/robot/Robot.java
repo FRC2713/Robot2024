@@ -68,11 +68,14 @@ public class Robot extends LoggedRobot {
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
-  public static final CommandXboxController driver = new CommandXboxController(Constants.RobotMap.DRIVER_PORT);
-  public static final CommandXboxController operator = new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
+  public static final CommandXboxController driver =
+      new CommandXboxController(Constants.RobotMap.DRIVER_PORT);
+  public static final CommandXboxController operator =
+      new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
 
   private Command autoCommand;
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Autonomous Routine");
+  private final LoggedDashboardChooser<Command> autoChooser =
+      new LoggedDashboardChooser<>("Autonomous Routine");
 
   @Override
   public void robotInit() {
@@ -91,27 +94,30 @@ public class Robot extends LoggedRobot {
 
     elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
-    shooterPivot = new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
+    shooterPivot =
+        new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
-    swerveDrive = isSimulation()
-        ? new SwerveSubsystem(
-            new SwerveIOSim(),
-            new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),
-            new SwerveModuleIOSim(Constants.DriveConstants.FRONT_RIGHT),
-            new SwerveModuleIOSim(Constants.DriveConstants.BACK_LEFT),
-            new SwerveModuleIOSim(Constants.DriveConstants.BACK_RIGHT))
-        : new SwerveSubsystem(
-            new SwerveIOPigeon2(),
-            new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_LEFT),
-            new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_RIGHT),
-            new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
-            new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
-
-    visionFront = new Vision(
+    swerveDrive =
         isSimulation()
-            ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-            : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+            ? new SwerveSubsystem(
+                new SwerveIOSim(),
+                new SwerveModuleIOSim(Constants.DriveConstants.FRONT_LEFT),
+                new SwerveModuleIOSim(Constants.DriveConstants.FRONT_RIGHT),
+                new SwerveModuleIOSim(Constants.DriveConstants.BACK_LEFT),
+                new SwerveModuleIOSim(Constants.DriveConstants.BACK_RIGHT))
+            : new SwerveSubsystem(
+                new SwerveIOPigeon2(),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_LEFT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.FRONT_RIGHT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
+                new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
+
+    visionFront =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
 
     // visionRear =
     // new Vision(
@@ -143,9 +149,9 @@ public class Robot extends LoggedRobot {
         .leftBumper()
         .onTrue(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-                Shooter.Commands.setState(Shooter.State.INTAKING),
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
+                    Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                    Shooter.Commands.setState(Shooter.State.INTAKING),
+                    ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
                 .repeatedly()
                 .onlyWhile(() -> !shooter.hasGamePiece())
                 .andThen(
@@ -263,7 +269,6 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
-
   }
 
   @Override
@@ -306,8 +311,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledExit() {
-  }
+  public void disabledExit() {}
 
   @Override
   public void autonomousInit() {
@@ -321,12 +325,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-  }
+  public void autonomousExit() {}
 
   @Override
   public void teleopInit() {
@@ -342,8 +344,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopExit() {
-  }
+  public void teleopExit() {}
 
   @Override
   public void testInit() {
@@ -351,12 +352,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
-  public void testExit() {
-  }
+  public void testExit() {}
 
   public void buildAutoChooser() {
     RHRNamedCommands.registerGenericCommands();

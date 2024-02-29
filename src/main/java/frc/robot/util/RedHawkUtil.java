@@ -19,7 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
-
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;

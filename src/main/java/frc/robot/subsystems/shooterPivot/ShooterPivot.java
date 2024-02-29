@@ -12,17 +12,17 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivot extends SubsystemBase {
-  private static final LoggedTunableNumber intakingAngleDegrees = new LoggedTunableNumber(
-      "ShooterPivot/Intake Angle Degrees", 48);
-  private static final LoggedTunableNumber fenderShotAngleDegrees = new LoggedTunableNumber(
-      "ShooterPivot/Fender Shot Angle Degrees", 48);
-  private static final LoggedTunableNumber podiumShotAngleDegrees = new LoggedTunableNumber(
-      "ShooterPivot/Podium Shot Angle Degrees", 48);
-  private static final LoggedTunableNumber ampShotAngleDegrees = new LoggedTunableNumber(
-      "ShooterPivot/Amp Shot Angle Degrees", -30);
+  private static final LoggedTunableNumber intakingAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 48);
+  private static final LoggedTunableNumber fenderShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Fender Shot Angle Degrees", 48);
+  private static final LoggedTunableNumber podiumShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 48);
+  private static final LoggedTunableNumber ampShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
 
-  private static final LoggedTunableNumber atGoalThresholdDegrees = new LoggedTunableNumber(
-      "ShooterPivot/At Goal Threshold Degrees", 2);
+  private static final LoggedTunableNumber atGoalThresholdDegrees =
+      new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
 
   @RequiredArgsConstructor
   public enum State {
@@ -68,10 +68,10 @@ public class ShooterPivot extends SubsystemBase {
 
   @AutoLogOutput(key = "ShooterPivot/isAtTargetAngle")
   public boolean isAtTargetAngle() {
-    return (Math.abs(inputs.angleDegreesLeft - this.state.pivotAngleDegrees.getAsDouble()) < atGoalThresholdDegrees
-        .get())
-        && (Math.abs(inputs.angleDegreesRight - this.state.pivotAngleDegrees.getAsDouble()) < atGoalThresholdDegrees
-            .get());
+    return (Math.abs(inputs.angleDegreesLeft - this.state.pivotAngleDegrees.getAsDouble())
+            < atGoalThresholdDegrees.get())
+        && (Math.abs(inputs.angleDegreesRight - this.state.pivotAngleDegrees.getAsDouble())
+            < atGoalThresholdDegrees.get());
   }
 
   public static class Commands {
