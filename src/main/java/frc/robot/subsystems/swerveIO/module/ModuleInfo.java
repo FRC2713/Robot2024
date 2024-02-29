@@ -15,4 +15,5 @@ public class ModuleInfo {
   @Getter private int aziEncoderCANId;
   @Getter private double offset;
   @Getter private Translation2d location;
+  @Getter private double wheelDiameter;
 }

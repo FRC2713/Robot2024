@@ -80,10 +80,10 @@ public class SwerveModuleIOSparkMAX implements SwerveModuleIO {
     cOk(driver.setIdleMode(IdleMode.kBrake));
     cOk(azimuth.setIdleMode(IdleMode.kBrake));
 
-    cOk(getDriveEncoder().setPositionConversionFactor(Constants.DriveConstants.DIST_PER_PULSE));
+    cOk(getDriveEncoder().setPositionConversionFactor( RedHawkUtil.getDistPerPulse(information.getWheelDiameter())));
     cOk(
         getDriveEncoder()
-            .setVelocityConversionFactor((Constants.DriveConstants.DIST_PER_PULSE / 60)));
+            .setVelocityConversionFactor(RedHawkUtil.getDistPerPulse(information.getWheelDiameter())));
 
     cOk(getAziEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0));
     cOk(getAziEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));

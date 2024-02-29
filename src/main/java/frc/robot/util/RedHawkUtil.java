@@ -15,8 +15,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants;
+
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -216,6 +219,10 @@ public final class RedHawkUtil {
         lerp(startValue.vxMetersPerSecond, endValue.vxMetersPerSecond, t),
         lerp(startValue.vyMetersPerSecond, endValue.vyMetersPerSecond, t),
         lerp(startValue.omegaRadiansPerSecond, endValue.omegaRadiansPerSecond, t));
+  }
+
+  public static double getDistPerPulse(double diametre) {
+    return (1.0 / Constants.DriveConstants.GEAR_RATIO) * Units.inchesToMeters(diametre) * Math.PI;
   }
 
   public static SwerveModulePosition moduleDelta(
