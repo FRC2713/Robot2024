@@ -54,14 +54,13 @@ public class ShooterPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
+    IO.updateInputs(inputs);
     Logger.processInputs("ShooterPivot", inputs);
     Logger.recordOutput("ShooterPivot/Target", state.pivotAngleDegrees.getAsDouble());
 
     if (state != State.OFF) {
       IO.setTargetAngle(state.pivotAngleDegrees.getAsDouble());
     }
-
-    IO.updateInputs(inputs);
   }
 
   public double getCurrentAngle() {

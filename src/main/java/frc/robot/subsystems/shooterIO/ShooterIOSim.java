@@ -5,8 +5,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.rhr.RHRPIDFFController;
+import frc.robot.util.PIDFFGains;
 
 public class ShooterIOSim implements ShooterIO {
   RHRPIDFFController leftController, rightController;
@@ -29,8 +29,9 @@ public class ShooterIOSim implements ShooterIO {
   Timer fakeGamepieceTimer = new Timer();
 
   public ShooterIOSim() {
-    leftController = ShooterConstants.SHOOTER_GAINS.createRHRController();
-    rightController = ShooterConstants.SHOOTER_GAINS.createRHRController();
+    var simGains = PIDFFGains.builder().kV(0.001).build();
+    leftController = new RHRPIDFFController(simGains);
+    rightController = new RHRPIDFFController(simGains);
   }
 
   @Override
