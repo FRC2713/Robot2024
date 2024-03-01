@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxExtensions;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -29,6 +30,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
   OffsetAbsoluteAnalogEncoder azimuthEncoder;
   private ModuleInfo info;
   private RHRFeedForward ff;
+
+  private SparkConfigurator<CANSparkMax> configurator;
 
   private RelativeEncoder getAziEncoder() {
     return azimuth.getEncoder();
@@ -57,7 +60,6 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     azimuthEncoder = new OffsetAbsoluteAnalogEncoder(info.getAziEncoderCANId(), info.getOffset());
     azimuth = new CANSparkMax(info.getAziCANId(), MotorType.kBrushless);
     azimuth.restoreFactoryDefaults();
-    azimuth.setCANTimeout(Constants.CAN_TIMEOUT_MS);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
@@ -73,34 +75,19 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
         },
         azimuth);
 
-    azimuth.setSmartCurrentLimit(Constants.DriveConstants.AZI_CURRENT_LIMIT);
-
-    for (int i = 0; i < 30; i++) {
-      azimuth.setInverted(true);
-    }
-
-    cOk(azimuth.setIdleMode(IdleMode.kBrake));
-
-    cOk(getAziEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0));
-    cOk(getAziEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
-
-    new SparkConfigurator<>(azimuth)
+    configurator = new SparkConfigurator<>(azimuth);
+    configurator
         .setUntilOk(() -> azimuth.setIdleMode(IdleMode.kBrake))
         .setUntilOk(() -> azimuth.getEncoder().setPositionConversionFactor(7.0 / 150.0 * 360.0))
-        .setUntilOk(() -> azimuth.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0));
-
-    info.getAzimuthGains().applyTo(azimuth.getPIDController());
-    azimuth.getPIDController().setPositionPIDWrappingEnabled(true);
-    azimuth.getPIDController().setPositionPIDWrappingMinInput(-180);
-    azimuth.getPIDController().setPositionPIDWrappingMaxInput(180);
-
-    for (int i = 0; i < 30; i++) {
-      // seed();
-    }
-
-    azimuth.setCANTimeout(0);
-
-    azimuth.burnFlash();
+        .setUntilOk(() -> azimuth.getEncoder().setVelocityConversionFactor(7.0 / 150.0 * 360.0))
+        .setUntilOk(() -> azimuth.getPIDController().setPositionPIDWrappingEnabled(true))
+        .setUntilOk(() -> CANSparkMaxExtensions.setInverted(azimuth, true))
+        .setUntilOk(() -> azimuth.setIdleMode(IdleMode.kBrake))
+        .setUntilOk(() -> azimuth.setSmartCurrentLimit(Constants.DriveConstants.AZI_CURRENT_LIMIT))
+        .setUntilOk(() -> azimuth.getPIDController().setPositionPIDWrappingEnabled(true))
+        .setUntilOk(() -> azimuth.getPIDController().setPositionPIDWrappingMinInput(-180))
+        .setUntilOk(() -> azimuth.getPIDController().setPositionPIDWrappingMaxInput(180))
+        .setUntilOk(() -> azimuth.getPIDController().setP(info.getAzimuthGains().getKP()));
   }
 
   @Override
