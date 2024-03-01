@@ -232,13 +232,20 @@ public class Robot extends LoggedRobot {
         .whileTrue(
             new RepeatCommand(
                 new InstantCommand(
-                    () -> {
-                      swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                      SwerveHeadingController.getInstance()
-                          .addToSetpoint(
-                              Rotation2d.fromDegrees(
-                                  visionFront.getInputs().horizontalOffsetFromTarget));
-                    })));
+                        () -> {
+                          swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+                          SwerveHeadingController.getInstance()
+                              .addToSetpoint(
+                                  Rotation2d.fromDegrees(
+                                      visionFront.getInputs().horizontalOffsetFromTarget
+                                          * Constants.DynamicShooterConstants.heading_kP));
+                        })
+                    .repeatedly()
+                    .until(
+                        () ->
+                            SwerveHeadingController.getInstance()
+                                .atSetpoint(
+                                    Constants.DynamicShooterConstants.headingErrorDegree))));
   }
 
   @Override
