@@ -27,8 +27,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     throughBore = left.getAbsoluteEncoder();
 
-    right.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
-    left.getEncoder().setPositionConversionFactor(1.0 / 90.0 * 360.0);
+    right.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
+    left.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
 
     left.getEncoder().setPosition(54.255);
     right.getEncoder().setPosition(54.255);
