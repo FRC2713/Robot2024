@@ -14,11 +14,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber intakingAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 48);
+      new LoggedTunableNumber("ShooterPivot/Intake Angle Degrees", 45);
   private static final LoggedTunableNumber fenderShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Fender Shot Angle Degrees", 48);
   private static final LoggedTunableNumber podiumShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 48);
+      new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
+  private static final LoggedTunableNumber ampShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
@@ -29,6 +31,9 @@ public class ShooterPivot extends SubsystemBase {
     FENDER_SHOT(fenderShotAngleDegrees),
     PODIUM_SHOT(podiumShotAngleDegrees),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
+    AMP_SHOT(ampShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_1(podiumShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_2(podiumShotAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;
@@ -50,8 +55,6 @@ public class ShooterPivot extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.processInputs("ShooterPivot", inputs);
-    Logger.recordOutput("ShooterPivot/Mode", state);
-
     Logger.recordOutput("ShooterPivot/Target", state.pivotAngleDegrees.getAsDouble());
 
     if (state != State.OFF) {

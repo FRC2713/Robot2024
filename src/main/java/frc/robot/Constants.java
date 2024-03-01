@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class Constants {
 
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
   public static final boolean ENABLE_VISION_POSE_ESTIMATION = true;
   public static final int CAN_TIMEOUT_MS = 200;
 
@@ -140,8 +140,10 @@ public final class Constants {
     public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(30);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
-    public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(1.0).kD(0).kG(0.0).build();
+    public static final PIDFFGains SHOOTER_PIVOT_UP_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Up Controller").kP(0.1).build();
+    public static final PIDFFGains SHOOTER_PIVOT_DOWN_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Down Controller").kP(0.1).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
@@ -195,7 +197,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.00015).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.00).kV(0.00017).build();
   }
 
   @UtilityClass
@@ -262,6 +264,7 @@ public final class Constants {
             .aziEncoderCANId(0)
             .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo FRONT_RIGHT =
@@ -274,6 +277,7 @@ public final class Constants {
             .aziEncoderCANId(1)
             .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_LEFT =
@@ -286,6 +290,7 @@ public final class Constants {
             .aziEncoderCANId(2)
             .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_RIGHT =
@@ -298,6 +303,7 @@ public final class Constants {
             .aziEncoderCANId(3)
             .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     @UtilityClass

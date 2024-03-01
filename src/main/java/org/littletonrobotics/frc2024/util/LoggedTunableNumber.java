@@ -7,12 +7,12 @@
 
 package org.littletonrobotics.frc2024.util;
 
+import frc.robot.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.frc2024.Constants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
@@ -57,7 +57,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.tuningMode) {
+      if (Constants.TUNING_MODE) {
         dashboardNumber = new LoggedDashboardNumber(key, defaultValue);
       }
     }
@@ -72,7 +72,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       return 0.0;
     } else {
-      return Constants.tuningMode ? dashboardNumber.get() : defaultValue;
+      return Constants.TUNING_MODE ? dashboardNumber.get() : defaultValue;
     }
   }
 
@@ -85,7 +85,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
    *     otherwise.
    */
   public boolean hasChanged(int id) {
-    if (!Constants.tuningMode) return false;
+    if (!Constants.TUNING_MODE) return false;
     double currentValue = get();
     Double lastValue = lastHasChangedValues.get(id);
     if (lastValue == null || currentValue != lastValue) {

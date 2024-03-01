@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
-import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
@@ -21,19 +20,19 @@ public class ThreePieceChoreo extends SequentialCommandGroup {
             () -> {
               Robot.swerveDrive.resetOdometry(firstTraj.getInitialPose());
             }),
-        ShootingCommands.FeederShotCommands(),
+        // ShootingCommands.FeederShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(firstTraj),
             Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
-        ShootingCommands.FullShotCommands(),
+        // ShootingCommands.FullShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(secondTraj),
             Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
-        ShootingCommands.FullShotCommands(),
+        // ShootingCommands.FullShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(thirdTraj),
             Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
-        ShootingCommands.FullShotCommands(),
+        // ShootingCommands.FullShotCommands(),
         new InstantCommand(
             () -> {
               SwerveSubsystem.Commands.errorTracker.printSummary("ThreePieceChoreo");

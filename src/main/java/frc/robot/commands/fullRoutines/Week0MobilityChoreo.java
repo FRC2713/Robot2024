@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
-import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
@@ -20,11 +19,11 @@ public class Week0MobilityChoreo extends SequentialCommandGroup {
             () -> {
               Robot.swerveDrive.resetOdometry(Traj.getInitialPose());
             }),
-        ShootingCommands.FeederShotCommands(),
+        // ShootingCommands.FeederShotCommands(),
         new ParallelCommandGroup(
             SwerveSubsystem.Commands.choreoCommandBuilder(Traj),
             Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)),
-        ShootingCommands.FullShotCommands(),
+        // ShootingCommands.FullShotCommands(),
         new InstantCommand(
             () -> {
               SwerveSubsystem.Commands.errorTracker.printSummary("Week0MobilityChoreo");

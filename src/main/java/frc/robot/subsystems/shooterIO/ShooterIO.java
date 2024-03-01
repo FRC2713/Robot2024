@@ -7,6 +7,7 @@ public interface ShooterIO {
   public static class ShooterInputs {
     public double leftOutputVoltage = 0.0;
     public double rightOutputVoltage = 0.0;
+    public double leftDutyCycle = 0.0;
     public double leftSpeedRPM = 0.0;
     public double rightSpeedRPM = 0.0;
     public double rightPosDeg = 0.0;
