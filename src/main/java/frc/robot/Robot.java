@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -50,6 +51,7 @@ import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -252,6 +254,27 @@ public class Robot extends LoggedRobot {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
                 }));
 
+
+    driver
+        .povDown()
+        .whileTrue(
+            new RepeatCommand(
+                new InstantCommand(
+                        () -> {
+                          swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+                          SwerveHeadingController.getInstance()
+                              .addToSetpoint(
+                                  Rotation2d.fromDegrees(
+                                      visionFront.getInputs().horizontalOffsetFromTarget
+                                          * Constants.DynamicShooterConstants.heading_kP));
+                        })
+                    .repeatedly()
+                    .until(
+                        () ->
+                            SwerveHeadingController.getInstance()
+                                .atSetpoint(
+                                    Constants.DynamicShooterConstants.headingErrorDegree))));
+
     // -- Operator Controls --
 
     operator
@@ -318,6 +341,8 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput(
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
+
+    VehicleState.getInstance().updateDynamicPivotAngle(visionFront.estimateDistanceToTag());
   }
 
   @Override

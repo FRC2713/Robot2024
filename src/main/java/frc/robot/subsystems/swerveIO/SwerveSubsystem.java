@@ -260,7 +260,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
-    if (!visionInputs.hasValidTarget) {
+    if (!visionInputs.hasTarget) {
       return;
     }
 
@@ -279,7 +279,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/Should update pose", shouldUpdatePose);
     if (shouldUpdatePose) {
       var stdevs =
-          visionInputs.targetCountFiducials > 1
+          visionInputs.tagCount > 1
               ? LimeLightConstants.POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS
               : LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.multiplyByRange(1);
 
