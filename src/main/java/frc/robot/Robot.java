@@ -294,7 +294,6 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
-
   }
 
   @Override

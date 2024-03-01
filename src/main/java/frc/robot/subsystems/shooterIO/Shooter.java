@@ -21,16 +21,15 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotFeederVolts =
       new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
-
   private static final LoggedTunableNumber podiumShotShooterRpm =
       new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
   private static final LoggedTunableNumber podiumShotFeederVolts =
       new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
 
   /**
-   * Applies a differential speed to the left and right wheels.
-   * Positive values make the left wheel go faster and the right wheel slower
-   * Negative values make the left wheel slower and the right wheel faster.
+   * Applies a differential speed to the left and right wheels. Positive values make the left wheel
+   * go faster and the right wheel slower Negative values make the left wheel slower and the right
+   * wheel faster.
    */
   private static final LoggedTunableNumber shooterDifferentialRpm =
       new LoggedTunableNumber("Flywheel/Differential RPM", 250);
@@ -121,15 +120,20 @@ public class Shooter extends SubsystemBase {
     double differential = shooterDifferentialRpm.getAsDouble();
 
     IO.setMotorSetPoint(
-        state.leftRpm.getAsDouble() + differential,
-        state.rightRpm.getAsDouble() - differential);
+        state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
     Logger.processInputs("Shooter", inputs);
   }
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    double leftTarget = state.leftRpm.getAsDouble() + shooterDifferentialRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble() ;    
-    double rightTarget = state.rightRpm.getAsDouble() - shooterDifferentialRpm.getAsDouble() - atGoalThresholdRPM.getAsDouble();
+    double leftTarget =
+        state.leftRpm.getAsDouble()
+            + shooterDifferentialRpm.getAsDouble()
+            - atGoalThresholdRPM.getAsDouble();
+    double rightTarget =
+        state.rightRpm.getAsDouble()
+            - shooterDifferentialRpm.getAsDouble()
+            - atGoalThresholdRPM.getAsDouble();
 
     return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
   }
