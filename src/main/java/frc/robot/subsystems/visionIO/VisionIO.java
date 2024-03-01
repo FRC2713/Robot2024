@@ -6,41 +6,53 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionIO {
   @AutoLog
   public static class VisionInputs {
-    public Pose3d botPose = new Pose3d();
     public Pose3d botPoseBlue = new Pose3d();
-    public Pose3d botPoseRed = new Pose3d();
-    public Pose3d cameraPoseInTargetSpace = new Pose3d();
-    public Pose3d targetPoseInCameraSpace = new Pose3d();
-    public Pose3d targetPoseInRobotSpace = new Pose3d();
-    public Pose3d botPoseInTargetSpace = new Pose3d();
-    public Pose3d cameraPoseInRobotSpace = new Pose3d();
+    // public Pose3d botPose = new Pose3d();
+    // public Pose3d botPoseRed = new Pose3d();
+    // public Pose3d cameraPoseInTargetSpace = new Pose3d();
+    // public Pose3d targetPoseInCameraSpace = new Pose3d();
+    // public Pose3d targetPoseInRobotSpace = new Pose3d();
+    // public Pose3d botPoseInTargetSpace = new Pose3d();
+    // public Pose3d cameraPoseInRobotSpace = new Pose3d();
 
-    public double botPoseTimestamp = 0;
     public double botPoseBlueTimestamp = 0;
-    public double botPoseRedTimestamp = 0;
-    public double cameraPoseInTargetSpaceTimestamp = 0;
-    public double targetPoseInCameraSpaceTimestamp = 0;
-    public double targetPoseInRobotSpaceTimestamp = 0;
-    public double botPoseInTargetSpaceTimestamp = 0;
-    public double cameraPoseInRobotSpaceTimestamp = 0;
+    // public double botPoseTimestamp = 0;
+    // public double botPoseRedTimestamp = 0;
+    // public double cameraPoseInTargetSpaceTimestamp = 0;
+    // public double targetPoseInCameraSpaceTimestamp = 0;
+    // public double targetPoseInRobotSpaceTimestamp = 0;
+    // public double botPoseInTargetSpaceTimestamp = 0;
+    // public double cameraPoseInRobotSpaceTimestamp = 0;
 
-    public double aprilTagId = 0;
-    public boolean hasValidTarget = false;
+    // public double aprilTagId = 0;
+    // public boolean hasValidTarget = false;
+    // public double horizontalOffsetFromTarget = 0;
+    // public double verticalOffsetFromTarget = 0;
+    // public double targetArea = 0;
+    // public double pipelineLatency = 0;
+    // public double captureLatency = 0;
+    // public double totalLatency = 0;
+    // public double shortestBoundingBoxSidelength = 0;
+    // public double longestBoundingBoxSideLength = 0;
+    // public double horizontalBoundingBoxSideLength = 0;
+    // public double verticalBoundingBoxSideLength = 0;
+    // public double activePipeline = 0;
+    // public double neuralNetClassId = 0;
+    // public double[] averageHsvColor = new double[] {};
+    // public int targetCountFiducials = 0;
+
+    public boolean hasTarget = false;
     public double horizontalOffsetFromTarget = 0;
     public double verticalOffsetFromTarget = 0;
     public double targetArea = 0;
-    public double pipelineLatency = 0;
-    public double captureLatency = 0;
-    public double totalLatency = 0;
-    public double shortestBoundingBoxSidelength = 0;
-    public double longestBoundingBoxSideLength = 0;
-    public double horizontalBoundingBoxSideLength = 0;
-    public double verticalBoundingBoxSideLength = 0;
+    public double pipelineLatencyMs = 0;
+    public double captureLatencyMs = 0;
+    public double totalLatencyMs = 0;
     public double activePipeline = 0;
-    public double neuralNetClassId = 0;
-    public double[] averageHsvColor = new double[] {};
-
-    public int targetCountFiducials = 0;
+    public double tagCount = 0;
+    public double tagSpan = 0;
+    public double averageTagDistanceFromCamera = 0;
+    public double averageTagArea = 0;
   }
 
   public void updateInputs(VisionInputs inputs);
@@ -94,4 +106,6 @@ public interface VisionIO {
         pose.getRotation().getY(),
         pose.getRotation().getZ());
   }
+
+  public void setPriorityId(int tagId);
 }

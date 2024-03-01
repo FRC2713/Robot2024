@@ -64,6 +64,10 @@ public class SwerveHeadingController {
   public boolean atSetpoint() {
     return this.error < 0.1;
   }
+
+  public boolean atSetpoint(double acceptableError) {
+    return this.error < acceptableError;
+  }
   /**
    * Updates the heading controller PID with the setpoint and calculates output.
    *
