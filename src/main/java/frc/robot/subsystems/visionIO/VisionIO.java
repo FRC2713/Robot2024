@@ -53,6 +53,7 @@ public interface VisionIO {
     public double tagSpan = 0;
     public double averageTagDistanceFromCamera = 0;
     public double averageTagArea = 0;
+    public double tagId = 0;
   }
 
   public void updateInputs(VisionInputs inputs);

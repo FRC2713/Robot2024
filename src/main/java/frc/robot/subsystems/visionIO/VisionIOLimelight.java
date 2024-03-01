@@ -138,6 +138,7 @@ public class VisionIOLimelight implements VisionIO {
     inputs.tagSpan = lvf.tagSpan;
     inputs.averageTagDistanceFromCamera = lvf.averageTagDistanceFromCamera;
     inputs.averageTagArea = lvf.averageTagArea;
+    inputs.tagId = aprilTagId.get();
   }
 
   @Override

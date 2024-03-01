@@ -30,23 +30,19 @@ public class VisionIOSim implements VisionIO {
     layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
     visionSim.addAprilTags(layout);
 
-    SimCameraProperties cameraProperties = new SimCameraProperties();
-    cameraProperties.setCalibration(
-        960,
-        720,
-        Rotation2d.fromDegrees(
-            Math.hypot(
-                info.getMountingDirection().getHorizontalFOV(),
-                info.getMountingDirection().getVerticalFOV())));
-
-    cameraProperties.setCalibError(.25, .08);
-    cameraProperties.setFPS(20);
-    cameraProperties.setAvgLatencyMs(35);
-    cameraProperties.setLatencyStdDevMs(5);
+    var cameraProp = new SimCameraProperties();
+    cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+    cameraProp.setCalibError(0.35, 0.10);
+    cameraProp.setFPS(15);
+    cameraProp.setAvgLatencyMs(50);
+    cameraProp.setLatencyStdDevMs(15);
 
     cameraHw = new PhotonCamera(info.getNtTableName());
-    cameraSim = new PhotonCameraSim(cameraHw, cameraProperties);
-    visionSim.addCamera(cameraSim, info.getLocation());
+    cameraSim = new PhotonCameraSim(cameraHw, cameraProp);
+    cameraSim.enableDrawWireframe(true);
+    cameraSim.enableProcessedStream(true);
+    cameraSim.enableRawStream(true);
+    visionSim.addCamera(cameraSim, new Transform3d());
     SmartDashboard.putData(visionSim.getDebugField());
   }
 
@@ -57,8 +53,14 @@ public class VisionIOSim implements VisionIO {
   @Override
   public void updateInputs(VisionInputs inputs) {
     visionSim.update(Robot.swerveDrive.getUsablePose());
+    visionSim
+        .getDebugField()
+        .getObject("VisionEstimation")
+        .setPose(Robot.swerveDrive.getUsablePose());
 
     var res = cameraHw.getLatestResult();
+
+    inputs.hasTarget = res.hasTargets();
 
     if (res.hasTargets()) {
       var imageCaptureTime = res.getTimestampSeconds();
@@ -71,9 +73,24 @@ public class VisionIOSim implements VisionIO {
 
       inputs.botPoseBlue = robotPose;
       inputs.botPoseBlueTimestamp = imageCaptureTime;
+      inputs.horizontalOffsetFromTarget = target.getYaw();
+      inputs.verticalOffsetFromTarget = target.getPitch();
+      inputs.targetArea = target.getArea();
+      inputs.pipelineLatencyMs = res.getLatencyMillis();
+      inputs.captureLatencyMs = 0.0;
+      inputs.activePipeline = 0;
+      inputs.tagCount = res.getTargets().size();
+      inputs.tagId = res.getBestTarget().getFiducialId();
     } else {
       inputs.botPoseBlue = new Pose3d();
       inputs.botPoseBlueTimestamp = 0.0;
+      inputs.horizontalOffsetFromTarget = 0.0;
+      inputs.verticalOffsetFromTarget = 0.0;
+      inputs.targetArea = 0.0;
+      inputs.pipelineLatencyMs = 0.0;
+      inputs.captureLatencyMs = 0.0;
+      inputs.activePipeline = 0;
+      inputs.tagCount = 0;
     }
   }
 
