@@ -80,11 +80,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     // right.follow(left, true);
 
-    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(left.getPIDController(), 0);
-    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(right.getPIDController(), 0);
-
-    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(left.getPIDController(), 1);
-    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(right.getPIDController(), 1);
+    ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(left.getPIDController(), 0);
+    ShooterPivotConstants.SHOOTER_PIVOT_GAINS.applyTo(right.getPIDController(), 0);
   }
 
   @Override
@@ -111,15 +108,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
   }
 
   @Override
-  public void setTargetAngle(double degrees) {
-    if (degrees > left.getEncoder().getPosition()) {
-      // if target is greater than current setpoint
-      // use the down gains (slot 1)
-      right.getPIDController().setReference(degrees, ControlType.kPosition, 1);
-      left.getPIDController().setReference(degrees, ControlType.kPosition, 1);
-    } else {
-      right.getPIDController().setReference(degrees, ControlType.kPosition, 0);
-      left.getPIDController().setReference(degrees, ControlType.kPosition, 0);
-    }
+  public void setTargetAngle(double degrees, double arbFeedForward) {
+    right.getPIDController().setReference(degrees, ControlType.kPosition, 1, arbFeedForward);
+    left.getPIDController().setReference(degrees, ControlType.kPosition, 1, arbFeedForward);
   }
 }

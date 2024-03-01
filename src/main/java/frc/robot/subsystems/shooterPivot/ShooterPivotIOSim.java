@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterPivotIOSim implements ShooterPivotIO {
 
@@ -23,16 +24,18 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.SIMULATE_GRAVITY,
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
   private double targetAngle;
+  private double armFeedForwardVolts;
 
-  private PIDController upController, downController, currentController;
+  private PIDController simController;
 
   private double voltage;
 
   public ShooterPivotIOSim() {
-    upController = new PIDController(1, 0, 0);
-    downController = new PIDController(1, 0, 0);
-
-    currentController = upController;
+    simController =
+        new PIDController(
+            ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKP(),
+            ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKI(),
+            ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKD());
   }
 
   @Override
@@ -42,7 +45,9 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
       return;
     }
 
-    double effort = currentController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
+    double effort =
+        simController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle)
+            + armFeedForwardVolts;
     effort = MathUtil.clamp(effort, -12, 12);
     this.voltage = effort;
 
@@ -63,15 +68,8 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
-  public void setTargetAngle(double degrees) {
-    if (degrees > Units.radiansToDegrees(sim.getAngleRads())) {
-      // if target is greater than current setpoint
-      // use the down gains (slot 1)
-      currentController = downController;
-    } else {
-      currentController = upController;
-    }
-
+  public void setTargetAngle(double degrees, double arbFeedForward) {
+    this.armFeedForwardVolts = arbFeedForward;
     targetAngle = degrees;
   }
 }

@@ -136,14 +136,19 @@ public final class Constants {
     public static final double MAX_ANGLE_DEGREES = 60;
     public static final double RETRACTED_ANGLE_DEGREES = 0;
     public static final boolean SIMULATE_GRAVITY = true;
-    public static final double GEARING = 100;
+    public static final double GEARING = 150;
     public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(30);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
-    public static final double MAX_DEGREES_PER_SECOND = 5;
-    public static final PIDFFGains SHOOTER_PIVOT_UP_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Up Controller").kP(0.1).build();
-    public static final PIDFFGains SHOOTER_PIVOT_DOWN_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Down Controller").kP(0.1).build();
+    public static final PIDFFGains SHOOTER_PIVOT_GAINS =
+        PIDFFGains.builder()
+            .name("ShooterPivot Controller")
+            .kS(0.1)
+            .kG(0.1)
+            .kV(0.1)
+            .kP(0.1)
+            .build();
+    public static final double MAX_VELOCITY_RAD_SEC = 3; // from wpi example
+    public static final double MAX_ACCEL_RAD_SEC_2 = 10; // from wpi example
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;

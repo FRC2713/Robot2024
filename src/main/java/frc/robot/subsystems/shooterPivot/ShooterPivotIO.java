@@ -24,5 +24,5 @@ public interface ShooterPivotIO {
 
   public void updateInputs(ShooterPivotInputs inputs);
 
-  public void setTargetAngle(double degrees);
+  public void setTargetAngle(double degrees, double arbFeedForward);
 }

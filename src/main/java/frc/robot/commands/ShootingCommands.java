@@ -48,6 +48,6 @@ public class ShootingCommands {
   }
 
   public static Command runShooterPivot(ShooterPivot.State shooterPivotState) {
-    return ShooterPivot.Commands.setMotionMode(shooterPivotState);
+    return ShooterPivot.Commands.setState(shooterPivotState);
   }
 }
