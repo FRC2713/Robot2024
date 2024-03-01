@@ -254,7 +254,6 @@ public class Robot extends LoggedRobot {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
                 }));
 
-
     driver
         .povDown()
         .whileTrue(
