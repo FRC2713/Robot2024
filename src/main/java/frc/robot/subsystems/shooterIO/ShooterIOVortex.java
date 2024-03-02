@@ -26,9 +26,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterIOVortex implements ShooterIO {
   private final CANSparkFlex leftMotor =
-      new CANSparkFlex(
-          Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID,
-          MotorType.kBrushless); // left and right should swap
+      new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
   private final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
   private final TalonFX feeder = new TalonFX(Constants.RobotMap.FEEDER_CAN_ID);

@@ -17,14 +17,14 @@ import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fenderShotShooterRpm =
-      new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
+      new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
   private static final LoggedTunableNumber fenderShotFeederVolts =
-      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
+      new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
 
   private static final LoggedTunableNumber podiumShotShooterRpm =
-      new LoggedTunableNumber("Flywheel/Fender Shot RPM", 4000);
+      new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
   private static final LoggedTunableNumber podiumShotFeederVolts =
-      new LoggedTunableNumber("Flywheel/Fender Shot Feeder Volts", 12);
+      new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
 
   /**
    * Applies a differential speed to the left and right wheels. Positive values make the left wheel
@@ -32,30 +32,30 @@ public class Shooter extends SubsystemBase {
    * wheel faster.
    */
   private static final LoggedTunableNumber shooterDifferentialRpm =
-      new LoggedTunableNumber("Flywheel/Differential RPM", 250);
+      new LoggedTunableNumber("Shooter/Differential RPM", 250);
 
   private static final LoggedTunableNumber holdingGpShooterRpm =
-      new LoggedTunableNumber("Flywheel/Resting RPM", 0);
+      new LoggedTunableNumber("Shooter/Resting RPM", 0);
   private static final LoggedTunableNumber holdingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Resting Feeder Volts", 0);
+      new LoggedTunableNumber("Shooter/Resting Feeder Volts", 0);
 
   private static final LoggedTunableNumber intakingShooterRpm =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
+      new LoggedTunableNumber("Shooter/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 2);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 2);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
-      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
+      new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 0);
   private static final LoggedTunableNumber outtakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
 
   private static final LoggedTunableNumber ampShotShooterRMP =
-      new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
+      new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 0);
   private static final LoggedTunableNumber ampShotFeederVolts =
-      new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 200);
+      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
@@ -87,6 +87,11 @@ public class Shooter extends SubsystemBase {
         podiumShotShooterRpm,
         podiumShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
+    FORCE_MANUAL_CONTROL(
+        () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
+        () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
+        () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
+        () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
@@ -111,7 +116,7 @@ public class Shooter extends SubsystemBase {
     IO.updateInputs(inputs, state);
 
     boolean shouldSpin = debouncer.calculate(isAtTarget());
-    Logger.recordOutput("Flywheel/Should spin", shouldSpin);
+    Logger.recordOutput("Shooter/Should spin", shouldSpin);
 
     if (state == State.INTAKING && hasGamePiece()) {
       state = State.HOLDING_GP;
@@ -133,7 +138,7 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter", inputs);
   }
 
-  @AutoLogOutput(key = "Flywheel/isAtTarget")
+  @AutoLogOutput(key = "Shooter/isAtTarget")
   public boolean isAtTarget() {
     // double leftTarget =
     //     state.leftRpm.getAsDouble()
@@ -150,7 +155,7 @@ public class Shooter extends SubsystemBase {
         && Math.abs(state.rightRpm.getAsDouble() - inputs.rightSpeedRPM) < atGoalThresholdRPM.get();
   }
 
-  @AutoLogOutput(key = "Flywheel/hasGamePiece")
+  @AutoLogOutput(key = "Shooter/hasGamePiece")
   public boolean hasGamePiece() {
     return (inputs.laserCanDistanceMM < 95);
   }

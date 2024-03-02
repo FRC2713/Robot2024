@@ -129,23 +129,10 @@ public class Robot extends LoggedRobot {
     // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
     // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
-    new Trigger(() -> shooter.hasGamePiece())
-        .onTrue(
-            Commands.sequence(
-                new InstantCommand(
-                    () -> {
-                      visionFront.setLEDMode(LEDMode.FORCE_BLINK);
-                    }),
-                new WaitCommand(2),
-                new InstantCommand(
-                    () -> {
-                      visionFront.setLEDMode(LEDMode.PIPELINE);
-                    })));
-
     mechManager = new MechanismManager();
+  }
 
-    // -- Drive controls --
-
+  public void createDriverBindings() {
     driver
         .leftBumper()
         .onTrue(
@@ -161,10 +148,7 @@ public class Robot extends LoggedRobot {
                         Commands.either(
                             Shooter.Commands.setState(Shooter.State.OFF),
                             new InstantCommand(),
-                            () -> shooter.getState() == Shooter.State.INTAKING))));
-
-    driver
-        .leftBumper()
+                            () -> shooter.getState() == Shooter.State.INTAKING))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -179,10 +163,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
                 Shooter.Commands.setState(Shooter.State.OUTAKING),
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
-
-    driver
-        .povUp()
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -202,10 +183,7 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
-
-    driver
-        .rightBumper()
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -223,10 +201,7 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
-
-    driver
-        .rightTrigger(0.3)
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -271,9 +246,9 @@ public class Robot extends LoggedRobot {
                             SwerveHeadingController.getInstance()
                                 .atSetpoint(
                                     Constants.DynamicShooterConstants.headingErrorDegree))));
+  }
 
-    // -- Operator Controls --
-
+  public void createOperatorBindings() {
     operator
         .x()
         .onTrue(
@@ -281,10 +256,7 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
-
-    operator
-        .x()
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -302,10 +274,7 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
                 Shooter.Commands.setState(Shooter.State.PODIUM_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)));
-
-    operator
-        .a()
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -317,20 +286,33 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
   }
 
+  public void createAutomaticTriggers() {
+
+    new Trigger(() -> shooter.hasGamePiece())
+        .onTrue(
+            Commands.sequence(
+                new InstantCommand(
+                    () -> {
+                      visionFront.setLEDMode(LEDMode.FORCE_BLINK);
+                    }),
+                new WaitCommand(2),
+                new InstantCommand(
+                    () -> {
+                      visionFront.setLEDMode(LEDMode.PIPELINE);
+                    })));
+  }
+
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    // ErrHandler.getInstance().log();
     // RumbleManager.getInstance().periodic();
     mechManager.periodic();
+
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
     // swerveDrive.seed();
-
-    // RoboRioSim.setVInVoltage(
-    // BatterySim.calculateDefaultBatteryLoadedVoltage(swerveDrive.getTotalCurrentDraw()));
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
