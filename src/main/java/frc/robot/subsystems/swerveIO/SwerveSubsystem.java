@@ -244,6 +244,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  public ChassisSpeeds getChassisSpeeds() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(this.getRobotRelativeSpeeds(), this.getYaw());
+  }
+
   public Rotation2d getYaw() {
     return Rotation2d.fromDegrees(inputs.gyroYawPosition);
   }

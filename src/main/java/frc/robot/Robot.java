@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -52,7 +52,6 @@ import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -161,20 +160,20 @@ public class Robot extends LoggedRobot {
                     new InstantCommand(),
                     () -> shooter.getState() == Shooter.State.INTAKING)));
 
-    driver
-        .povUp()
-        .onTrue(
-            Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
-                Shooter.Commands.setState(Shooter.State.OUTAKING),
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)))
-        .onFalse(
-            Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.OFF),
-                Commands.either(
-                    Shooter.Commands.setState(Shooter.State.OFF),
-                    new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.OUTAKING)));
+    // driver
+    //     .povUp()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP),
+    //             Shooter.Commands.setState(Shooter.State.OUTAKING),
+    //             ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Intake.Commands.setMotionMode(Intake.State.OFF),
+    //             Commands.either(
+    //                 Shooter.Commands.setState(Shooter.State.OFF),
+    //                 new InstantCommand(),
+    //                 () -> shooter.getState() == Shooter.State.OUTAKING)));
 
     // driver.povLeft().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT));
 
@@ -231,25 +230,65 @@ public class Robot extends LoggedRobot {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
                 }));
 
+    // driver
+    //     .povDown()
+    //     .whileTrue(
+    //         new RepeatCommand(
+    //             new InstantCommand(
+    //                     () -> {
+    //                       swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
+    //                       SwerveHeadingController.getInstance()
+    //                           .addToSetpoint(
+    //                               Rotation2d.fromDegrees(
+    //                                   visionFront.getInputs().horizontalOffsetFromTarget
+    //                                       * Constants.DynamicShooterConstants.heading_kP));
+    //                     })
+    //                 .repeatedly()
+    //                 .until(
+    //                     () ->
+    //                         SwerveHeadingController.getInstance()
+    //                             .atSetpoint(
+    //                                 Constants.DynamicShooterConstants.headingErrorDegree))));
+
+    driver
+        .povUp()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () ->
+                        Robot.swerveDrive.setMotionMode(
+                            SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
+                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(0))));
+
+    driver
+        .povLeft()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () ->
+                        Robot.swerveDrive.setMotionMode(
+                            SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
+                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90))));
+
+    driver
+        .povRight()
+        .onTrue(
+            new SequentialCommandGroup(
+                new InstantCommand(
+                    () ->
+                        Robot.swerveDrive.setMotionMode(
+                            SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
+                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(270))));
+
     driver
         .povDown()
-        .whileTrue(
-            new RepeatCommand(
+        .onTrue(
+            new SequentialCommandGroup(
                 new InstantCommand(
-                        () -> {
-                          swerveDrive.setMotionMode(MotionMode.HEADING_CONTROLLER);
-                          SwerveHeadingController.getInstance()
-                              .addToSetpoint(
-                                  Rotation2d.fromDegrees(
-                                      visionFront.getInputs().horizontalOffsetFromTarget
-                                          * Constants.DynamicShooterConstants.heading_kP));
-                        })
-                    .repeatedly()
-                    .until(
-                        () ->
-                            SwerveHeadingController.getInstance()
-                                .atSetpoint(
-                                    Constants.DynamicShooterConstants.headingErrorDegree))));
+                    () ->
+                        Robot.swerveDrive.setMotionMode(
+                            SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
+                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(180))));
   }
 
   public void createOperatorBindings() {

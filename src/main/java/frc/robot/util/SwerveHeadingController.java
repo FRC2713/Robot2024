@@ -82,21 +82,26 @@ public class SwerveHeadingController {
 
     double output = 0;
 
-    if (!controller.atSetpoint()) {
-      Rotation2d currentHeading = Robot.swerveDrive.getYaw();
-      output = controller.calculate(currentHeading.getDegrees(), setpoint.getDegrees());
-      output =
-          MathUtil.clamp(
-              output,
-              -Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC),
-              Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
-      error = setpoint.getDegrees() - currentHeading.getDegrees();
-      Logger.recordOutput("Heading Controller/error", error);
+    Rotation2d currentHeading = Robot.swerveDrive.getYaw();
+    output = controller.calculate(currentHeading.getDegrees(), setpoint.getDegrees());
+    output =
+        MathUtil.clamp(
+            output,
+            -Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC),
+            Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
+    error = setpoint.getDegrees() - currentHeading.getDegrees();
+    Logger.recordOutput("Heading Controller/error", error);
 
-      // if ((Math.abs(error) <= 1) || (Math.abs(error) >= 359 && Math.abs(error) <= 360)) {
-      // return 0;
-      // }
+    var chassisSpeeds = Robot.swerveDrive.getChassisSpeeds();
+    if ((Math.abs(error) <= 1 || Math.abs(error - 360) <= 1)
+        && chassisSpeeds.vxMetersPerSecond <= 0.25
+        && chassisSpeeds.vyMetersPerSecond <= 0.25) {
+      output = 0;
     }
+
+    // if ((Math.abs(error) <= 1) || (Math.abs(error) >= 359 && Math.abs(error) <= 360)) {
+    // return 0;
+    // }
 
     Logger.recordOutput("Heading Controller/update", output);
     return output;
