@@ -77,6 +77,16 @@ public class Shooter extends SubsystemBase {
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
     OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
     AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
+    AUTO_SHOT_NonAmpSide_1(
+        podiumShotShooterRpm,
+        podiumShotShooterRpm,
+        podiumShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
+    AUTO_SHOT_NonAmpSide_2(
+        podiumShotShooterRpm,
+        podiumShotShooterRpm,
+        podiumShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
     OFF(() -> 0, () -> 0, () -> 0, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;

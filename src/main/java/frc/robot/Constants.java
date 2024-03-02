@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class Constants {
 
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
   public static final boolean ENABLE_VISION_POSE_ESTIMATION = true;
   public static final int CAN_TIMEOUT_MS = 200;
 
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double GEARING = 1;
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
-    public static final double MOI = 0.001;
+    public static final double MOI = 0.0001;
     public static final PIDFFGains SHOOTER_GAINS =
         PIDFFGains.builder().name("Shooter Controller").kP(0.00).kV(0.00017).build();
   }
@@ -332,5 +332,13 @@ public final class Constants {
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_ROTATION =
           PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
+  }
+
+  public static final class DynamicShooterConstants {
+    public static final double limelightMountingHeightMeters = 1;
+    public static final double limelightMouningAngleDegrees = 1;
+    public static final double tagMountingHeight = 1;
+    public static final double heading_kP = 1;
+    public static final double headingErrorDegree = 1;
   }
 }
