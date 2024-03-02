@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 3);
+      new LoggedTunableNumber("Flywheel/Intaking Feeder Volts", 2);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
       new LoggedTunableNumber("Flywheel/Outtaking Shooter RPM", 0);
@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Flywheel/Outtaking Feeder Volts", -5);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 100);
+      new LoggedTunableNumber("Flywheel/At Goal Threshold RPM", 200);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
@@ -113,14 +113,14 @@ public class Shooter extends SubsystemBase {
     boolean shouldSpin = debouncer.calculate(isAtTarget());
     Logger.recordOutput("Flywheel/Should spin", shouldSpin);
 
+    if (state == State.INTAKING && hasGamePiece()) {
+      state = State.HOLDING_GP;
+    }
+
     if (shouldSpin && state.additionalFeederCondition.getAsBoolean()) {
       IO.setFeederVolts(state.feederRpm.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
-    }
-
-    if (state == State.INTAKING && hasGamePiece()) {
-      state = State.HOLDING_GP;
     }
 
     // if (state == State.FENDER_SHOT && !debouncer.calculate(hasGamePiece())) {
@@ -129,28 +129,30 @@ public class Shooter extends SubsystemBase {
 
     double differential = shooterDifferentialRpm.getAsDouble();
 
-    IO.setMotorSetPoint(
-        state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
+    IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
     Logger.processInputs("Shooter", inputs);
   }
 
   @AutoLogOutput(key = "Flywheel/isAtTarget")
   public boolean isAtTarget() {
-    double leftTarget =
-        state.leftRpm.getAsDouble()
-            + shooterDifferentialRpm.getAsDouble()
-            - atGoalThresholdRPM.getAsDouble();
-    double rightTarget =
-        state.rightRpm.getAsDouble()
-            - shooterDifferentialRpm.getAsDouble()
-            - atGoalThresholdRPM.getAsDouble();
+    // double leftTarget =
+    //     state.leftRpm.getAsDouble()
+    //         + shooterDifferentialRpm.getAsDouble()
+    //         - atGoalThresholdRPM.getAsDouble();
+    // double rightTarget =
+    //     state.rightRpm.getAsDouble()
+    //         - shooterDifferentialRpm.getAsDouble()
+    //         - atGoalThresholdRPM.getAsDouble();
 
-    return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
+    // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
+
+    return Math.abs(state.leftRpm.getAsDouble() - inputs.leftSpeedRPM) < atGoalThresholdRPM.get()
+        && Math.abs(state.rightRpm.getAsDouble() - inputs.rightSpeedRPM) < atGoalThresholdRPM.get();
   }
 
   @AutoLogOutput(key = "Flywheel/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.sensorVoltage > 0.8);
+    return (inputs.laserCanDistanceMM < 95);
   }
 
   public static class Commands {

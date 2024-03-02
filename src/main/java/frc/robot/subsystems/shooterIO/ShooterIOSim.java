@@ -72,26 +72,26 @@ public class ShooterIOSim implements ShooterIO {
     if (state == Shooter.State.INTAKING) {
       fakeGamepieceTimer.start();
 
-      if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
-        inputs.sensorVoltage = 4.5;
-      } else {
-        inputs.sensorVoltage = 0.0;
-      }
+      // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
+      //   inputs.sensorVoltage = 4.5;
+      // } else {
+      //   inputs.sensorVoltage = 0.0;
+      // }
     }
 
     if (state == Shooter.State.HOLDING_GP) {
       fakeGamepieceTimer.stop();
       fakeGamepieceTimer.reset();
-      inputs.sensorVoltage = 4.5;
+      // inputs.sensorVoltage = 4.5;
     }
 
     if (state == Shooter.State.FENDER_SHOT) {
       fakeGamepieceTimer.start();
 
       if (fakeGamepieceTimer.get() <= 0.5) {
-        inputs.sensorVoltage = 4.5;
+        // inputs.sensorVoltage = 4.5;
       } else {
-        inputs.sensorVoltage = 0;
+        // inputs.sensorVoltage = 0;
       }
     }
   }

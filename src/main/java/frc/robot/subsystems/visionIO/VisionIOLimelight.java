@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.util.LimelightHelpers;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -148,13 +149,22 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void setLEDMode(LEDMode mode) {
-    ledMode.set(
-        switch (mode) {
-          case PIPELINE -> 0;
-          case FORCE_OFF -> 1;
-          case FORCE_BLINK -> 2;
-          case FORCE_ON -> 3;
-        });
+    switch (mode) {
+      case FORCE_BLINK:
+        LimelightHelpers.setLEDMode_ForceBlink(this.getInfo().getNtTableName());
+        break;
+      case FORCE_OFF:
+        LimelightHelpers.setLEDMode_ForceOff(this.getInfo().getNtTableName());
+        break;
+      case FORCE_ON:
+        LimelightHelpers.setLEDMode_ForceOn(this.getInfo().getNtTableName());
+        break;
+      case PIPELINE:
+        LimelightHelpers.setLEDMode_PipelineControl(this.getInfo().getNtTableName());
+        break;
+      default:
+        break;
+    }
   }
 
   @Override

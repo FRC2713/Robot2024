@@ -22,7 +22,9 @@ public interface ShooterIO {
     public double feederSupplyCurrentAmps = 0.0;
     public double feederVelocityRPM = 0.0;
 
-    public double sensorVoltage = 0.0;
+    public int laserCanStatus = 0;
+    public int laserCanDistanceMM = 0;
+    public int laserCanAmbientLightLevel = 0;
   }
 
   public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);

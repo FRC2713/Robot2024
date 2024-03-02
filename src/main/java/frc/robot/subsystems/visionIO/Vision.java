@@ -49,5 +49,7 @@ public class Vision extends SubsystemBase {
     return inputs;
   }
 
-  public void setLEDMode(LEDMode leds) {}
+  public void setLEDMode(LEDMode leds) {
+    io.setLEDMode(leds);
+  }
 }
