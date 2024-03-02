@@ -70,35 +70,41 @@ public class Shooter extends SubsystemBase {
         fenderShotShooterRpm,
         fenderShotShooterRpm,
         fenderShotFeederVolts,
-        () -> Robot.shooterPivot.isAtTargetAngle()),
+        () -> Robot.shooterPivot.isAtTargetAngle(),
+        true),
     PODIUM_SHOT(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
         podiumShotFeederVolts,
-        () -> Robot.shooterPivot.isAtTargetAngle()),
-    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
-    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
-    OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
-    AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
+        () -> Robot.shooterPivot.isAtTargetAngle(),
+        true),
+    AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true, true),
     AUTO_SHOT_NonAmpSide_1(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
         podiumShotFeederVolts,
-        () -> Robot.shooterPivot.isAtTargetAngle()),
+        () -> Robot.shooterPivot.isAtTargetAngle(),
+        true),
     AUTO_SHOT_NonAmpSide_2(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
         podiumShotFeederVolts,
-        () -> Robot.shooterPivot.isAtTargetAngle()),
+        () -> Robot.shooterPivot.isAtTargetAngle(),
+        true),
     FORCE_MANUAL_CONTROL(
         () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
         () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
-        () -> true),
-    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
-    OFF(() -> 0, () -> 0, () -> 0, () -> true);
+        () -> true,
+        true),
+    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true, true),
+    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true, true),
+    OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true, true),
+    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true, true),
+    OFF(() -> 0, () -> 0, () -> 0, () -> true, true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
+    private final boolean isShooting;
   }
 
   @Setter
@@ -166,6 +172,11 @@ public class Shooter extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/hasGamePiece")
   public boolean hasGamePiece() {
     return (inputs.laserCanDistanceMM < 95);
+  }
+
+  @AutoLogOutput(key = "Shooter/gamePieceTooFar")
+  public boolean gamePieceTooFar() {
+    return (inputs.laserCan2farDistanceMM < 95 && state.ordinal() > 5);
   }
 
   public static class Commands {

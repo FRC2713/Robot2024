@@ -37,6 +37,7 @@ public class ShooterIOVortex implements ShooterIO {
   private StatusSignal<Double> feederVelocity = feeder.getVelocity();
 
   private LaserCan laserCan = new LaserCan(0);
+  private LaserCan laserCan2far = new LaserCan(1);
 
   public ShooterIOVortex() {
     leftMotor.restoreFactoryDefaults();
@@ -93,6 +94,8 @@ public class ShooterIOVortex implements ShooterIO {
     try {
       laserCan.setRangingMode(RangingMode.SHORT);
       laserCan.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
+      laserCan2far.setRangingMode(RangingMode.SHORT);
+      laserCan2far.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
     } catch (ConfigurationFailedException e) {
       System.err.println("Could not configure LaserCAN!");
     }
@@ -133,6 +136,18 @@ public class ShooterIOVortex implements ShooterIO {
       inputs.laserCanAmbientLightLevel = 0;
       inputs.laserCanDistanceMM = 0;
       inputs.laserCanStatus = 0;
+    }
+
+    var sensorMeasurement2far = laserCan2far.getMeasurement();
+    if (sensorMeasurement != null) {
+
+      inputs.laserCan2farAmbientLightLevel = sensorMeasurement.ambient;
+      inputs.laserCan2farDistanceMM = sensorMeasurement.distance_mm;
+      inputs.laserCanStatus = sensorMeasurement.status;
+    } else {
+      inputs.laserCan2farAmbientLightLevel = 0;
+      inputs.laserCan2farDistanceMM = 0;
+      inputs.laserCan2farStatus = 0;
     }
   }
 

@@ -25,6 +25,10 @@ public interface ShooterIO {
     public int laserCanStatus = 0;
     public int laserCanDistanceMM = 0;
     public int laserCanAmbientLightLevel = 0;
+
+    public int laserCan2farStatus = 0;
+    public int laserCan2farDistanceMM = 0;
+    public int laserCan2farAmbientLightLevel = 0;
   }
 
   public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);
