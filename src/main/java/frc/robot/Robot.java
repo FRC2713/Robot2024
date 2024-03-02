@@ -96,7 +96,7 @@ public class Robot extends LoggedRobot {
 
     Logger.start();
 
-    elevator = new Elevator(true ? new ElevatorIOSim() : new ElevatorIOSparks());
+    elevator = new Elevator(isSimulation() ? new ElevatorIOSim() : new ElevatorIOSparks());
     shooter = new Shooter(isSimulation() ? new ShooterIOSim() : new ShooterIOVortex());
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
@@ -130,6 +130,10 @@ public class Robot extends LoggedRobot {
     // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     mechManager = new MechanismManager();
+
+    createDriverBindings();
+    createOperatorBindings();
+    createAutomaticTriggers();
   }
 
   public void createDriverBindings() {
@@ -284,6 +288,9 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+
+    operator.povUp().onTrue(Elevator.Commands.setState(Elevator.State.MAX_HEIGHT));
+    operator.povDown().onTrue(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT));
   }
 
   public void createAutomaticTriggers() {

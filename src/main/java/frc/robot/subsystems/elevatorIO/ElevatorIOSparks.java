@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevatorIO;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
@@ -19,8 +20,14 @@ public class ElevatorIOSparks implements ElevatorIO {
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
+    left.setIdleMode(IdleMode.kCoast);
+    right.setIdleMode(IdleMode.kCoast);
+
     left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
     right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+
+    left.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
+    right.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
 
     left.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
     left.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
@@ -30,7 +37,7 @@ public class ElevatorIOSparks implements ElevatorIO {
 
     for (int i = 0; i < 30; i++) {
       left.setInverted(true);
-      right.setInverted(false);
+      right.setInverted(true);
     }
   }
 
@@ -53,10 +60,10 @@ public class ElevatorIOSparks implements ElevatorIO {
 
   @Override
   public void reset() {
-    left.getEncoder().setPosition(0);
-    right.getEncoder().setPosition(0);
+    // left.getEncoder().setPosition(0);
+    // right.getEncoder().setPosition(0);
 
-    left.getEncoder().setPositionConversionFactor(0);
+    // left.getEncoder().setPositionConversionFactor(0);
   }
 
   @Override

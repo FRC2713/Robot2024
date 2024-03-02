@@ -39,7 +39,7 @@ public class Elevator extends SubsystemBase {
 
   @RequiredArgsConstructor
   public enum State {
-    MIN_HEIGHT(() -> 0),
+    MIN_HEIGHT(() -> 2),
     MAX_HEIGHT(maxHeight),
     CHAIN_APPROACH_HEIGHT(chainApproachHeight),
     ON_CHAIN_HEIGHT(onChainHeight),

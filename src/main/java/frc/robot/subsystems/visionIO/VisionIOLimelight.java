@@ -37,7 +37,7 @@ public class VisionIOLimelight implements VisionIO {
     table = NetworkTableInstance.getDefault().getTable(info.getNtTableName());
 
     // botPose = table.getDoubleArrayTopic("botpose").subscribe(new double[] {});
-    // botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
+    botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     // botPoseWpiRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
     // cameraPoseTargetSpace =
     //     table.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
@@ -120,26 +120,26 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());
+    // var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());
 
-    inputs.botPoseBlue =
-        new Pose3d(
-            new Translation3d(lvf.translationX, lvf.translationY, lvf.translationZ),
-            new Rotation3d(lvf.rotationRoll, lvf.rotationPitch, lvf.rotationYaw));
-    inputs.botPoseBlueTimestamp = Timer.getFPGATimestamp() - lvf.totalLatency;
+    // inputs.botPoseBlue =
+    //     new Pose3d(
+    //         new Translation3d(lvf.translationX, lvf.translationY, lvf.translationZ),
+    //         new Rotation3d(lvf.rotationRoll, lvf.rotationPitch, lvf.rotationYaw));
+    // inputs.botPoseBlueTimestamp = Timer.getFPGATimestamp() - lvf.totalLatency;
 
-    inputs.hasTarget = tv.get() == 1;
-    inputs.horizontalOffsetFromTarget = tx.get();
-    inputs.verticalOffsetFromTarget = ty.get();
-    inputs.targetArea = ta.get();
-    inputs.pipelineLatencyMs = tl.get();
-    inputs.captureLatencyMs = cl.get();
-    inputs.activePipeline = getpipe.get();
-    inputs.tagCount = lvf.tagCount;
-    inputs.tagSpan = lvf.tagSpan;
-    inputs.averageTagDistanceFromCamera = lvf.averageTagDistanceFromCamera;
-    inputs.averageTagArea = lvf.averageTagArea;
-    inputs.tagId = aprilTagId.get();
+    // inputs.hasTarget = tv.get() == 1;
+    // inputs.horizontalOffsetFromTarget = tx.get();
+    // inputs.verticalOffsetFromTarget = ty.get();
+    // inputs.targetArea = ta.get();
+    // inputs.pipelineLatencyMs = tl.get();
+    // inputs.captureLatencyMs = cl.get();
+    // inputs.activePipeline = getpipe.get();
+    // inputs.tagCount = lvf.tagCount;
+    // inputs.tagSpan = lvf.tagSpan;
+    // inputs.averageTagDistanceFromCamera = lvf.averageTagDistanceFromCamera;
+    // inputs.averageTagArea = lvf.averageTagArea;
+    // inputs.tagId = aprilTagId.get();
   }
 
   @Override
