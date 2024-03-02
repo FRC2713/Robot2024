@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
    * wheel faster.
    */
   private static final LoggedTunableNumber shooterDifferentialRpm =
-      new LoggedTunableNumber("Shooter/Differential RPM", 250);
+      new LoggedTunableNumber("Shooter/Differential RPM", 1000);
 
   private static final LoggedTunableNumber holdingGpShooterRpm =
       new LoggedTunableNumber("Shooter/Resting RPM", 0);
@@ -141,7 +141,8 @@ public class Shooter extends SubsystemBase {
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
     } else {
-      IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
+      IO.setMotorSetPoint(
+          state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
     }
     Logger.processInputs("Shooter", inputs);
   }
@@ -159,8 +160,16 @@ public class Shooter extends SubsystemBase {
 
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
 
-    return Math.abs(state.leftRpm.getAsDouble() - inputs.leftSpeedRPM) < atGoalThresholdRPM.get()
-        && Math.abs(state.rightRpm.getAsDouble() - inputs.rightSpeedRPM) < atGoalThresholdRPM.get();
+    return Math.abs(
+                state.leftRpm.getAsDouble()
+                    + shooterDifferentialRpm.getAsDouble()
+                    - inputs.leftSpeedRPM)
+            < atGoalThresholdRPM.get()
+        && Math.abs(
+                state.rightRpm.getAsDouble()
+                    - shooterDifferentialRpm.getAsDouble()
+                    - inputs.rightSpeedRPM)
+            < atGoalThresholdRPM.get();
   }
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")
