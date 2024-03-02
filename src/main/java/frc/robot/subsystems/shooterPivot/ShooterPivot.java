@@ -21,7 +21,8 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
-
+  private static final LoggedTunableNumber prepareForClimbAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 0);
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
 
@@ -34,6 +35,7 @@ public class ShooterPivot extends SubsystemBase {
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(podiumShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(podiumShotAngleDegrees),
+    PREPARE_FOR_CLIMB(prepareForClimbAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
+import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.fullRoutines.RHRNamedCommands;
 import frc.robot.commands.fullRoutines.SelfishAuto;
@@ -328,8 +329,8 @@ public class Robot extends LoggedRobot {
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
-    operator.povUp().onTrue(Elevator.Commands.setState(Elevator.State.MAX_HEIGHT));
-    operator.povDown().onTrue(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT));
+    operator.povUp().onTrue(ClimbingCommands.prepareForClimb());
+    operator.povDown().onTrue(ClimbingCommands.climb());
   }
 
   public void createAutomaticTriggers() {
