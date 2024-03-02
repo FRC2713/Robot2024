@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -142,9 +143,6 @@ public class Robot extends LoggedRobot {
                     })));
 
     mechManager = new MechanismManager();
-
-    checkAlliance();
-    buildAutoChooser();
 
     // -- Drive controls --
 
@@ -355,8 +353,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    checkAlliance();
-
+    seedGyroBasedOnAlliance();
     swerveDrive.seed();
   }
 
@@ -365,7 +362,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    checkAlliance();
     swerveDrive.setMotionMode(MotionMode.TRAJECTORY);
     autoCommand = autoChooser.get();
 
@@ -418,15 +414,25 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("NonAmpSide", new NonAmpSide());
   }
 
-  public void checkAlliance() {
-    Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
-    Logger.recordOutput("DS Alliance has value", checkedAlliance.isPresent());
-    if (checkedAlliance.isPresent()) {
-      Logger.recordOutput("DS Alliance value", checkedAlliance.get());
-      // buildAutoChooser();
-    }
+  public void updatePreMatchDashboardValues() {
+    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putBoolean("Has Alliance Color", DriverStation.getAlliance().isPresent());
+    SmartDashboard.putBoolean(
+        "Front Left Encoder Good",
+        swerveDrive.getSwerveModuleStates()[0].angle.getDegrees() != 0.0);
+    SmartDashboard.putBoolean(
+        "Front Right Encoder Good",
+        swerveDrive.getSwerveModuleStates()[1].angle.getDegrees() != 0.0);
+    SmartDashboard.putBoolean(
+        "Back Left Encoder Good", swerveDrive.getSwerveModuleStates()[2].angle.getDegrees() != 0.0);
+    SmartDashboard.putBoolean(
+        "Back Right Encoder Good",
+        swerveDrive.getSwerveModuleStates()[3].angle.getDegrees() != 0.0);
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+  }
 
-    // these gyro resets are mostly for ironing out teleop driving issues
+  public void seedGyroBasedOnAlliance() {
+    Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
 
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
@@ -439,5 +445,11 @@ public class Robot extends LoggedRobot {
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
       swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
     }
+  }
+
+  @Override
+  public void driverStationConnected() {
+    seedGyroBasedOnAlliance();
+    buildAutoChooser();
   }
 }
