@@ -26,7 +26,7 @@ import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
-import frc.robot.subsystems.Candle.Candle;
+import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
@@ -663,6 +663,8 @@ public class Robot extends LoggedRobot {
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
       swerveDrive.resetGyro(startingAngle);
       SwerveSubsystem.allianceFlipper = 1;
+      // TODO: use the candle subsystem to set the animation to ColorFlow and Blue
+      candle.setRGBValue(0, 0, 255);
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
@@ -670,6 +672,8 @@ public class Robot extends LoggedRobot {
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
       swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
+      // TODO: use the candle subsystem to set the animation to ColorFlow and Red
+      candle.setRGBValue(255, 0,0);
     }
   }
 

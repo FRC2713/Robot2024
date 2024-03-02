@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Candle;
+package frc.robot.subsystems.candle;
 
 import com.ctre.phoenix.led.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,7 +14,16 @@ public class Candle extends SubsystemBase {
 
   // TODO:
   // create class variabls r, g, and b that are integers
-
+private int r = 0;
+private int g = 0;
+private int b = 0;
+private double brightness = 0;
+private double speed = 0;
+private int numLed = 0;
+private double sparking = 0;
+private double cooling = 0;
+private boolean reverseDirection;
+private int ledOffset = 0;
   public enum AnimationTypes {
     ColorFlow,
     Fire,
@@ -39,31 +48,31 @@ public class Candle extends SubsystemBase {
 
     switch (led_animation) {
       case ColorFlow:
-        m_animation = new ColorFlowAnimation(0, 0, 0);
+        m_animation = new ColorFlowAnimation(r, g, b);
         break;
       case Fire:
-        m_animation = new FireAnimation();
+        m_animation = new FireAnimation(brightness, speed, numLed, sparking, cooling, reverseDirection, ledOffset);
         break;
       case Larson:
-        m_animation = new LarsonAnimation(0, 0, 0);
+        m_animation = new LarsonAnimation(r, g, b);
         break;
       case Rainbow:
-        m_animation = new RainbowAnimation(0, 0, 0);
+        m_animation = new RainbowAnimation(brightness, speed, numLed);
         break;
       case RgbFade:
-        m_animation = new RgbFadeAnimation(0, 0, 0);
+        m_animation = new RgbFadeAnimation(brightness, speed, numLed);
         break;
       case SingleFade:
-        m_animation = new SingleFadeAnimation(0, 0, 0);
+        m_animation = new SingleFadeAnimation(r, g, b);
         break;
       case Strobe:
-        m_animation = new StrobeAnimation(0, 0, 0);
+        m_animation = new StrobeAnimation(r, g, b);
         break;
       case Twinkle:
-        m_animation = new TwinkleAnimation(0, 0, 0);
+        m_animation = new TwinkleAnimation(r, g, b);
         break;
       case TwinkleOff:
-        m_animation = new TwinkleOffAnimation(0, 0, 0);
+        m_animation = new TwinkleOffAnimation(r, g, b);
         break;
       case SetAll:
         m_animation = null;
@@ -72,7 +81,22 @@ public class Candle extends SubsystemBase {
   }
 
   // TODO: with a method, set r, g, and b
-
+    public void setRGBValue(int r, int g, int b) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+    }
+    public void setBrSpNl(double brightness, double speed, int numLed) {
+      this.brightness = brightness;
+      this.speed = speed;
+      this.numLed = numLed;
+    }
+    public void setSpCoRdLo(double sparking, double cooling, boolean reverseDirection, int ledOffset) {
+      this.sparking = sparking;
+      this.cooling = cooling;
+      this.reverseDirection = reverseDirection;
+      this.ledOffset = ledOffset;
+    }
   public static class Commands {
     public static Command changeAnimation(AnimationTypes type) {
       return new InstantCommand(() -> Robot.candle.changeAnimation(type));
