@@ -14,7 +14,8 @@ import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
-public class ShootingCommands {
+public class AutoShootingCommands {
+
   public static Command runPath(String choreoPath) {
     ChoreoTrajectory traj = Choreo.getTrajectory(choreoPath);
     return SwerveSubsystem.Commands.choreoCommandBuilder(traj);
@@ -22,16 +23,16 @@ public class ShootingCommands {
 
   public static Command runPathAndIntake(String choreoPath) {
     return new SequentialCommandGroup(
-        ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath), new WaitCommand(1));
+        AutoShootingCommands.runIntake(), AutoShootingCommands.runPath(choreoPath), new WaitCommand(1));
   }
 
   public static Command runPathAndShoot(
       String choreoPath, Shooter.State shooterState, ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
-            ShootingCommands.runShooterPivot(shooterPivotState),
-            ShootingCommands.runPath(choreoPath)),
-        ShootingCommands.runShooter(shooterState));
+            AutoShootingCommands.runShooterPivot(shooterPivotState),
+            AutoShootingCommands.runPath(choreoPath)),
+        AutoShootingCommands.runShooter(shooterState));
   }
 
   public static Command runIntake() {
