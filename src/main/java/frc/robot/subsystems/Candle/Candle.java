@@ -12,6 +12,9 @@ public class Candle extends SubsystemBase {
   private CANdle m_candle = new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
   private Animation m_animation = null;
 
+  // TODO:
+  // create class variabls r, g, and b that are integers
+
   public enum AnimationTypes {
     ColorFlow,
     Fire,
@@ -31,6 +34,9 @@ public class Candle extends SubsystemBase {
   }
 
   public void changeAnimation(AnimationTypes led_animation) {
+
+    // TODO: for relavant animations, use the r, g, and b class variabls instead of the hard coded ones
+
     switch (led_animation) {
       case ColorFlow:
         m_animation = new ColorFlowAnimation(0, 0, 0);
@@ -64,6 +70,8 @@ public class Candle extends SubsystemBase {
         break;
     }
   }
+
+  // TODO: with a method, set r, g, and b
 
   public static class Commands {
     public static Command changeAnimation(AnimationTypes type) {
