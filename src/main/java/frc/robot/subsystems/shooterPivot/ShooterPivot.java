@@ -32,8 +32,8 @@ public class ShooterPivot extends SubsystemBase {
     PODIUM_SHOT(podiumShotAngleDegrees),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     AMP_SHOT(ampShotAngleDegrees),
-    AUTO_SHOT_NonAmpSide_1(podiumShotAngleDegrees),
-    AUTO_SHOT_NonAmpSide_2(podiumShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_1(fenderShotAngleDegrees),
+    AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;
