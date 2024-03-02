@@ -480,6 +480,19 @@ public class SwerveSubsystem extends SubsystemBase {
       return new InstantCommand(() -> Robot.swerveDrive.resetOdometry(pose));
     }
 
+    public static Command resetGyro(ChoreoTrajectory traj) {
+      return new InstantCommand(
+          () -> Robot.swerveDrive.resetGyro(traj.getInitialPose().getRotation()));
+    }
+
+    public static Command resetOdometry(ChoreoTrajectory traj) {
+      return new InstantCommand(() -> Robot.swerveDrive.resetOdometry(traj.getInitialPose()));
+    }
+
+    public static Command resetOdometryAndGyro(ChoreoTrajectory traj) {
+      return new SequentialCommandGroup(resetGyro(traj), resetOdometry(traj));
+    }
+
     public static Command resetOdometry(String trajectory) {
       PathPlannerPath p = PathPlannerPath.fromChoreoTrajectory(trajectory);
       return new InstantCommand(
@@ -497,14 +510,13 @@ public class SwerveSubsystem extends SubsystemBase {
           Choreo.choreoSwerveCommand(
               traj, //
               Robot.swerveDrive::getUsablePose, //
-              modifiedChoreoSwerveController(
-                  new PIDController(3, 0.0, 0.0), //
-                  new PIDController(3, 0.0, 0.0), //
-                  new PIDController(3, 0.0, 0.0)),
+              new PIDController(3, 0.0, 0.0), //
+              new PIDController(3, 0.0, 0.0), //
+              new PIDController(3, 0.0, 0.0),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },
-              useAllianceColour,
+              () -> false,
               Robot.swerveDrive //
               ),
           new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));

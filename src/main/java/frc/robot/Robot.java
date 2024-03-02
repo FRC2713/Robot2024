@@ -432,6 +432,7 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
+
     RHRNamedCommands.registerGenericCommands();
 
     autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());

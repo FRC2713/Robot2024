@@ -108,8 +108,5 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setShooterVolts(double lVolts, double rVolts) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setShooterVolts'");
-  }
+  public void setShooterVolts(double lVolts, double rVolts) {}
 }

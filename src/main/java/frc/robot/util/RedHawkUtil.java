@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -73,6 +74,19 @@ public final class RedHawkUtil {
    */
   public static boolean pastMidPoint(Pose2d pose) {
     return Reflections.reflectIfRed(pose.getX()) > (FieldConstants.fieldLength / 2);
+  }
+
+  public static ChoreoTrajectory maybeFlip(ChoreoTrajectory traj) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isEmpty()) {
+      return traj;
+    }
+
+    if (alliance.get() == Alliance.Blue) {
+      return traj;
+    } else {
+      return traj.flipped();
+    }
   }
 
   // public static PathPoint currentPositionPathPoint(Rotation2d heading) {

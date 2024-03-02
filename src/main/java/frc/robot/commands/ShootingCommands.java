@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -15,18 +14,19 @@ import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
 public class ShootingCommands {
-  public static Command runPath(String choreoPath) {
-    ChoreoTrajectory traj = Choreo.getTrajectory(choreoPath);
-    return SwerveSubsystem.Commands.choreoCommandBuilder(traj);
+  public static Command runPath(ChoreoTrajectory choreoPath) {
+    return SwerveSubsystem.Commands.choreoCommandBuilder(choreoPath);
   }
 
-  public static Command runPathAndIntake(String choreoPath) {
+  public static Command runPathAndIntake(ChoreoTrajectory choreoPath) {
     return new SequentialCommandGroup(
         ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath), new WaitCommand(1));
   }
 
   public static Command runPathAndShoot(
-      String choreoPath, Shooter.State shooterState, ShooterPivot.State shooterPivotState) {
+      ChoreoTrajectory choreoPath,
+      Shooter.State shooterState,
+      ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             ShootingCommands.runShooterPivot(shooterPivotState),
