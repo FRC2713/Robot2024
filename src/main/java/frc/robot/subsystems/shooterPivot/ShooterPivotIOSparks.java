@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.util.RedHawkUtil;
@@ -30,8 +31,13 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     right.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
     left.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
 
-    left.getEncoder().setPosition(54.255);
-    right.getEncoder().setPosition(54.255);
+    if (left.getEncoder().getPosition() == 0.0) {
+      left.getEncoder().setPosition(54.255);
+    }
+
+    if (right.getEncoder().getPosition() == 0.0) {
+      right.getEncoder().setPosition(54.255);
+    }
 
     left.setSmartCurrentLimit(30);
     right.setSmartCurrentLimit(30);
@@ -57,8 +63,21 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     left.setIdleMode(IdleMode.kBrake);
     right.setIdleMode(IdleMode.kBrake);
 
-    left.setInverted(true);
-    right.setInverted(false);
+    for (int i = 0; i < 10; i++) {
+      left.setInverted(true);
+      right.setInverted(false);
+    }
+
+    while (!left.getInverted()) {
+      left.setInverted(true);
+      Timer.delay(0.001);
+    }
+
+    while (right.getInverted()) {
+      right.setInverted(false);
+      Timer.delay(0.001);
+    }
+
     // right.follow(left, true);
 
     ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(left.getPIDController(), 0);

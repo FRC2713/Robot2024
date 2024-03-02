@@ -13,9 +13,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber intakeBottomVolts =
-      new LoggedTunableNumber("Intake/Intaking Bottom Volts", 11);
+      new LoggedTunableNumber("Intake/Intaking Bottom Volts", 9.5);
   private static final LoggedTunableNumber intakeTopVolts =
-      new LoggedTunableNumber("Intake/Intaking Top Volts", 11);
+      new LoggedTunableNumber("Intake/Intaking Top Volts", 9.5);
 
   private static final LoggedTunableNumber outtakeBottomVolts =
       new LoggedTunableNumber("Intake/Outtaking Bottom Volts", -6);

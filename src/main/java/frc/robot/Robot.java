@@ -211,9 +211,9 @@ public class Robot extends LoggedRobot {
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
                     Shooter.Commands.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                    () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
 
     driver
         .rightTrigger(0.3)

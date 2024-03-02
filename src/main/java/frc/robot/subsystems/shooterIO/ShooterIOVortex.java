@@ -22,6 +22,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterIOVortex implements ShooterIO {
   private final CANSparkFlex leftMotor =
@@ -50,12 +51,6 @@ public class ShooterIOVortex implements ShooterIO {
     rightMotor.setSmartCurrentLimit(40);
     // leftMotor.enableVoltageCompensation(12.0);
     // rightMotor.enableVoltageCompensation(12.0);
-
-    leftMotor.setClosedLoopRampRate(0.1);
-    rightMotor.setClosedLoopRampRate(0.1);
-
-    leftMotor.setOpenLoopRampRate(0.1);
-    rightMotor.setOpenLoopRampRate(0.1);
 
     // leftMotor.getEncoder().setMeasurementPeriod(10);
     // rightMotor.getEncoder().setMeasurementPeriod(10);
@@ -131,13 +126,22 @@ public class ShooterIOVortex implements ShooterIO {
     inputs.feederVelocityRPM = feederVelocity.getValue();
 
     var sensorMeasurement = laserCan.getMeasurement();
-    inputs.laserCanAmbientLightLevel = sensorMeasurement.ambient;
-    inputs.laserCanDistanceMM = sensorMeasurement.distance_mm;
-    inputs.laserCanStatus = sensorMeasurement.status;
+    if (sensorMeasurement != null) {
+
+      inputs.laserCanAmbientLightLevel = sensorMeasurement.ambient;
+      inputs.laserCanDistanceMM = sensorMeasurement.distance_mm;
+      inputs.laserCanStatus = sensorMeasurement.status;
+    } else {
+      inputs.laserCanAmbientLightLevel = 0;
+      inputs.laserCanDistanceMM = 0;
+      inputs.laserCanStatus = 0;
+    }
   }
 
   @Override
   public void setMotorSetPoint(double leftRPM, double rightRPM) {
+    Logger.recordOutput("Flywheel/Left Setpoint", leftRPM);
+    Logger.recordOutput("Flywheel/Right Setpoint", rightRPM);
     leftMotor.getPIDController().setReference(leftRPM, ControlType.kVelocity, 0);
     rightMotor.getPIDController().setReference(rightRPM, ControlType.kVelocity, 0);
   }
