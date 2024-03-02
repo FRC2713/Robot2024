@@ -10,7 +10,13 @@ public class VehicleState {
       new InterpolatingDoubleTreeMap();
 
   static {
-    dynamicPivotMap.put(0.0, 0.0);
+    dynamicPivotMap.put(21.45, 48.0);
+    dynamicPivotMap.put(11.2, 45.0);
+    dynamicPivotMap.put(5.2, 37.);
+    dynamicPivotMap.put(0., 25.);
+    dynamicPivotMap.put(-5., 20.);
+    dynamicPivotMap.put(-8., 17.);
+    dynamicPivotMap.put(-9.5, 16.125);
   }
 
   @Getter Rotation2d dynamicPivotAngle;

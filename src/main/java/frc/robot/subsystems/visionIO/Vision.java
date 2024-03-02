@@ -52,4 +52,8 @@ public class Vision extends SubsystemBase {
   public void setLEDMode(LEDMode leds) {
     io.setLEDMode(leds);
   }
+
+  public void setPriorityId(int tagId) {
+    io.setPriorityId(tagId);
+  }
 }

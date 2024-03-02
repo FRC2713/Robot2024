@@ -23,7 +23,7 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", -30);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
-      new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 2);
+      new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
   @RequiredArgsConstructor
   public enum State {

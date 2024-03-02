@@ -7,9 +7,14 @@
     "serverTeam": "2713"
   },
   "Server": {
-    "Subscribers": {
-      "open": true
-    },
     "open": true
+  },
+  "retained": {
+    "limelight-a": {
+      "double[]##v_/limelight-a/botpose_wpiblue": {
+        "open": true
+      },
+      "open": true
+    }
   }
 }

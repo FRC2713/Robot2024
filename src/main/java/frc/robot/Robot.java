@@ -367,7 +367,9 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    VehicleState.getInstance().updateDynamicPivotAngle(visionFront.estimateDistanceToTag());
+    VehicleState.getInstance()
+        .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
+    swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
   }
 
   @Override
@@ -480,5 +482,10 @@ public class Robot extends LoggedRobot {
   public void driverStationConnected() {
     seedGyroBasedOnAlliance();
     buildAutoChooser();
+    // visionFront.setPriorityId(
+    //     switch (DriverStation.getAlliance().get()) {
+    //       case Blue -> 7;
+    //       case Red -> 3;
+    //     });
   }
 }

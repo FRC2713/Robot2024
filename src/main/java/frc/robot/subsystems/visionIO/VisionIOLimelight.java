@@ -37,7 +37,7 @@ public class VisionIOLimelight implements VisionIO {
     table = NetworkTableInstance.getDefault().getTable(info.getNtTableName());
 
     // botPose = table.getDoubleArrayTopic("botpose").subscribe(new double[] {});
-    botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
+    // botPoseWpiBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     // botPoseWpiRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
     // cameraPoseTargetSpace =
     //     table.getDoubleArrayTopic("camerapose_targetspace").subscribe(new double[] {});
@@ -51,29 +51,29 @@ public class VisionIOLimelight implements VisionIO {
     //     table.getDoubleArrayTopic("camerapose_robotspace").subscribe(new double[] {});
     // tc = table.getDoubleArrayTopic("tc").subscribe(new double[] {});
 
-    aprilTagId = table.getDoubleTopic("tid").subscribe(0);
-    tv = table.getDoubleTopic("tv").subscribe(0);
-    tx = table.getDoubleTopic("tx").subscribe(0);
-    ty = table.getDoubleTopic("ty").subscribe(0);
-    ta = table.getDoubleTopic("ta").subscribe(0);
-    tl = table.getDoubleTopic("tl").subscribe(0);
-    cl = table.getDoubleTopic("cl").subscribe(0);
-    tshort = table.getDoubleTopic("tshort").subscribe(0);
-    tlong = table.getDoubleTopic("tlong").subscribe(0);
-    thor = table.getDoubleTopic("thor").subscribe(0);
-    tvert = table.getDoubleTopic("tvert").subscribe(0);
-    getpipe = table.getDoubleTopic("getpipe").subscribe(0);
-    tclass = table.getDoubleTopic("tclass").subscribe(0);
+    // aprilTagId = table.getDoubleTopic("tid").subscribe(0);
+    // tv = table.getDoubleTopic("tv").subscribe(0);
+    // tx = table.getDoubleTopic("tx").subscribe(0);
+    // ty = table.getDoubleTopic("ty").subscribe(0);
+    // ta = table.getDoubleTopic("ta").subscribe(0);
+    // tl = table.getDoubleTopic("tl").subscribe(0);
+    // cl = table.getDoubleTopic("cl").subscribe(0);
+    // tshort = table.getDoubleTopic("tshort").subscribe(0);
+    // tlong = table.getDoubleTopic("tlong").subscribe(0);
+    // thor = table.getDoubleTopic("thor").subscribe(0);
+    // tvert = table.getDoubleTopic("tvert").subscribe(0);
+    // getpipe = table.getDoubleTopic("getpipe").subscribe(0);
+    // tclass = table.getDoubleTopic("tclass").subscribe(0);
 
-    ledMode = table.getIntegerTopic("ledMode").publish();
-    cameraMode = table.getIntegerTopic("camMode").publish();
-    pipeline = table.getIntegerTopic("pipeline").publish();
-    stream = table.getIntegerTopic("stream").publish();
-    snapshot = table.getIntegerTopic("snapshot").publish();
-    crop = table.getDoubleArrayTopic("crop").publish();
-    cameraPoseRobotSpacePub = table.getDoubleArrayTopic("camerapose_robotspace_set").publish();
+    // ledMode = table.getIntegerTopic("ledMode").publish();
+    // cameraMode = table.getIntegerTopic("camMode").publish();
+    // pipeline = table.getIntegerTopic("pipeline").publish();
+    // stream = table.getIntegerTopic("stream").publish();
+    // snapshot = table.getIntegerTopic("snapshot").publish();
+    // crop = table.getDoubleArrayTopic("crop").publish();
+    // cameraPoseRobotSpacePub = table.getDoubleArrayTopic("camerapose_robotspace_set").publish();
 
-    priorityId = table.getIntegerTopic("priorityid").publish();
+    // priorityId = table.getIntegerTopic("priorityid").publish();
   }
 
   private Pair<Pose3d, Double> timestampedPoseFromLLArray(double[] arr) {
@@ -120,6 +120,22 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
+    var lvfData = table.getEntry("botpose_wpiblue").getDoubleArray(new double[] {});
+
+    if (lvfData.length > 0) {
+      var lvf = this.getLimelightVisionFrame(lvfData);
+      inputs.hasTarget = lvf.tagCount > 0;
+      inputs.tagCount = lvf.tagCount;
+      inputs.botPoseBlue = lvf.getPose();
+      inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
+      inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
+    } else {
+      inputs.hasTarget = false;
+      inputs.tagCount = 0;
+      inputs.horizontalOffsetFromTarget = 0;
+      inputs.verticalOffsetFromTarget = 0;
+    }
+
     // var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());
 
     // inputs.botPoseBlue =
@@ -169,49 +185,50 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void setCameraMode(CameraMode mode) {
-    cameraMode.set(
-        switch (mode) {
-          case VISION -> 0;
-          case DRIVER_CAM -> 1;
-        });
+    // cameraMode.set(
+    //     switch (mode) {
+    //       case VISION -> 0;
+    //       case DRIVER_CAM -> 1;
+    //     });
   }
 
   @Override
   public void setPipeline(int pipeline) {
-    this.pipeline.set(pipeline);
+    // this.pipeline.set(pipeline);
   }
 
   @Override
   public void setStreamMode(StreamMode streamMode) {
-    stream.set(
-        switch (streamMode) {
-          case STANDARD -> 0;
-          case PIP_MAIN -> 1;
-          case PIP_SECONDARY -> 2;
-        });
+    // stream.set(
+    //     switch (streamMode) {
+    //       case STANDARD -> 0;
+    //       case PIP_MAIN -> 1;
+    //       case PIP_SECONDARY -> 2;
+    //     });
   }
 
   @Override
   public void setSnapshotMode(SnapshotMode mode) {
-    snapshot.set(
-        switch (mode) {
-          case NONE -> 0;
-          case TAKE_ONE -> 1;
-        });
+    // snapshot.set(
+    //     switch (mode) {
+    //       case NONE -> 0;
+    //       case TAKE_ONE -> 1;
+    //     });
   }
 
   @Override
   public void setCrop(double x0, double x1, double y0, double y1) {
-    crop.set(new double[] {x0, x1, y0, y1});
+    // crop.set(new double[] {x0, x1, y0, y1});
   }
 
   @Override
   public void setCameraPoseInRobotSpaceInternal(
       double forward, double side, double up, double roll, double pitch, double yaw) {
-    cameraPoseRobotSpacePub.set(new double[] {forward, side, up, roll, pitch, yaw});
+    // cameraPoseRobotSpacePub.set(new double[] {forward, side, up, roll, pitch, yaw});
   }
 
   public void setPriorityId(int tagId) {
-    priorityId.set(tagId);
+    // priorityId.set(tagId);
+    table.getEntry("priorityid").setInteger(tagId);
   }
 }

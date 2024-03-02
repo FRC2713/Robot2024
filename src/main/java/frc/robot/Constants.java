@@ -329,9 +329,9 @@ public final class Constants {
   }
 
   public static final class DynamicShooterConstants {
-    public static final double limelightMountingHeightMeters = 1;
-    public static final double limelightMouningAngleDegrees = 1;
-    public static final double tagMountingHeight = 1;
+    public static final double limelightMountingHeightMeters = 0.642158;
+    public static final double limelightMouningAngleDegrees = 5;
+    public static final double tagMountingHeight = Units.inchesToMeters(57.5);
     public static final double heading_kP = 1;
     public static final double headingErrorDegree = 1;
   }
