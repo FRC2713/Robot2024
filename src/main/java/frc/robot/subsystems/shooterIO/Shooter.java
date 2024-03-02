@@ -54,6 +54,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber ampShotFeederVolts =
       new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
 
+  private static final LoggedTunableNumber preSpinRPM =
+      new LoggedTunableNumber("Shooter/Pre-spin RPM", fenderShotShooterRpm.get() * 0.75);
+
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
@@ -92,6 +95,7 @@ public class Shooter extends SubsystemBase {
         () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
+    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
