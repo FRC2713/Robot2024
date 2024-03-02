@@ -26,6 +26,6 @@ public class VehicleState {
   }
 
   public void updateDynamicPivotAngle(double estimateDistanceToTag) {
-    dynamicPivotMap.get(estimateDistanceToTag);
+    dynamicPivotAngle = Rotation2d.fromDegrees(dynamicPivotMap.get(estimateDistanceToTag));
   }
 }
