@@ -197,7 +197,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.0001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.00).kV(0.00017).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.00).kV(0.0001575).build();
   }
 
   @UtilityClass
@@ -316,12 +316,12 @@ public final class Constants {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
-              // 0.012
-              .kP(0.01)
+              // 0.03
+              .kP(0.03)
               .build();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.00).kS(0.09).kV(0.11).build();
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.).kS(0.09).kV(0.11).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(3).build();

@@ -32,4 +32,6 @@ public interface ShooterIO {
   public void setMotorSetPoint(double leftRPM, double rightRPM);
 
   public void setFeederVolts(double volts);
+
+  public void setShooterVolts(double lVolts, double rVolts);
 }

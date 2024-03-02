@@ -138,7 +138,11 @@ public class Shooter extends SubsystemBase {
 
     double differential = shooterDifferentialRpm.getAsDouble();
 
-    IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
+    if (state == State.OFF) {
+      IO.setShooterVolts(0, 0);
+    } else {
+      IO.setMotorSetPoint(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble());
+    }
     Logger.processInputs("Shooter", inputs);
   }
 

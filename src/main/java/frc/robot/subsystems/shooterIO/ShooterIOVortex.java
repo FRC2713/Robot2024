@@ -45,15 +45,15 @@ public class ShooterIOVortex implements ShooterIO {
     leftMotor.setIdleMode(IdleMode.kCoast);
     rightMotor.setIdleMode(IdleMode.kCoast);
 
-    leftMotor.setSmartCurrentLimit(40);
-    rightMotor.setSmartCurrentLimit(40);
-    // leftMotor.enableVoltageCompensation(12.0);
-    // rightMotor.enableVoltageCompensation(12.0);
+    leftMotor.setSmartCurrentLimit(60);
+    rightMotor.setSmartCurrentLimit(60);
+    leftMotor.enableVoltageCompensation(12.0);
+    rightMotor.enableVoltageCompensation(12.0);
 
-    // leftMotor.getEncoder().setMeasurementPeriod(10);
-    // rightMotor.getEncoder().setMeasurementPeriod(10);
-    // leftMotor.getEncoder().setAverageDepth(2);
-    // rightMotor.getEncoder().setAverageDepth(2);
+    leftMotor.getEncoder().setMeasurementPeriod(10);
+    rightMotor.getEncoder().setMeasurementPeriod(10);
+    leftMotor.getEncoder().setAverageDepth(2);
+    rightMotor.getEncoder().setAverageDepth(2);
 
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
@@ -147,5 +147,11 @@ public class ShooterIOVortex implements ShooterIO {
   @Override
   public void setFeederVolts(double volts) {
     feeder.setControl(new VoltageOut(volts));
+  }
+
+  @Override
+  public void setShooterVolts(double lVolts, double rVolts) {
+    leftMotor.setVoltage(lVolts);
+    rightMotor.setVoltage(rVolts);
   }
 }

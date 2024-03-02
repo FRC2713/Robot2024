@@ -106,4 +106,10 @@ public class ShooterIOSim implements ShooterIO {
   public void setFeederVolts(double volts) {
     this.feederVolts = volts;
   }
+
+  @Override
+  public void setShooterVolts(double lVolts, double rVolts) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setShooterVolts'");
+  }
 }
