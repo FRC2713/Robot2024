@@ -54,6 +54,11 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber ampShotFeederVolts =
       new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
 
+  private static final LoggedTunableNumber tooFarShooterRpm =
+      new LoggedTunableNumber("Shooter/Too Far Shooter RPM", -100);
+  private static final LoggedTunableNumber tooFarFeederVolts =
+      new LoggedTunableNumber("Shooter/Too Far Feeder Volts", -1);
+
   private static final LoggedTunableNumber preSpinRPM =
       new LoggedTunableNumber("Shooter/Pre-spin RPM", fenderShotShooterRpm.get() * 0.75);
 
@@ -66,6 +71,7 @@ public class Shooter extends SubsystemBase {
 
   @RequiredArgsConstructor
   public enum State {
+    REVERSE_GP(tooFarShooterRpm, tooFarShooterRpm, tooFarFeederVolts, () -> true, false),
     FENDER_SHOT(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
@@ -97,11 +103,11 @@ public class Shooter extends SubsystemBase {
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true,
         true),
-    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true, true),
-    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true, true),
-    OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true, true),
-    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true, true),
-    OFF(() -> 0, () -> 0, () -> 0, () -> true, true);
+    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true, false),
+    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true, false),
+    OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true, false),
+    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true, false),
+    OFF(() -> 0, () -> 0, () -> 0, () -> true, false);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
     private final boolean isShooting;
@@ -129,6 +135,14 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/Should spin", shouldSpin);
 
     if (state == State.INTAKING && hasGamePiece()) {
+      state = State.HOLDING_GP;
+    }
+
+    if (gamePieceTooFar()) {
+      state = State.REVERSE_GP;
+    }
+
+    if (state == State.REVERSE_GP && !gamePieceTooFar()) {
       state = State.HOLDING_GP;
     }
 
@@ -176,7 +190,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/gamePieceTooFar")
   public boolean gamePieceTooFar() {
-    return (inputs.laserCan2farDistanceMM < 95 && state.ordinal() > 5);
+    return (inputs.laserCan2farDistanceMM < 95 && this.state.isShooting == false);
   }
 
   public static class Commands {
