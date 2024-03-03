@@ -20,8 +20,8 @@ public class ElevatorIOSparks implements ElevatorIO {
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
-    left.setIdleMode(IdleMode.kCoast);
-    right.setIdleMode(IdleMode.kCoast);
+    left.setIdleMode(IdleMode.kBrake);
+    right.setIdleMode(IdleMode.kBrake);
 
     left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
     right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);

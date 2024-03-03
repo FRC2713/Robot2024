@@ -34,6 +34,7 @@ public class ShooterPivot extends SubsystemBase {
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(fenderShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
+    PREP_FOR_CLIMB(() -> 0),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;

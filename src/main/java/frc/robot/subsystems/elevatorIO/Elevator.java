@@ -35,7 +35,7 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/On chain height", 5);
 
   private static final LoggedTunableNumber ampHeight =
-      new LoggedTunableNumber("Elevator/Amp height", 14);
+      new LoggedTunableNumber("Elevator/Amp height", 15);
 
   @RequiredArgsConstructor
   public enum State {

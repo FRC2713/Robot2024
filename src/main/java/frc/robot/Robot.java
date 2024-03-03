@@ -140,18 +140,21 @@ public class Robot extends LoggedRobot {
         .leftBumper()
         .onTrue(
             Commands.sequence(
-                    Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-                    Shooter.Commands.setState(Shooter.State.INTAKING),
-                    ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
-                .repeatedly()
-                .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
-                .andThen(
-                    Commands.sequence(
-                        Intake.Commands.setMotionMode(Intake.State.OFF),
-                        Commands.either(
-                            Shooter.Commands.setState(Shooter.State.OFF),
-                            new InstantCommand(),
-                            () -> shooter.getState() == Shooter.State.INTAKING))))
+                Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                Commands.sequence(
+                        Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                        Shooter.Commands.setState(Shooter.State.INTAKING),
+                        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
+                    .repeatedly()
+                    .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
+                    .andThen(
+                        Commands.sequence(
+                            Intake.Commands.setMotionMode(Intake.State.OFF),
+                            Commands.either(
+                                Shooter.Commands.setState(Shooter.State.OFF),
+                                new InstantCommand(),
+                                () -> shooter.getState() == Shooter.State.INTAKING)))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -159,6 +162,23 @@ public class Robot extends LoggedRobot {
                     Shooter.Commands.setState(Shooter.State.OFF),
                     new InstantCommand(),
                     () -> shooter.getState() == Shooter.State.INTAKING)));
+
+    driver
+        .leftTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+                Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Shooter.Commands.setState(Shooter.State.OUTAKING),
+                Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP)))
+        .onFalse(
+            Commands.sequence(
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece())));
 
     // driver
     //     .povUp()
@@ -201,7 +221,7 @@ public class Robot extends LoggedRobot {
         .rightTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.DYNAMIC_AIM),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
@@ -328,8 +348,15 @@ public class Robot extends LoggedRobot {
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
-    operator.povUp().onTrue(Elevator.Commands.setState(Elevator.State.MAX_HEIGHT));
-    operator.povDown().onTrue(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT));
+    operator
+        .povUp()
+        .onTrue(
+            Commands.sequence(
+                Elevator.Commands.setState(Elevator.State.MAX_HEIGHT),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PREP_FOR_CLIMB)));
+    operator
+        .povDown()
+        .onTrue(Commands.sequence(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT)));
 
     operator
         .rightBumper()
@@ -339,7 +366,15 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.AMP_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Shooter.Commands.setState(Shooter.State.AMP_SHOT)));
+                Shooter.Commands.setState(Shooter.State.AMP_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece())));
   }
 
   public void createAutomaticTriggers() {
