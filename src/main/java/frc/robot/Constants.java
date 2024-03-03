@@ -156,7 +156,7 @@ public final class Constants {
     public static final double CARRIAGE_MASS_KG = 0.3;
     public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
     public static final double MIN_HEIGHT_METERS = 0;
-    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(15);
+    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(16);
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;

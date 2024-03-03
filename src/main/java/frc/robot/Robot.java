@@ -330,6 +330,16 @@ public class Robot extends LoggedRobot {
 
     operator.povUp().onTrue(Elevator.Commands.setState(Elevator.State.MAX_HEIGHT));
     operator.povDown().onTrue(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT));
+
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.sequence(
+                Elevator.Commands.setState(Elevator.State.AMP),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.AMP_SHOT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Shooter.Commands.setState(Shooter.State.AMP_SHOT)));
   }
 
   public void createAutomaticTriggers() {

@@ -35,11 +35,11 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/On chain height", 5);
 
   private static final LoggedTunableNumber ampHeight =
-      new LoggedTunableNumber("Elevator/Amp height", 5);
+      new LoggedTunableNumber("Elevator/Amp height", 14);
 
   @RequiredArgsConstructor
   public enum State {
-    MIN_HEIGHT(() -> 2),
+    MIN_HEIGHT(() -> 0),
     MAX_HEIGHT(maxHeight),
     CHAIN_APPROACH_HEIGHT(chainApproachHeight),
     ON_CHAIN_HEIGHT(onChainHeight),
