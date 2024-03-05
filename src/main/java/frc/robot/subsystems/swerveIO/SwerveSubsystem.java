@@ -39,6 +39,7 @@ import frc.robot.util.ErrorTracker;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SwerveHeadingController;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -64,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public static double allianceFlipper = 1;
 
-  private MotionMode motionMode = MotionMode.FULL_DRIVE;
+  @Getter private MotionMode motionMode = MotionMode.FULL_DRIVE;
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
