@@ -54,6 +54,7 @@ public class Elevator extends SubsystemBase {
   }
 
   @Setter
+  @Getter
   @AutoLogOutput(key = "Elevator/State")
   public State state = State.OFF;
 

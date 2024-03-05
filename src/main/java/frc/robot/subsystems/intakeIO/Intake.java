@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
@@ -43,6 +44,7 @@ public class Intake extends SubsystemBase {
   }
 
   @Setter
+  @Getter
   @AutoLogOutput(key = "Intake/State")
   public State state = State.OFF;
 

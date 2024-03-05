@@ -475,6 +475,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // RumbleManager.getInstance().periodic();
     mechManager.periodic();
+    updatePreMatchDashboardValues();
 
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
@@ -569,20 +570,28 @@ public class Robot extends LoggedRobot {
   }
 
   public void updatePreMatchDashboardValues() {
-    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
-    SmartDashboard.putBoolean("Has Alliance Color", DriverStation.getAlliance().isPresent());
+    SmartDashboard.putNumber("Dashboard/Battery Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putBoolean(
-        "Front Left Encoder Good",
+        "Dashboard/Has Alliance Color", DriverStation.getAlliance().isPresent());
+    SmartDashboard.putBoolean(
+        "Dashboard/Front Left Encoder Good",
         swerveDrive.getSwerveModuleStates()[0].angle.getDegrees() != 0.0);
     SmartDashboard.putBoolean(
-        "Front Right Encoder Good",
+        "Dashboard/Front Right Encoder Good",
         swerveDrive.getSwerveModuleStates()[1].angle.getDegrees() != 0.0);
     SmartDashboard.putBoolean(
-        "Back Left Encoder Good", swerveDrive.getSwerveModuleStates()[2].angle.getDegrees() != 0.0);
+        "Dashboard/Back Left Encoder Good",
+        swerveDrive.getSwerveModuleStates()[2].angle.getDegrees() != 0.0);
     SmartDashboard.putBoolean(
-        "Back Right Encoder Good",
+        "Dashboard/Back Right Encoder Good",
         swerveDrive.getSwerveModuleStates()[3].angle.getDegrees() != 0.0);
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Dashboard/Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
+    SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
+    SmartDashboard.putString("Dashboard/States/Intake", intake.getState().name());
+    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getState().name());
+    SmartDashboard.putString("Dashboard/States/Pivot", shooterPivot.getState().name());
+    SmartDashboard.putString("Dashboard/States/Swerve", swerveDrive.getMotionMode().name());
   }
 
   public void seedGyroBasedOnAlliance() {
