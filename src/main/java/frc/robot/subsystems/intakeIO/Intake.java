@@ -22,10 +22,22 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber outtakeTopVolts =
       new LoggedTunableNumber("Intake/Outtaking Top Volts", -12);
 
+  private static final LoggedTunableNumber fullInBottomVolts =
+      new LoggedTunableNumber("Intake/Full-In Top Volts", 12);
+  private static final LoggedTunableNumber fullInTopVolts =
+      new LoggedTunableNumber("Intake/Full-In Bottom Volts", 12);
+
+  private static final LoggedTunableNumber fullOutBottomVolts =
+      new LoggedTunableNumber("Intake/Full-Out Top Volts", -12);
+  private static final LoggedTunableNumber fullOutTopVolts =
+      new LoggedTunableNumber("Intake/Full-Out Bottom Volts", -12);
+
   @RequiredArgsConstructor
   public enum State {
     INTAKE_GP(intakeBottomVolts, intakeTopVolts),
     OUTAKE_GP(outtakeBottomVolts, outtakeTopVolts),
+    FULL_IN(fullInBottomVolts, fullInTopVolts),
+    FULL_OUT(fullOutBottomVolts, fullOutTopVolts),
     OFF(() -> 0, () -> 0);
     private final DoubleSupplier bottomVolts, topVolts;
   }
