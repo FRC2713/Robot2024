@@ -52,6 +52,7 @@ import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -155,7 +156,8 @@ public class Robot extends LoggedRobot {
                             Commands.either(
                                 Shooter.Commands.setState(Shooter.State.OFF),
                                 new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)))))
+                                () -> shooter.getState() == Shooter.State.INTAKING),
+                            RumbleManager.driverBigOneSec()))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
