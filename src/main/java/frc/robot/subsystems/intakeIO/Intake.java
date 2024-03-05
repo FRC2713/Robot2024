@@ -18,9 +18,9 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/Intaking Top Volts", 9.5);
 
   private static final LoggedTunableNumber outtakeBottomVolts =
-      new LoggedTunableNumber("Intake/Outtaking Bottom Volts", -6);
+      new LoggedTunableNumber("Intake/Outtaking Bottom Volts", -12);
   private static final LoggedTunableNumber outtakeTopVolts =
-      new LoggedTunableNumber("Intake/Outtaking Top Volts", -6);
+      new LoggedTunableNumber("Intake/Outtaking Top Volts", -12);
 
   @RequiredArgsConstructor
   public enum State {

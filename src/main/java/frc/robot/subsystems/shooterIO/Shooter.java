@@ -45,9 +45,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 2);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
-      new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 0);
+      new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 4000);
   private static final LoggedTunableNumber outtakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", 12);
 
   private static final LoggedTunableNumber ampShotShooterRMP =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", -1000);
@@ -78,7 +78,7 @@ public class Shooter extends SubsystemBase {
         () -> Robot.shooterPivot.isAtTargetAngle()),
     HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
-    OUTAKING(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
+    OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
     AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,
@@ -96,7 +96,8 @@ public class Shooter extends SubsystemBase {
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
-    OFF(() -> 0, () -> 0, () -> 0, () -> true);
+    OFF(() -> 0, () -> 0, () -> 0, () -> true),
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -12, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }
@@ -119,14 +120,14 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     IO.updateInputs(inputs, state);
 
-    boolean shouldSpin = debouncer.calculate(isAtTarget());
-    Logger.recordOutput("Shooter/Should spin", shouldSpin);
+    boolean shouldSpinFeeder = debouncer.calculate(isAtTarget());
+    Logger.recordOutput("Shooter/Should spin feeder", shouldSpinFeeder);
 
     if (state == State.INTAKING && hasGamePiece()) {
       state = State.HOLDING_GP;
     }
 
-    if (shouldSpin && state.additionalFeederCondition.getAsBoolean()) {
+    if (shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean()) {
       IO.setFeederVolts(state.feederRpm.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
@@ -150,15 +151,16 @@ public class Shooter extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/isAtTarget")
   public boolean isAtTarget() {
     // double leftTarget =
-    //     state.leftRpm.getAsDouble()
-    //         + shooterDifferentialRpm.getAsDouble()
-    //         - atGoalThresholdRPM.getAsDouble();
+    // state.leftRpm.getAsDouble()
+    // + shooterDifferentialRpm.getAsDouble()
+    // - atGoalThresholdRPM.getAsDouble();
     // double rightTarget =
-    //     state.rightRpm.getAsDouble()
-    //         - shooterDifferentialRpm.getAsDouble()
-    //         - atGoalThresholdRPM.getAsDouble();
+    // state.rightRpm.getAsDouble()
+    // - shooterDifferentialRpm.getAsDouble()
+    // - atGoalThresholdRPM.getAsDouble();
 
-    // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM > rightTarget;
+    // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
+    // rightTarget;
 
     return Math.abs(
                 state.leftRpm.getAsDouble()
