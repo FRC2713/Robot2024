@@ -108,7 +108,7 @@ public class Shooter extends SubsystemBase {
   public State state = State.OFF;
 
   private final ShooterIO IO;
-  private final ShooterInputsAutoLogged inputs;
+  public final ShooterInputsAutoLogged inputs;
 
   public Shooter(ShooterIO IO) {
     this.IO = IO;

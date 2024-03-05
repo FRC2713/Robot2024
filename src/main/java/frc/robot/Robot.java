@@ -52,6 +52,7 @@ import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
@@ -192,7 +193,8 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -214,7 +216,8 @@ public class Robot extends LoggedRobot {
                     () ->
                         shooter.isAtTarget()
                             && SwerveHeadingController.getInstance().atSetpoint(0.5)),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -309,7 +312,8 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -327,7 +331,8 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
                 Shooter.Commands.setState(Shooter.State.PODIUM_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -562,6 +567,7 @@ public class Robot extends LoggedRobot {
   public void driverStationConnected() {
     seedGyroBasedOnAlliance();
     buildAutoChooser();
+    RedHawkUtil.logShotFirst();
     // visionFront.setPriorityId(
     // switch (DriverStation.getAlliance().get()) {
     // case Blue -> 7;

@@ -26,11 +26,13 @@ public class NonAmpSide extends SequentialCommandGroup {
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle),
         ShootingCommands.runShooter(Shooter.State.FENDER_SHOT),
+        RedHawkUtil.logShot(),
 
         // // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+        RedHawkUtil.logShot(),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));
 
     // // Second Piece

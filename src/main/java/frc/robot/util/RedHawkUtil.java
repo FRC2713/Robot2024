@@ -19,7 +19,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -90,7 +93,8 @@ public final class RedHawkUtil {
   }
 
   // public static PathPoint currentPositionPathPoint(Rotation2d heading) {
-  // return new PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
+  // return new
+  // PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
   // heading, Robot.swerveDrive.getUsablePose().getRotation(),
   // Robot.swerveDrive.getAverageVelocity());
   // }
@@ -193,8 +197,20 @@ public final class RedHawkUtil {
       return old;
     }
 
+    public static Rotation2d reflectIfBlue(Rotation2d old) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Blue) {
+        return old.minus(Rotation2d.fromDegrees(180)).times(-1);
+      }
+      return old;
+    }
+
     public static Pose2d reflectIfRed(Pose2d old) {
       return new Pose2d(reflectIfRed(old.getTranslation()), reflectIfRed(old.getRotation()));
+    }
+
+    public static Pose2d reflectIfBlue(Pose2d old) {
+      return new Pose2d(reflectIfBlue(old.getTranslation()), reflectIfBlue(old.getRotation()));
     }
   }
 
@@ -260,5 +276,34 @@ public final class RedHawkUtil {
     Date now = Date.from(Instant.now());
     String dateFormat = new SimpleDateFormat("MM/dd").format(now);
     return String.format("/U/%s/", dateFormat);
+  }
+
+  public static Command logShot() {
+    return new InstantCommand(
+        () -> {
+          var pos = RedHawkUtil.Reflections.reflectIfBlue(Robot.swerveDrive.getUsablePose());
+          var deg = pos.getRotation().getDegrees();
+          deg = Math.signum(deg) == -1 ? deg + 360 : deg;
+          Logger.recordOutput(
+              "/Shot log",
+              String.format(
+                  "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                  DriverStation.getMatchTime(),
+                  deg,
+                  ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
+                  Robot.shooterPivot.getCurrentAngle(),
+                  Robot.elevator.getCurrentHeight(),
+                  pos.getTranslation().getX(),
+                  pos.getTranslation().getY(),
+                  // TODO: SHOULD CHASSIS SPEEDS BE FLIPPED?
+                  Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond,
+                  Robot.swerveDrive.getChassisSpeeds().vyMetersPerSecond,
+                  0.5));
+        });
+  }
+
+  public static void logShotFirst() {
+    Logger.recordOutput(
+        "/Shot log", "time,theta,shooter_speed,pivot_angle,elevator_height,x,y,vx,vy,went_in");
   }
 }
