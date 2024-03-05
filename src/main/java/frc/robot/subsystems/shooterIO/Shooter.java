@@ -49,6 +49,16 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber outtakingFeederVolts =
       new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", 12);
 
+  private static final LoggedTunableNumber fullInShooterRPM =
+      new LoggedTunableNumber("Shooter/Full-In Shooter RPM", 4000);
+  private static final LoggedTunableNumber fullInFeederVolts =
+      new LoggedTunableNumber("Shooter/Full-In Feeder Volts", 12);
+
+  private static final LoggedTunableNumber fullOutShooterRPM =
+      new LoggedTunableNumber("Shooter/Full_Out Shooter RPM", -4000);
+  private static final LoggedTunableNumber fullOutFeederVolts =
+      new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
+
   private static final LoggedTunableNumber ampShotShooterRMP =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
@@ -79,6 +89,8 @@ public class Shooter extends SubsystemBase {
     HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
     OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
+    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, fullOutFeederVolts, () -> true),
+    FULL_IN(fullInShooterRPM, fullInShooterRPM, fullInFeederVolts, () -> true),
     AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,
@@ -91,8 +103,8 @@ public class Shooter extends SubsystemBase {
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     FORCE_MANUAL_CONTROL(
-        () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
-        () -> Robot.operator.getLeftX() * 4000, // [-1, 1] * 4000 rpm
+        fenderShotShooterRpm,
+        fenderShotShooterRpm,
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
