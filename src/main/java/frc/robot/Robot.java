@@ -434,7 +434,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    seedGyroBasedOnAlliance();
     swerveDrive.seed();
   }
 
@@ -519,13 +518,15 @@ public class Robot extends LoggedRobot {
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(0));
+      swerveDrive.resetGyro(Rotation2d.fromRadians(-1.0303769170676331));
+      SwerveSubsystem.allianceFlipper = 1;
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
+      swerveDrive.resetGyro(Rotation2d.fromRadians(1.0303769170676331));
+      SwerveSubsystem.allianceFlipper = -1;
     }
   }
 

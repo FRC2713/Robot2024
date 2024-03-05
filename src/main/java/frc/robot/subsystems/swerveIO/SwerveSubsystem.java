@@ -194,6 +194,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param rotation The rotation to reset the gyro to.
    */
   public void resetGyro(Rotation2d rotation) {
+    System.err.println("Reset gyro!!!");
     io.resetGyro(rotation);
   }
 
@@ -207,6 +208,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // io.resetGyro(pose.getRotation());
 
+    io.updateInputs(inputs, kinematics, getModulePositions());
     odometry.resetPosition(
         Rotation2d.fromDegrees(inputs.gyroYawPosition),
         new SwerveModulePosition[] {

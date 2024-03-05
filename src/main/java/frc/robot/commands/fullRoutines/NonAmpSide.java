@@ -27,7 +27,7 @@ public class NonAmpSide extends SequentialCommandGroup {
         new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle),
         ShootingCommands.runShooter(Shooter.State.FENDER_SHOT),
 
-        // First Piece
+        // // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),

@@ -926,8 +926,8 @@
         "Non Amp Side": {
             "waypoints": [
                 {
-                    "x": 0.6810668110847473,
-                    "y": 4.298892021179199,
+                    "x": 0.7084308862686157,
+                    "y": 4.319674491882324,
                     "heading": -1.0303769170676331,
                     "isInitialGuess": false,
                     "translationConstrained": true,
