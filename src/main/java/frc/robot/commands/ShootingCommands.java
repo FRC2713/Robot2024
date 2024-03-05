@@ -34,6 +34,14 @@ public class ShootingCommands {
         ShootingCommands.runShooter(shooterState));
   }
 
+  public static Command runShooterAndPivot(
+      Shooter.State shooterState, ShooterPivot.State shooterPivotState) {
+    return new SequentialCommandGroup(
+        ShootingCommands.runShooterPivot(shooterPivotState),
+        new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle),
+        ShootingCommands.runShooter(shooterState));
+  }
+
   public static Command runIntake() {
     return Commands.sequence(
         Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),

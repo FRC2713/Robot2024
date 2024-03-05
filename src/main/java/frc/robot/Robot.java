@@ -52,6 +52,7 @@ import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -223,7 +224,11 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.DYNAMIC_AIM),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.ALIGN_TO_TAG)),
+                new WaitUntilCommand(
+                    () ->
+                        shooter.isAtTarget()
+                            && SwerveHeadingController.getInstance().atSetpoint(0.5)),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
@@ -414,7 +419,8 @@ public class Robot extends LoggedRobot {
 
     VehicleState.getInstance()
         .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
-    swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
+    VehicleState.getInstance().updateCenterTagError(visionFront.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(), visionFront.getInputs());
   }
 
   @Override

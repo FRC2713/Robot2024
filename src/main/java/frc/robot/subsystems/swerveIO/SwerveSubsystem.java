@@ -48,6 +48,7 @@ public class SwerveSubsystem extends SubsystemBase {
     HEADING_CONTROLLER,
     TRAJECTORY,
     LOCKDOWN,
+    ALIGN_TO_TAG
   }
 
   SwerveIO io;
@@ -401,6 +402,9 @@ public class SwerveSubsystem extends SubsystemBase {
       case TRAJECTORY:
         // setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
         break;
+      case ALIGN_TO_TAG:
+        setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
+        break;
       default:
         break;
     }
@@ -508,11 +512,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
       return new SequentialCommandGroup(
           Choreo.choreoSwerveCommand(
-              traj, //
-              Robot.swerveDrive::getUsablePose, //
-              new PIDController(3, 0.0, 0.0), //
-              new PIDController(3, 0.0, 0.0), //
-              new PIDController(3, 0.0, 0.0),
+              traj,
+              Robot.swerveDrive::getUsablePose,
+              modifiedChoreoSwerveController(
+                  new PIDController(10, 0.0, 0.0),
+                  new PIDController(10, 0.0, 0.0),
+                  new PIDController(3, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },

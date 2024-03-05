@@ -29,10 +29,9 @@ public class NonAmpSide extends SequentialCommandGroup {
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
-        ShootingCommands.runPathAndShoot(
-            traj2,
-            Shooter.State.AUTO_SHOT_NonAmpSide_1,
-            ShooterPivot.State.AUTO_SHOT_NonAmpSide_1));
+        ShootingCommands.runShooterAndPivot(
+            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));
 
     // // Second Piece
     // ShootingCommands.runPathAndIntake("Non Amp Side.3"),

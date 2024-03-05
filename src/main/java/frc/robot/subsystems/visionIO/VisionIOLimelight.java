@@ -129,6 +129,7 @@ public class VisionIOLimelight implements VisionIO {
       inputs.botPoseBlue = lvf.getPose();
       inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
       inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
+      inputs.tagId = table.getEntry("tid").getDouble(0);
     } else {
       inputs.hasTarget = false;
       inputs.tagCount = 0;

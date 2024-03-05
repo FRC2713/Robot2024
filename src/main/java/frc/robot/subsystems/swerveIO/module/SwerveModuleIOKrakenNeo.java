@@ -95,6 +95,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     inputs.driveCurrentDrawAmps = drive.getStatorCurrent().getValue();
     inputs.driveEncoderPositionMetres =
         drive.getPosition().getValue() * RedHawkUtil.getDistPerPulse(info.getWheelDiameter());
+    Logger.recordOutput(
+        "Swerve/" + info.getName() + "/Raw Drive Angle", drive.getPosition().getValue());
     inputs.driveEncoderVelocityMetresPerSecond =
         drive.getVelocity().getValue() * RedHawkUtil.getDistPerPulse(info.getWheelDiameter());
     inputs.driveOutputVolts = drive.getMotorVoltage().getValue();

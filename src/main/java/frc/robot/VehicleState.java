@@ -2,7 +2,10 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
+import java.util.Optional;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class VehicleState {
   private static VehicleState instance;
@@ -22,6 +25,7 @@ public class VehicleState {
   }
 
   @Getter Rotation2d dynamicPivotAngle;
+  @Getter Optional<Rotation2d> centerTagError = Optional.empty();
 
   private VehicleState() {}
 
@@ -35,5 +39,19 @@ public class VehicleState {
 
   public void updateDynamicPivotAngle(double estimateDistanceToTag) {
     dynamicPivotAngle = Rotation2d.fromDegrees(dynamicPivotMap.get(estimateDistanceToTag));
+  }
+
+  public void updateCenterTagError(VisionInputs visionInputs) {
+    if (visionInputs.tagId == 7 || visionInputs.tagId == 3) {
+      centerTagError = Optional.of(Rotation2d.fromDegrees(visionInputs.horizontalOffsetFromTarget));
+    } else {
+
+      centerTagError = Optional.empty();
+    }
+
+    Logger.recordOutput("Center tag error has value", centerTagError.isPresent());
+    if (centerTagError.isPresent()) {
+      Logger.recordOutput("Center tag error", centerTagError.get());
+    }
   }
 }
