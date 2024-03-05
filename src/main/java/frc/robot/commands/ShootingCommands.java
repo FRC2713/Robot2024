@@ -20,7 +20,7 @@ public class ShootingCommands {
 
   public static Command runPathAndIntake(ChoreoTrajectory choreoPath) {
     return new SequentialCommandGroup(
-        ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath), new WaitCommand(1));
+        ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath), new WaitCommand(0.25));
   }
 
   public static Command runPathAndShoot(
@@ -54,7 +54,7 @@ public class ShootingCommands {
         Shooter.Commands.setState(shooterState),
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
         Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-        new WaitCommand(1),
+        new WaitCommand(0.25),
         Shooter.Commands.setState(Shooter.State.OFF));
   }
 
