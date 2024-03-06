@@ -414,6 +414,20 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece())));
 
     operator
+        .y()
+        .onTrue(
+            Commands.sequence(
+                Elevator.Commands.setState(Elevator.State.ELEVATORSHOT),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.ELEVATOR_SHOT),
+                Shooter.Commands.setState(Shooter.State.ELEVATOR_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece())));
+
+    operator
         .povLeft()
         .onTrue(
             Commands.sequence(
