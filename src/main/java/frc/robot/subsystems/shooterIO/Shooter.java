@@ -59,10 +59,15 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber fullOutFeederVolts =
       new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
 
-  private static final LoggedTunableNumber ampShotShooterRMP =
+  private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
       new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
+
+  private static final LoggedTunableNumber elevatorShotShooterRPM =
+      new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
+  private static final LoggedTunableNumber elevatorShotFeederVolts =
+      new LoggedTunableNumber("Shooter/Elevator Feeder Volts", 12);
 
   private static final LoggedTunableNumber preSpinRPM =
       new LoggedTunableNumber("Shooter/Pre-spin RPM", fenderShotShooterRpm.get() * 0.75);
@@ -86,12 +91,17 @@ public class Shooter extends SubsystemBase {
         podiumShotShooterRpm,
         podiumShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
+    ELEVATOR_SHOT(
+        elevatorShotShooterRPM,
+        elevatorShotShooterRPM,
+        elevatorShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
     HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
     OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
     FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, fullOutFeederVolts, () -> true),
     FULL_IN(fullInShooterRPM, fullInShooterRPM, fullInFeederVolts, () -> true),
-    AMP_SHOT(ampShotShooterRMP, ampShotShooterRMP, ampShotFeederVolts, () -> true),
+    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
