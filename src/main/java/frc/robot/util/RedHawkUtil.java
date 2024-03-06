@@ -285,10 +285,15 @@ public final class RedHawkUtil {
           var deg = pos.getRotation().getDegrees();
           deg = Math.signum(deg) == -1 ? deg + 360 : deg;
           Logger.recordOutput(
-              "/Shot log",
+              "Shot log",
               String.format(
-                  "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                  DriverStation.getMatchTime(),
+                  "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                  DriverStation.getEventName()
+                      + "-"
+                      + DriverStation.getMatchNumber()
+                      + "-"
+                      + DriverStation.getReplayNumber(),
+                  DriverStation.isAutonomous() ? DriverStation.getMatchTime() + 135. : DriverStation.getMatchTime(),
                   deg,
                   ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
                   Robot.shooterPivot.getCurrentAngle(),
@@ -304,6 +309,7 @@ public final class RedHawkUtil {
 
   public static void logShotFirst() {
     Logger.recordOutput(
-        "/Shot log", "time,theta,shooter_speed,pivot_angle,elevator_height,x,y,vx,vy,went_in");
+        "Shot log",
+        "event,time,theta,shooter_speed,pivot_angle,elevator_height,x,y,vx,vy,went_in");
   }
 }
