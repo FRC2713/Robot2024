@@ -430,8 +430,8 @@ public class Robot extends LoggedRobot {
         .povRight()
         .onTrue(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.FULL_OUT),
-                Shooter.Commands.setState(Shooter.State.FULL_OUT)))
+                Intake.Commands.setMotionMode(Intake.State.FULL_IN),
+                Shooter.Commands.setState(Shooter.State.FULL_IN)))
         .onFalse(
             Commands.sequence(
                 Commands.either(

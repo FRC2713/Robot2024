@@ -29,7 +29,7 @@ public class ShooterIOSim implements ShooterIO {
   Timer fakeGamepieceTimer = new Timer();
 
   public ShooterIOSim() {
-    var simGains = PIDFFGains.builder().kV(0.001).build();
+    var simGains = PIDFFGains.builder().kV(0.0017).build();
     leftController = new RHRPIDFFController(simGains);
     rightController = new RHRPIDFFController(simGains);
   }

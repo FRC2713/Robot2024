@@ -139,7 +139,8 @@ public class Shooter extends SubsystemBase {
       state = State.HOLDING_GP;
     }
 
-    if (shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean()) {
+    if ((shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean())
+        || this.state == Shooter.State.FORCE_MANUAL_CONTROL) {
       IO.setFeederVolts(state.feederRpm.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
