@@ -298,11 +298,11 @@ public final class RedHawkUtil {
                   ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
                   Robot.shooterPivot.getCurrentAngle(),
                   Robot.elevator.getCurrentHeight(),
-                  pos.getTranslation().getX(),
-                  pos.getTranslation().getY(),
+                  Units.metersToInches(pos.getTranslation().getX()),
+                  Units.metersToInches(pos.getTranslation().getY()),
                   // TODO: SHOULD CHASSIS SPEEDS BE FLIPPED?
-                  Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond,
-                  Robot.swerveDrive.getChassisSpeeds().vyMetersPerSecond,
+                  Units.metersToInches(Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond),
+                  Units.metersToInches(Robot.swerveDrive.getChassisSpeeds().vyMetersPerSecond),
                   0.5));
         });
   }
