@@ -60,9 +60,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
 
   private static final LoggedTunableNumber ampShotShooterRPM =
-      new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", -1000);
+      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
-      new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -5);
 
   private static final LoggedTunableNumber elevatorShotShooterRPM =
       new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
@@ -199,7 +199,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.laserCanDistanceMM < 95);
+    return (inputs.laserCanDistanceMM < 65);
   }
 
   public static class Commands {

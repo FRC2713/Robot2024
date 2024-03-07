@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
     OUTAKE_GP(outtakeBottomVolts, outtakeTopVolts),
     FULL_IN(fullInBottomVolts, fullInTopVolts),
     FULL_OUT(fullOutBottomVolts, fullOutTopVolts),
+    NOTE_IN_CHASSIS(() -> -12, () -> 12),
     OFF(() -> 0, () -> 0);
     private final DoubleSupplier bottomVolts, topVolts;
   }

@@ -31,11 +31,11 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
     right.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
     left.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
 
-    if (left.getEncoder().getPosition() == 0.0) {
+    if (Math.abs(left.getEncoder().getPosition()) < 0.1) {
       left.getEncoder().setPosition(54.255);
     }
 
-    if (right.getEncoder().getPosition() == 0.0) {
+    if (Math.abs(right.getEncoder().getPosition()) < 0.1) {
       right.getEncoder().setPosition(54.255);
     }
 
