@@ -3,8 +3,6 @@ package frc.robot.commands.fullRoutines;
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Robot;
 import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
@@ -25,7 +23,6 @@ public class NonAmpSide extends SequentialCommandGroup {
 
         // Preload
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
-        new WaitUntilCommand(Robot.shooterPivot::isAtTargetAngle),
         ShootingCommands.runShooter(Shooter.State.FENDER_SHOT),
         RedHawkUtil.logShot(),
 
@@ -36,17 +33,14 @@ public class NonAmpSide extends SequentialCommandGroup {
         RedHawkUtil.logShot(),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 
-        // // Second Piece
-        // ShootingCommands.runPathAndIntake("Non Amp Side.3"),
-        // ShootingCommands.runPathAndShoot(
-        //     "Non Amp Side.4",
-        //     Shooter.State.AUTO_SHOT_NonAmpSide_2,
-        //     ShooterPivot.State.AUTO_SHOT_NonAmpSide_2),
-        // new InstantCommand(
-        //     () -> {
-        //       SwerveSubsystem.Commands.errorTracker.printSummary("NonAmpSide");
-        //     }),
-        // End Auto
+        // Second Piece
+        ShootingCommands.runPathAndIntake(traj2),
+        ShootingCommands.runShooterAndPivot(
+            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+        RedHawkUtil.logShot(),
+        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+
+        // Reset everything for teleop
         Shooter.Commands.setState(Shooter.State.OFF),
         Intake.Commands.setMotionMode(Intake.State.OFF),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));

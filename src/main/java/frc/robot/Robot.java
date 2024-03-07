@@ -21,12 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.fullRoutines.NonAmpSide;
-import frc.robot.commands.fullRoutines.RHRNamedCommands;
-import frc.robot.commands.fullRoutines.SelfishAuto;
-import frc.robot.commands.fullRoutines.SimpleChoreo;
-import frc.robot.commands.fullRoutines.ThreePiece;
-import frc.robot.commands.fullRoutines.ThreePieceChoreo;
-import frc.robot.commands.fullRoutines.Week0MobilityChoreo;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -564,15 +558,7 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-
-    RHRNamedCommands.registerGenericCommands();
-
-    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
-    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
-    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
-    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
-    autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
-    autoChooser.addOption("NonAmpSide", new NonAmpSide());
+    autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
   }
 
   public void updatePreMatchDashboardValues() {
