@@ -25,6 +25,8 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
+  private static final LoggedTunableNumber feederShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 0);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
@@ -37,6 +39,7 @@ public class ShooterPivot extends SubsystemBase {
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     AMP_SHOT(ampShotAngleDegrees),
+    FEEDER_SHOT(feederShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     PREP_FOR_CLIMB(() -> 0),

@@ -49,16 +49,6 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber outtakingFeederVolts =
       new LoggedTunableNumber("Shooter/Outtaking Feeder Volts", 12);
 
-  private static final LoggedTunableNumber fullInShooterRPM =
-      new LoggedTunableNumber("Shooter/Full-In Shooter RPM", 4000);
-  private static final LoggedTunableNumber fullInFeederVolts =
-      new LoggedTunableNumber("Shooter/Full-In Feeder Volts", 12);
-
-  private static final LoggedTunableNumber fullOutShooterRPM =
-      new LoggedTunableNumber("Shooter/Full_Out Shooter RPM", -4000);
-  private static final LoggedTunableNumber fullOutFeederVolts =
-      new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
-
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
@@ -67,6 +57,11 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber elevatorShotShooterRPM =
       new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
   private static final LoggedTunableNumber elevatorShotFeederVolts =
+      new LoggedTunableNumber("Shooter/Elevator Feeder Volts", 12);
+
+  private static final LoggedTunableNumber feederShotShooterRPM =
+      new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 3000);
+  private static final LoggedTunableNumber feederShotFeederVolts =
       new LoggedTunableNumber("Shooter/Elevator Feeder Volts", 12);
 
   private static final LoggedTunableNumber preSpinRPM =
@@ -96,11 +91,14 @@ public class Shooter extends SubsystemBase {
         elevatorShotShooterRPM,
         elevatorShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
+    FEEDER_SHOT(
+        feederShotShooterRPM,
+        feederShotShooterRPM,
+        feederShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
     HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
     INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
     OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
-    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, fullOutFeederVolts, () -> true),
-    FULL_IN(fullInShooterRPM, fullInShooterRPM, fullInFeederVolts, () -> true),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,

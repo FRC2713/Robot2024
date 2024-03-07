@@ -426,26 +426,12 @@ public class Robot extends LoggedRobot {
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
                     Shooter.Commands.setState(Shooter.State.OFF),
                     () -> shooter.hasGamePiece())));
-
     operator
         .povLeft()
         .onTrue(
             Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.FULL_OUT),
-                Shooter.Commands.setState(Shooter.State.FULL_OUT)))
-        .onFalse(
-            Commands.sequence(
-                Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece())));
-
-    operator
-        .povRight()
-        .onTrue(
-            Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.FULL_IN),
-                Shooter.Commands.setState(Shooter.State.FULL_IN)))
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT)))
         .onFalse(
             Commands.sequence(
                 Commands.either(
