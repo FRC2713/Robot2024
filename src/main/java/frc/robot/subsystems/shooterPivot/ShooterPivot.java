@@ -73,6 +73,14 @@ public class ShooterPivot extends SubsystemBase {
     return inputs.absoluteEncoderAdjustedAngle;
   }
 
+  public double getLeftPosition() {
+    return inputs.angleDegreesLeft;
+  }
+
+  public double getRightPosition() {
+    return inputs.angleDegreesRight;
+  }
+
   @AutoLogOutput(key = "ShooterPivot/isAtTargetAngle")
   public boolean isAtTargetAngle() {
     return (Math.abs(inputs.angleDegreesLeft - this.state.pivotAngleDegrees.getAsDouble())

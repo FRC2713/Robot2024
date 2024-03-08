@@ -54,6 +54,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 public class Robot extends LoggedRobot {
@@ -87,7 +88,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      // Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
     }
 
     Logger.start();
@@ -417,6 +418,7 @@ public class Robot extends LoggedRobot {
                 Shooter.Commands.setState(Shooter.State.ELEVATOR_SHOT)))
         .onFalse(
             Commands.sequence(
+                Elevator.Commands.setState(Elevator.State.ELEVATORSHOT),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
                     Shooter.Commands.setState(Shooter.State.OFF),
@@ -479,6 +481,11 @@ public class Robot extends LoggedRobot {
 
     if (Math.abs(driver.getRightX()) > 0.25) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+    }
+
+    RobotController.setBrownoutVoltage(6.4);
+    if (RobotController.isBrownedOut()) {
+      //   swerveDrive.setDriveCurrentLimits(20);
     }
 
     // swerveDrive.seed();
@@ -562,21 +569,14 @@ public class Robot extends LoggedRobot {
   }
 
   public void updatePreMatchDashboardValues() {
+    var encoderReadings = swerveDrive.getAbsoluteEncoderAngles();
     SmartDashboard.putNumber("Dashboard/Battery Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putBoolean(
         "Dashboard/Has Alliance Color", DriverStation.getAlliance().isPresent());
-    SmartDashboard.putBoolean(
-        "Dashboard/Front Left Encoder Good",
-        swerveDrive.getSwerveModuleStates()[0].angle.getDegrees() != 0.0);
-    SmartDashboard.putBoolean(
-        "Dashboard/Front Right Encoder Good",
-        swerveDrive.getSwerveModuleStates()[1].angle.getDegrees() != 0.0);
-    SmartDashboard.putBoolean(
-        "Dashboard/Back Left Encoder Good",
-        swerveDrive.getSwerveModuleStates()[2].angle.getDegrees() != 0.0);
-    SmartDashboard.putBoolean(
-        "Dashboard/Back Right Encoder Good",
-        swerveDrive.getSwerveModuleStates()[3].angle.getDegrees() != 0.0);
+    SmartDashboard.putBoolean("Dashboard/Front Left Encoder Good", encoderReadings[0] != 0.0);
+    SmartDashboard.putBoolean("Dashboard/Front Right Encoder Good", encoderReadings[1] != 0.0);
+    SmartDashboard.putBoolean("Dashboard/Back Left Encoder Good", encoderReadings[2] != 0.0);
+    SmartDashboard.putBoolean("Dashboard/Back Right Encoder Good", encoderReadings[3] != 0.0);
     SmartDashboard.putNumber("Dashboard/Match Time", DriverStation.getMatchTime());
     SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
     SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
@@ -584,6 +584,10 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putString("Dashboard/States/Shooter", shooter.getState().name());
     SmartDashboard.putString("Dashboard/States/Pivot", shooterPivot.getState().name());
     SmartDashboard.putString("Dashboard/States/Swerve", swerveDrive.getMotionMode().name());
+    SmartDashboard.putNumber("Dashboard/Elevator Left", elevator.getLeftPosition());
+    SmartDashboard.putNumber("Dashboard/Elevator Right", elevator.getRightPosition());
+    SmartDashboard.putNumber("Dashboard/Pivot Left", shooterPivot.getLeftPosition());
+    SmartDashboard.putNumber("Dashboard/Pivot Right", shooterPivot.getRightPosition());
   }
 
   public void seedGyroBasedOnAlliance() {

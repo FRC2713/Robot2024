@@ -189,6 +189,21 @@ public class SwerveSubsystem extends SubsystemBase {
     };
   }
 
+  public double[] getAbsoluteEncoderAngles() {
+    return new double[] {
+      frontLeft.getAbsoluteEncoderAngle(),
+      frontRight.getAbsoluteEncoderAngle(),
+      backLeft.getAbsoluteEncoderAngle(),
+      backRight.getAbsoluteEncoderAngle(),
+    };
+  }
+
+  public void setDriveCurrentLimits(int amps) {
+    for (var module : new SwerveModule[] {frontLeft, frontRight, backLeft, backRight}) {
+      module.setDriveCurrentLimit(amps);
+    }
+  }
+
   /**
    * Sets the gyro to the given rotation.
    *

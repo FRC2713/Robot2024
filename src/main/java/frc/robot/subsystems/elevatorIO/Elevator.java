@@ -87,6 +87,14 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
   }
 
+  public double getLeftPosition() {
+    return inputs.heightInchesLeft;
+  }
+
+  public double getRightPosition() {
+    return inputs.heightInchesRight;
+  }
+
   @AutoLogOutput(key = "Elevator/isAtTarget")
   public boolean atTargetHeight() {
     return Math.abs(getCurrentHeight() - state.height.getAsDouble()) < 1;

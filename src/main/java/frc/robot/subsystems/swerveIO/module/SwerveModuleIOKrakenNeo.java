@@ -50,7 +50,7 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     info.getDriveGains().applyTo(config);
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 20;
+    config.CurrentLimits.SupplyCurrentLimit = 60;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Audio.BeepOnBoot = false;
@@ -149,5 +149,12 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
         "Swerve/" + info.getName() + "/Drive Setpoint RPS", desiredRotationsPerSecond);
     Logger.recordOutput("Swerve/" + info.getName() + "/Drive kV and kS", ffVolts);
     drive.setControl(m_request.withFeedForward(ffVolts));
+  }
+
+  @Override
+  public void setDriveCurrentLimit(int amps) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.CurrentLimits.SupplyCurrentLimit = amps;
+    RedHawkUtil.applyConfigs(drive, config);
   }
 }

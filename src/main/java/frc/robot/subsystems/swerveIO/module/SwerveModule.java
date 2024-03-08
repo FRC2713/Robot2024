@@ -41,12 +41,20 @@ public class SwerveModule extends SubsystemBase {
         Rotation2d.fromDegrees(inputs.aziEncoderPositionDeg));
   }
 
+  public double getAbsoluteEncoderAngle() {
+    return inputs.aziAbsoluteEncoderAdjAngleDeg;
+  }
+
   public SwerveModuleState getDesiredState() {
     return state;
   }
 
   public void seed() {
     io.seed();
+  }
+
+  public void setDriveCurrentLimit(int amps) {
+    io.setDriveCurrentLimit(amps);
   }
 
   private void recordOutput(String key, double value) {
