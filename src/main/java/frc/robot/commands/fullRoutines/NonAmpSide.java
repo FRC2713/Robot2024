@@ -46,8 +46,9 @@ public class NonAmpSide extends SequentialCommandGroup {
         // Reset everything for teleop
         Shooter.Commands.setState(Shooter.State.OFF),
         Intake.Commands.setMotionMode(Intake.State.OFF),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)
-        // ShootingCommands.runPathAndIntake(traj3)
-        );
+        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+
+        // Go for 3
+        ShootingCommands.runPathAndIntake(traj3));
   }
 }
