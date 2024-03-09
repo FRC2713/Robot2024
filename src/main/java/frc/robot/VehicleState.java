@@ -21,7 +21,7 @@ public class VehicleState {
     dynamicPivotMap.put(-2., 27. - 1);
     // dynamicPivotMap.put(-3.6, 25. - 1);
     dynamicPivotMap.put(-4.1, 25. - 2);
-    dynamicPivotMap.put(-6.1, 23. - 2);
+    dynamicPivotMap.put(-6.1, 23. - 3);
     dynamicPivotMap.put(-8.07, 21.25 - 2);
   }
 
