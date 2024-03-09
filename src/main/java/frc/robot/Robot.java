@@ -272,7 +272,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? 0 : 180))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 0
+                            : 180))));
 
     driver
         .povLeft()
@@ -282,7 +286,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? 90 : 270))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 90
+                            : 270))));
 
     driver
         .povRight()
@@ -292,7 +300,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? 270 : 90))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 270
+                            : 90))));
 
     driver
         .povDown()
@@ -302,7 +314,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? 180 : 0))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 180
+                            : 0))));
   }
 
   public void createOperatorBindings() {
@@ -480,7 +496,13 @@ public class Robot extends LoggedRobot {
         .onTrue(Intake.Commands.setMotionMode(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Intake.Commands.setMotionMode(Intake.State.OFF));
 
-    operator.back().onTrue(Commands.sequence(Intake.Commands.setMotionMode(Intake.State.CLEANING), ShooterPivot.Commands.setMotionMode(ShooterPivot.State.CLEANING), Shooter.Commands.setState(Shooter.State.CLEANING)));
+    operator
+        .back()
+        .onTrue(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.CLEANING),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.CLEANING),
+                Shooter.Commands.setState(Shooter.State.CLEANING)));
   }
 
   public void createAutomaticTriggers() {
