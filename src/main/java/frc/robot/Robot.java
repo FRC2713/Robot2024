@@ -218,13 +218,14 @@ public class Robot extends LoggedRobot {
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
+                                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)),
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
                     Shooter.Commands.setState(Shooter.State.OFF),
                     () -> shooter.getState() == Shooter.State.FENDER_SHOT),
                 new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING),));
 
     driver
         .start()
