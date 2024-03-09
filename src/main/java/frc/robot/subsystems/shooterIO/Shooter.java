@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Shooter/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 2);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 3);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 4000);
@@ -75,7 +75,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
-        private static final LoggedTunableNumber feederShotRPM =
+  private static final LoggedTunableNumber feederShotRPM =
       new LoggedTunableNumber("Shooter/Feeder Shot RPM", 200);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
@@ -123,7 +123,11 @@ public class Shooter extends SubsystemBase {
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true),
     OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
-    FEEDING(feederShotRPM, feederShotRPM, ampShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle());
+    FEEDING(
+        feederShotRPM,
+        feederShotRPM,
+        ampShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle());
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }
@@ -167,7 +171,7 @@ public class Shooter extends SubsystemBase {
     double differential = shooterDifferentialRpm.getAsDouble();
 
     if (state == State.FEEDING) {
-        differential = 0;
+      differential = 0;
     }
 
     if (state == State.OFF) {
@@ -192,22 +196,16 @@ public class Shooter extends SubsystemBase {
 
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
     // rightTarget;
-    
+
     double differential = shooterDifferentialRpm.getAsDouble();
 
     if (state == State.FEEDING) {
-        differential = 0;
+      differential = 0;
     }
 
-    return Math.abs(
-                state.leftRpm.getAsDouble()
-                    + differential
-                    - inputs.leftSpeedRPM)
+    return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
             < atGoalThresholdRPM.get()
-        && Math.abs(
-                state.rightRpm.getAsDouble()
-                    - differential
-                    - inputs.rightSpeedRPM)
+        && Math.abs(state.rightRpm.getAsDouble() - differential - inputs.rightSpeedRPM)
             < atGoalThresholdRPM.get();
   }
 

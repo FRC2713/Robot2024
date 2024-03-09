@@ -349,7 +349,9 @@ public class Robot extends LoggedRobot {
         .povDown()
         .onTrue(Commands.sequence(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT)));
 
-        operator.povLeft().onTrue(
+    operator
+        .povLeft()
+        .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDING),
                 Shooter.Commands.setState(Shooter.State.FEEDING),

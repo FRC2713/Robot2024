@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooterIO;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
+import au.grapplerobotics.LaserCan.RegionOfInterest;
 import au.grapplerobotics.LaserCan.TimingBudget;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -93,6 +94,7 @@ public class ShooterIOVortex implements ShooterIO {
     try {
       laserCan.setRangingMode(RangingMode.SHORT);
       laserCan.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
+      laserCan.setRegionOfInterest(new RegionOfInterest(8, 8, 4, 4));
     } catch (ConfigurationFailedException e) {
       System.err.println("Could not configure LaserCAN!");
     }
