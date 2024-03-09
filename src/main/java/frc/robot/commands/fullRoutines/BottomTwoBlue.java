@@ -10,10 +10,10 @@ import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
-public class BottomTwo extends SequentialCommandGroup {
+public class BottomTwoBlue extends SequentialCommandGroup {
   private ChoreoTrajectory traj1, traj2, traj3;
 
-  public BottomTwo() {
+  public BottomTwoBlue() {
     traj1 = Choreo.getTrajectory("Bottom Two.1");
     traj2 = Choreo.getTrajectory("Bottom Two.2");
     traj3 = Choreo.getTrajectory("Bottom Two.3");

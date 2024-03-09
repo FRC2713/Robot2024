@@ -20,8 +20,10 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
-import frc.robot.commands.fullRoutines.BottomTwo;
-import frc.robot.commands.fullRoutines.NonAmpSide;
+import frc.robot.commands.fullRoutines.BottomTwoBlue;
+import frc.robot.commands.fullRoutines.BottomTwoRed;
+import frc.robot.commands.fullRoutines.NonAmpSideBlue;
+import frc.robot.commands.fullRoutines.NonAmpSideRed;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -585,8 +587,10 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
-    autoChooser.addOption("BottomTwo", new BottomTwo());
+    autoChooser.addDefaultOption("NonAmpSide - BLUE", new NonAmpSideBlue());
+    autoChooser.addOption("BottomTwo - BLUE", new BottomTwoBlue());
+    autoChooser.addOption("NonAmpSide - RED", new NonAmpSideRed());
+    autoChooser.addOption("BottomTwo - RED", new BottomTwoRed());
   }
 
   public void updatePreMatchDashboardValues() {
