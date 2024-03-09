@@ -183,7 +183,7 @@ public final class RedHawkUtil {
     }
 
     public static Rotation2d reflect(Rotation2d old) {
-      return old.minus(Rotation2d.fromDegrees(180)).times(-1);
+      return Rotation2d.fromDegrees(180).minus(old);
     }
 
     public static double reflectIfRed(double x) {
