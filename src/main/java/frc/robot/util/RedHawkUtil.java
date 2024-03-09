@@ -185,6 +185,10 @@ public final class RedHawkUtil {
       return new Translation3d(FieldConstants.fieldLength - old.getX(), old.getY(), old.getZ());
     }
 
+    public static Rotation2d reflect(Rotation2d old) {
+      return old.minus(Rotation2d.fromDegrees(180)).times(-1);
+    }
+
     public static double reflectIfRed(double x) {
       return reflectIfRed(new Translation2d(x, 0)).getX();
     }

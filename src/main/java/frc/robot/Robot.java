@@ -592,18 +592,19 @@ public class Robot extends LoggedRobot {
 
   public void seedGyroBasedOnAlliance() {
     Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
+    var startingAngle = Rotation2d.fromRadians(-1.0303769170676331);
 
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(Rotation2d.fromRadians(-1.0303769170676331));
+      swerveDrive.resetGyro(startingAngle);
       SwerveSubsystem.allianceFlipper = 1;
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(Rotation2d.fromRadians(1.0303769170676331));
+      swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
     }
   }
