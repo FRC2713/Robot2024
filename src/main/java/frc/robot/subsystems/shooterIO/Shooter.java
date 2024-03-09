@@ -76,7 +76,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
   private static final LoggedTunableNumber feederShotRPM =
-      new LoggedTunableNumber("Shooter/Feeder Shot RPM", 200);
+      new LoggedTunableNumber("Shooter/Feeder Shot RPM", 2000);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
@@ -171,9 +171,9 @@ public class Shooter extends SubsystemBase {
 
     double differential = shooterDifferentialRpm.getAsDouble();
 
-    if (state == State.FEEDING) {
-      differential = 0;
-    }
+    // if (state == State.FEEDING) {
+    //   differential = 0;
+    // }
 
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
@@ -200,9 +200,9 @@ public class Shooter extends SubsystemBase {
 
     double differential = shooterDifferentialRpm.getAsDouble();
 
-    if (state == State.FEEDING) {
-      differential = 0;
-    }
+    // if (state == State.FEEDING) {
+    //   differential = 0;
+    // }
 
     return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
             < atGoalThresholdRPM.get()
