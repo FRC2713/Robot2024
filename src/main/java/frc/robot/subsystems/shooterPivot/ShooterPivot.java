@@ -29,7 +29,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
-        private static final LoggedTunableNumber prepClimbAngle =
+  private static final LoggedTunableNumber prepClimbAngle =
       new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 25);
 
   @RequiredArgsConstructor
