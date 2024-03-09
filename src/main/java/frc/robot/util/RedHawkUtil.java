@@ -89,6 +89,19 @@ public final class RedHawkUtil {
     }
   }
 
+  public static void maybeFlipLog(ChoreoTrajectory traj) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isEmpty()) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    }
+
+    if (alliance.get() == Alliance.Blue) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    } else {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", true);
+    }
+  }
+
   // public static PathPoint currentPositionPathPoint(Rotation2d heading) {
   // return new
   // PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),

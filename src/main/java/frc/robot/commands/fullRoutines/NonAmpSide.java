@@ -16,9 +16,11 @@ public class NonAmpSide extends SequentialCommandGroup {
   private ChoreoTrajectory traj1, traj2, traj3;
 
   public NonAmpSide() {
-    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Non Amp Side.1"));
-    traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Non Amp Side.2"));
-    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Non Amp Side.3"));
+    traj1 = Choreo.getTrajectory("Non Amp Side.1");
+    traj2 = Choreo.getTrajectory("Non Amp Side.2");
+    traj3 = Choreo.getTrajectory("Non Amp Side.3");
+
+    RedHawkUtil.maybeFlipLog(traj1);
 
     addCommands(
         SwerveSubsystem.Commands.resetOdometry(traj1),

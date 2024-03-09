@@ -14,9 +14,11 @@ public class BottomTwo extends SequentialCommandGroup {
   private ChoreoTrajectory traj1, traj2, traj3;
 
   public BottomTwo() {
-    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.1"));
-    traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.2"));
-    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.3"));
+    traj1 = Choreo.getTrajectory("Bottom Two.1");
+    traj2 = Choreo.getTrajectory("Bottom Two.2");
+    traj3 = Choreo.getTrajectory("Bottom Two.3");
+
+    RedHawkUtil.maybeFlipLog(traj1);
 
     addCommands(
         SwerveSubsystem.Commands.resetOdometry(traj1),
