@@ -29,6 +29,9 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
+        private static final LoggedTunableNumber prepClimbAngle =
+      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 25);
+
   @RequiredArgsConstructor
   public enum State {
     INTAKING(intakingAngleDegrees), // also for outtaking
@@ -39,7 +42,7 @@ public class ShooterPivot extends SubsystemBase {
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
-    PREP_FOR_CLIMB(() -> 10),
+    PREP_FOR_CLIMB(prepClimbAngle),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;
