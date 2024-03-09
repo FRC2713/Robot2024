@@ -25,6 +25,9 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Elevator Angle Degrees", 20);
+  private static final LoggedTunableNumber feederShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Elevator Angle Degrees", 15);
+
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
@@ -43,6 +46,7 @@ public class ShooterPivot extends SubsystemBase {
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     PREP_FOR_CLIMB(prepClimbAngle),
+    FEEDING(feederShotAngleDegrees),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;

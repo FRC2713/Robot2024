@@ -11,11 +11,12 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
 public class BottomTwo extends SequentialCommandGroup {
-  private ChoreoTrajectory traj1, traj2;
+  private ChoreoTrajectory traj1, traj2, traj3;
 
   public BottomTwo() {
     traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.1"));
     traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.2"));
+    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.3"));
 
     addCommands(
         SwerveSubsystem.Commands.resetOdometry(traj1),
@@ -42,6 +43,9 @@ public class BottomTwo extends SequentialCommandGroup {
         // Reset everything for teleop
         Shooter.Commands.setState(Shooter.State.OFF),
         Intake.Commands.setMotionMode(Intake.State.OFF),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));
+        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+
+        // Clear out
+        ShootingCommands.runPath(traj3));
   }
 }

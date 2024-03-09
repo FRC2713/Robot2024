@@ -75,6 +75,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdRPM =
       new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
+        private static final LoggedTunableNumber feederShotRPM =
+      new LoggedTunableNumber("Shooter/Feeder Shot RPM", 200);
+
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
@@ -119,7 +122,8 @@ public class Shooter extends SubsystemBase {
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true);
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
+    FEEDING(feederShotRPM, feederShotRPM, ampShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle());
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }
@@ -162,6 +166,10 @@ public class Shooter extends SubsystemBase {
 
     double differential = shooterDifferentialRpm.getAsDouble();
 
+    if (state == State.FEEDING) {
+        differential = 0;
+    }
+
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
     } else {
@@ -184,15 +192,21 @@ public class Shooter extends SubsystemBase {
 
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
     // rightTarget;
+    
+    double differential = shooterDifferentialRpm.getAsDouble();
+
+    if (state == State.FEEDING) {
+        differential = 0;
+    }
 
     return Math.abs(
                 state.leftRpm.getAsDouble()
-                    + shooterDifferentialRpm.getAsDouble()
+                    + differential
                     - inputs.leftSpeedRPM)
             < atGoalThresholdRPM.get()
         && Math.abs(
                 state.rightRpm.getAsDouble()
-                    - shooterDifferentialRpm.getAsDouble()
+                    - differential
                     - inputs.rightSpeedRPM)
             < atGoalThresholdRPM.get();
   }

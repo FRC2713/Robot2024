@@ -349,6 +349,23 @@ public class Robot extends LoggedRobot {
         .povDown()
         .onTrue(Commands.sequence(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT)));
 
+        operator.povLeft().onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDING),
+                Shooter.Commands.setState(Shooter.State.FEEDING),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
+
     operator
         .rightBumper()
         .onTrue(
