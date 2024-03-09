@@ -218,7 +218,7 @@ public class Robot extends LoggedRobot {
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
-                                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)),
+                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)),
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
