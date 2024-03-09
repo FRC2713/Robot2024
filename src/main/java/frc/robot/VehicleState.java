@@ -6,7 +6,6 @@ import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.littletonrobotics.junction.Logger;
 
 public class VehicleState {

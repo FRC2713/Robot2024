@@ -87,13 +87,13 @@ public class MotionHandler {
   public static ChassisSpeeds driveAlignToTag() {
     if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
 
-    var error = VehicleState.getInstance().getCenterTagError();
-    if (error.isPresent()) {
-      SwerveHeadingController.getInstance()
-          .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+      var error = VehicleState.getInstance().getCenterTagError();
+      if (error.isPresent()) {
+        SwerveHeadingController.getInstance()
+            .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
 
-          VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-    }
+        VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+      }
     }
 
     return driveHeadingController();
