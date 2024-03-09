@@ -184,7 +184,7 @@ public class Robot extends LoggedRobot {
 
     // driver.povRight().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT));
 
-        operator
+    driver
         .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
