@@ -47,10 +47,12 @@ public class SwerveHeadingController {
    * @param setpoint The new setpoint of the heading controller.
    */
   public void setSetpoint(Rotation2d setpoint) {
-    this.setpoint =
-        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
-            ? setpoint
-            : Rotation2d.fromDegrees((setpoint.getDegrees() + 180) % 360);
+    // this.setpoint =
+    //     DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+    //         ? setpoint
+    //         : Rotation2d.fromDegrees((setpoint.getDegrees() + 180) % 360);
+
+    this.setpoint = setpoint;
   }
 
   public void addToSetpoint(Rotation2d setpoint) {
