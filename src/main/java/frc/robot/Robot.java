@@ -207,6 +207,7 @@ public class Robot extends LoggedRobot {
         .rightTrigger(0.3)
         .onTrue(
             Commands.sequence(
+                new InstantCommand(() -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.DYNAMIC_AIM),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.ALIGN_TO_TAG)),

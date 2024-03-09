@@ -5,6 +5,8 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import java.util.Optional;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.littletonrobotics.junction.Logger;
 
 public class VehicleState {
@@ -25,6 +27,7 @@ public class VehicleState {
     dynamicPivotMap.put(-8.07, 21.25 - 2);
   }
 
+  @Getter @Setter boolean shouldUpdateCenterTagAlignment = false;
   @Getter Rotation2d dynamicPivotAngle;
   @Getter Optional<Rotation2d> centerTagError = Optional.empty();
 
