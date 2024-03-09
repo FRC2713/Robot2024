@@ -19,9 +19,10 @@ public class VehicleState {
     dynamicPivotMap.put(5.1, 37. - 1);
     dynamicPivotMap.put(0., 30. - 1);
     dynamicPivotMap.put(-2., 27. - 1);
-    dynamicPivotMap.put(-4.1, 25. - 1);
-    dynamicPivotMap.put(-6.1, 23. - 1);
-    dynamicPivotMap.put(-8.07, 21.25 - 1);
+    // dynamicPivotMap.put(-3.6, 25. - 1);
+    dynamicPivotMap.put(-4.1, 25. - 1.5);
+    dynamicPivotMap.put(-6.1, 23. - 1.5);
+    dynamicPivotMap.put(-8.07, 21.25 - 1.5);
   }
 
   @Getter Rotation2d dynamicPivotAngle;
