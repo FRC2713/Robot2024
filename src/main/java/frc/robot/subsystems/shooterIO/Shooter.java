@@ -119,7 +119,7 @@ public class Shooter extends SubsystemBase {
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -12, () -> true);
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true);
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }
