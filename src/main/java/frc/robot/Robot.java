@@ -88,7 +88,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+      Logger.addDataReceiver(new WPILOGWriter());
     }
 
     Logger.start();

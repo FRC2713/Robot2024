@@ -29,14 +29,14 @@ public class NonAmpSide extends SequentialCommandGroup {
         RedHawkUtil.logShot(),
 
         // First Piece
-        ShootingCommands.runPathAndIntake(traj1),
+        ShootingCommands.runPath(traj1),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 
         // Second Piece
-        ShootingCommands.runPathAndIntake(traj2),
+        ShootingCommands.runPath(traj2),
         new WaitCommand(0.3),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
@@ -49,6 +49,6 @@ public class NonAmpSide extends SequentialCommandGroup {
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 
         // Go for 3
-        ShootingCommands.runPathAndIntake(traj3));
+        ShootingCommands.runPath(traj3));
   }
 }
