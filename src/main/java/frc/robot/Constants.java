@@ -248,8 +248,8 @@ public final class Constants {
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
         PIDFFGains.builder()
             .name("Heading Controller")
-            .kP(05)
-            .kD(0.5)
+            .kP(08)
+            .kD(0)
             .kS(2)
             .build()
             .buildTunables();
