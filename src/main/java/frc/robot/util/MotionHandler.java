@@ -89,7 +89,7 @@ public class MotionHandler {
     var error = VehicleState.getInstance().getCenterTagError();
     if (error.isPresent()) {
       SwerveHeadingController.getInstance()
-          .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+          .setSetpoint(Robot.swerveDrive.getYaw().plus(error.get()));
     }
 
     return driveHeadingController();
