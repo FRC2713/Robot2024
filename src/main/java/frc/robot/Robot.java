@@ -184,6 +184,25 @@ public class Robot extends LoggedRobot {
 
     // driver.povRight().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT));
 
+        operator
+        .leftTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDING),
+                Shooter.Commands.setState(Shooter.State.FEEDING),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
+
     driver
         .rightBumper()
         .onTrue(
