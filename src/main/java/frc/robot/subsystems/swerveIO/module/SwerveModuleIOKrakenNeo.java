@@ -50,8 +50,14 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     info.getDriveGains().applyTo(config);
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.CurrentLimits.SupplyCurrentLimit = 40;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 60;
+
+    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.2;
+    config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.2;
+
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Audio.BeepOnBoot = false;
     config.Audio.BeepOnConfig = false;

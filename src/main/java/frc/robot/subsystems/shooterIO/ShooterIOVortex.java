@@ -94,7 +94,7 @@ public class ShooterIOVortex implements ShooterIO {
     try {
       laserCan.setRangingMode(RangingMode.SHORT);
       laserCan.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
-      laserCan.setRegionOfInterest(new RegionOfInterest(8, 8, 4, 4));
+      laserCan.setRegionOfInterest(new RegionOfInterest(8, 8, 16, 16));
     } catch (ConfigurationFailedException e) {
       System.err.println("Could not configure LaserCAN!");
     }
