@@ -39,7 +39,7 @@ public class NonAmpSideRed extends SequentialCommandGroup {
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
-        new WaitCommand(0.4),
+        new WaitCommand(0.7),
         // new WaitUntilCommand(Robot.shooter::hasGamePiece),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
