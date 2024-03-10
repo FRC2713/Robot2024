@@ -212,7 +212,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.laserCanDistanceMM < 60);
+    return (inputs.laserCanDistanceMM < 65);
   }
 
   public static class Commands {
