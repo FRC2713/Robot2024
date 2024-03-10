@@ -79,7 +79,7 @@ public class ShooterIOVortex implements ShooterIO {
     config.Voltage.PeakReverseVoltage = -12;
     config.CurrentLimits.SupplyCurrentLimit = 30;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.Audio.BeepOnBoot = false;
     config.Audio.BeepOnConfig = false;

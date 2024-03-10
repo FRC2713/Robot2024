@@ -150,13 +150,16 @@ public class Robot extends LoggedRobot {
                     .repeatedly()
                     .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
                     .andThen(
-                        Commands.sequence(Commands.either(RumbleManager.driverBigOneSec(), new InstantCommand(() -> {}), shooter::hasGamePiece),
+                        Commands.sequence(
+                            Commands.either(
+                                RumbleManager.driverBigOneSec(),
+                                new InstantCommand(() -> {}),
+                                shooter::hasGamePiece),
                             Intake.Commands.setMotionMode(Intake.State.OFF),
                             Commands.either(
                                 Shooter.Commands.setState(Shooter.State.OFF),
                                 new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)
-                            ))))
+                                () -> shooter.getState() == Shooter.State.INTAKING)))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
