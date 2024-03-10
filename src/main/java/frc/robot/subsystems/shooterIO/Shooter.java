@@ -76,7 +76,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
 
   private static final LoggedTunableNumber feederShotRPM =
-      new LoggedTunableNumber("Shooter/Feeder Shot RPM", 2000);
+      new LoggedTunableNumber("Shooter/Feeder Shot RPM", 4000);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
@@ -124,10 +124,10 @@ public class Shooter extends SubsystemBase {
     OFF(() -> 0, () -> 0, () -> 0, () -> true),
     OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 1, () -> true),
-    FEEDING(
+    FEEDER_SHOT(
         feederShotRPM,
         feederShotRPM,
-        ampShotFeederVolts,
+        fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle());
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;

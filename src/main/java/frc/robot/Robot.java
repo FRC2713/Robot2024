@@ -188,8 +188,8 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDING),
-                Shooter.Commands.setState(Shooter.State.FEEDING),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -393,8 +393,8 @@ public class Robot extends LoggedRobot {
         .povLeft()
         .onTrue(
             Commands.sequence(
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDING),
-                Shooter.Commands.setState(Shooter.State.FEEDING),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -515,13 +515,13 @@ public class Robot extends LoggedRobot {
         .onTrue(Intake.Commands.setMotionMode(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Intake.Commands.setMotionMode(Intake.State.OFF));
 
-    operator
-        .back()
-        .onTrue(
-            Commands.sequence(
-                Intake.Commands.setMotionMode(Intake.State.CLEANING),
-                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.CLEANING),
-                Shooter.Commands.setState(Shooter.State.CLEANING)));
+    // operator
+    //     .back()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Intake.Commands.setMotionMode(Intake.State.CLEANING),
+    //             ShooterPivot.Commands.setMotionMode(ShooterPivot.State.CLEANING),
+    //             Shooter.Commands.setState(Shooter.State.CLEANING)));
   }
 
   public void createAutomaticTriggers() {
