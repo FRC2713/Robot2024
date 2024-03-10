@@ -3,7 +3,8 @@ package frc.robot.commands.fullRoutines;
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Robot;
 import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
@@ -39,7 +40,8 @@ public class NonAmpSideBlue extends SequentialCommandGroup {
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
-        new WaitCommand(0.3),
+        // new WaitCommand(0.3),
+        new WaitUntilCommand(Robot.shooter::hasGamePiece),
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
