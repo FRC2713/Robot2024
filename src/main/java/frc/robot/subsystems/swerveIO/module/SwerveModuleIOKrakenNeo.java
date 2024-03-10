@@ -54,8 +54,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = 60;
 
-    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.2;
-    config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.2;
+    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
+    config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.02;
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
