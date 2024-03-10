@@ -313,7 +313,7 @@ public final class RedHawkUtil {
                       : DriverStation.getMatchTime(),
                   deg,
                   ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
-                  Robot.shooterPivot.getCurrentAngle(),
+                  Robot.shooterPivot.getLeftPosition(),
                   Robot.elevator.getCurrentHeight(),
                   Units.metersToInches(pos.getTranslation().getX()),
                   Units.metersToInches(pos.getTranslation().getY()),
