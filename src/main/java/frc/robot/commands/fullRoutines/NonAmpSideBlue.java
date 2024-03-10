@@ -4,8 +4,6 @@ import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Robot;
 import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
