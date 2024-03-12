@@ -31,7 +31,8 @@ import frc.robot.commands.otf.OTFAmp;
 =======
 import frc.robot.commands.fullRoutines.BottomTwoBlue;
 import frc.robot.commands.fullRoutines.BottomTwoRed;
-import frc.robot.commands.fullRoutines.FourPiece;
+import frc.robot.commands.fullRoutines.FourPieceCentre;
+import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSideBlue;
 import frc.robot.commands.fullRoutines.NonAmpSideRed;
 import frc.robot.commands.otf.OTF;
@@ -694,7 +695,8 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("BottomTwo - BLUE", new BottomTwoBlue());
     autoChooser.addOption("NonAmpSide - RED", new NonAmpSideRed());
     autoChooser.addOption("BottomTwo - RED", new BottomTwoRed());
-    autoChooser.addOption("FourPiece - RED", new FourPiece());
+    autoChooser.addOption("FourPiece Centre - RED", new FourPieceCentre());
+    autoChooser.addOption("FourPiece L - RED", new FourPieceL());
   }
 
   public void updatePreMatchDashboardValues() {

@@ -244,7 +244,7 @@ public final class Constants {
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.0001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kV(0.0001565).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kV(0.0001568).build();
   }
 
   @UtilityClass

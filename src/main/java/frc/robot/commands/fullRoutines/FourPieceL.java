@@ -11,15 +11,15 @@ import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
-public class FourPiece extends SequentialCommandGroup {
+public class FourPieceL extends SequentialCommandGroup {
 
   private ChoreoTrajectory traj1, traj2, traj3, traj4;
 
-  public FourPiece() {
-    traj1 = Choreo.getTrajectory("Four Piece.1").flipped();
-    traj2 = Choreo.getTrajectory("Four Piece.2").flipped();
-    traj3 = Choreo.getTrajectory("Four Piece.3").flipped();
-    traj4 = Choreo.getTrajectory("Four Piece.4").flipped();
+  public FourPieceL() {
+    traj1 = Choreo.getTrajectory("Four Piece L.1").flipped();
+    traj2 = Choreo.getTrajectory("Four Piece L.2").flipped();
+    traj3 = Choreo.getTrajectory("Four Piece L.3").flipped();
+    traj4 = Choreo.getTrajectory("Four Piece L.4").flipped();
 
     RedHawkUtil.maybeFlipLog(traj1);
 
@@ -58,9 +58,10 @@ public class FourPiece extends SequentialCommandGroup {
         // Reset everything for teleop
         Shooter.Commands.setState(Shooter.State.OFF),
         Intake.Commands.setMotionMode(Intake.State.OFF),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)
 
         // Go for 4
-        ShootingCommands.runPathAndIntake(traj4));
+        // ShootingCommands.runPathAndIntake(traj4)
+        );
   }
 }
