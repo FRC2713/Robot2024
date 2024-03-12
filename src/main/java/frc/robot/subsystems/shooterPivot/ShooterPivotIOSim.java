@@ -1,14 +1,12 @@
 package frc.robot.subsystems.shooterPivot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
-import frc.robot.rhr.RHRFeedForward;
-import frc.robot.rhr.RHRPIDFFController;
 
 public class ShooterPivotIOSim implements ShooterPivotIO {
 
@@ -26,56 +24,54 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
           Constants.ShooterPivotConstants.STARTING_ANGLE_RADS);
   private double targetAngle;
 
-  private RHRPIDFFController motorController;
-
-  private RHRFeedForward feedforward;
+  private PIDController upController, downController, currentController;
 
   private double voltage;
 
   public ShooterPivotIOSim() {
-    motorController = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRController();
-    feedforward = Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.createRHRFeedForward();
+    upController = new PIDController(1, 0, 0);
+    downController = new PIDController(1, 0, 0);
+
+    currentController = upController;
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
+  public void updateInputs(ShooterPivotInputs inputs) {
     if (DriverStation.isDisabled()) {
       sim.setInputVoltage(0.0);
+      return;
     }
 
+    double effort = currentController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
+    effort = MathUtil.clamp(effort, -12, 12);
+    this.voltage = effort;
+
+    sim.setInputVoltage(voltage);
     sim.update(0.02);
 
-    inputs.outputVoltage = this.voltage;
+    inputs.outputVoltageLeft = this.voltage;
+    inputs.angleDegreesLeft = Units.radiansToDegrees(sim.getAngleRads());
+    inputs.velocityDegreesPerSecondLeft = Units.radiansToDegrees(sim.getVelocityRadPerSec());
+    inputs.currentDrawAmpsLeft = sim.getCurrentDrawAmps();
 
-    inputs.angleDegreesOne = Units.radiansToDegrees(sim.getAngleRads()) + (Math.random() * 5 - 2.5);
+    inputs.outputVoltageRight = inputs.outputVoltageLeft;
+    inputs.angleDegreesRight = inputs.angleDegreesLeft;
+    inputs.velocityDegreesPerSecondRight = inputs.velocityDegreesPerSecondLeft;
+    inputs.currentDrawAmpsRight = inputs.currentDrawAmpsLeft;
 
     inputs.absoluteEncoderAdjustedAngle = Units.radiansToDegrees(sim.getAngleRads());
-
-    inputs.velocityDegreesPerSecondOne = Units.radiansToDegrees(sim.getVelocityRadPerSec());
-
-    inputs.tempCelciusOne = 0.0;
-
-    inputs.currentDrawOne = sim.getCurrentDrawAmps();
-
-    double effort = motorController.calculate(inputs.absoluteEncoderAdjustedAngle, targetAngle);
-    effort += ffVolts;
-    effort = MathUtil.clamp(effort, -12, 12);
-    setVoltage(effort);
   }
 
   @Override
-  public void reseedPosition(double angleDeg) {
-    sim.setState(VecBuilder.fill(Units.degreesToRadians(angleDeg), 0.0));
-  }
+  public void setTargetAngle(double degrees) {
+    if (degrees > Units.radiansToDegrees(sim.getAngleRads())) {
+      // if target is greater than current setpoint
+      // use the down gains (slot 1)
+      currentController = downController;
+    } else {
+      currentController = upController;
+    }
 
-  @Override
-  public void setTargetPosition(double angleDeg) {
-    this.targetAngle = angleDeg;
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    sim.setInputVoltage(volts);
-    this.voltage = volts;
+    targetAngle = degrees;
   }
 }

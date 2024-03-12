@@ -1,12 +1,13 @@
 package frc.robot.util;
 
+import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,12 +16,14 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import lombok.NonNull;
@@ -73,8 +76,35 @@ public final class RedHawkUtil {
     return Reflections.reflectIfRed(pose.getX()) > (FieldConstants.fieldLength / 2);
   }
 
+  public static ChoreoTrajectory maybeFlip(ChoreoTrajectory traj) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isEmpty()) {
+      return traj;
+    }
+
+    if (alliance.get() == Alliance.Blue) {
+      return traj;
+    } else {
+      return traj.flipped();
+    }
+  }
+
+  public static void maybeFlipLog(ChoreoTrajectory traj) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isEmpty()) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    }
+
+    if (alliance.get() == Alliance.Blue) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    } else {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", true);
+    }
+  }
+
   // public static PathPoint currentPositionPathPoint(Rotation2d heading) {
-  // return new PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
+  // return new
+  // PathPoint(RedHawkUtil.Pose2dToTranslation2d(Robot.swerveDrive.getUsablePose()),
   // heading, Robot.swerveDrive.getUsablePose().getRotation(),
   // Robot.swerveDrive.getAverageVelocity());
   // }
@@ -165,6 +195,10 @@ public final class RedHawkUtil {
       return new Translation3d(FieldConstants.fieldLength - old.getX(), old.getY(), old.getZ());
     }
 
+    public static Rotation2d reflect(Rotation2d old) {
+      return Rotation2d.fromDegrees(180).minus(old);
+    }
+
     public static double reflectIfRed(double x) {
       return reflectIfRed(new Translation2d(x, 0)).getX();
     }
@@ -177,8 +211,20 @@ public final class RedHawkUtil {
       return old;
     }
 
+    public static Rotation2d reflectIfBlue(Rotation2d old) {
+      var maybeAlliance = DriverStation.getAlliance();
+      if (maybeAlliance.isPresent() && maybeAlliance.get() == Alliance.Blue) {
+        return old.minus(Rotation2d.fromDegrees(180)).times(-1);
+      }
+      return old;
+    }
+
     public static Pose2d reflectIfRed(Pose2d old) {
       return new Pose2d(reflectIfRed(old.getTranslation()), reflectIfRed(old.getRotation()));
+    }
+
+    public static Pose2d reflectIfBlue(Pose2d old) {
+      return new Pose2d(reflectIfBlue(old.getTranslation()), reflectIfBlue(old.getRotation()));
     }
   }
 
@@ -186,10 +232,10 @@ public final class RedHawkUtil {
    * https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
    */
   public static void configureCANSparkMAXStatusFrames(
-      HashMap<PeriodicFrame, Integer> config, CANSparkMax... sparks) {
+      HashMap<PeriodicFrame, Integer> config, CANSparkBase... sparks) {
     config.forEach(
         (frame, ms) -> {
-          for (CANSparkMax spark : sparks) {
+          for (CANSparkBase spark : sparks) {
             cOk(spark.setPeriodicFramePeriod(frame, ms));
           }
         });
@@ -218,6 +264,10 @@ public final class RedHawkUtil {
         lerp(startValue.omegaRadiansPerSecond, endValue.omegaRadiansPerSecond, t));
   }
 
+  public static double getDistPerPulse(double diametre) {
+    return (1.0 / Constants.DriveConstants.GEAR_RATIO) * Units.inchesToMeters(diametre) * Math.PI;
+  }
+
   public static SwerveModulePosition moduleDelta(
       SwerveModulePosition before, SwerveModulePosition after) {
     return new SwerveModulePosition(after.distanceMeters - before.distanceMeters, after.angle);
@@ -237,8 +287,45 @@ public final class RedHawkUtil {
   }
 
   public static String getLogDirectory() {
-    Date now = Date.from(Instant.now());
-    String dateFormat = new SimpleDateFormat("MM/dd").format(now);
-    return String.format("/U/%s/", dateFormat);
+    // Date now = Date.from(Instant.now());
+    // String dateFormat = new SimpleDateFormat("MM/dd").format(now);
+    // return String.format("/U/%s/", dateFormat);
+    return "/U/logs";
+  }
+
+  public static Command logShot() {
+    return new InstantCommand(
+        () -> {
+          var pos = RedHawkUtil.Reflections.reflectIfBlue(Robot.swerveDrive.getUsablePose());
+          var deg = pos.getRotation().getDegrees();
+          deg = Math.signum(deg) == -1 ? deg + 360 : deg;
+          Logger.recordOutput(
+              "Shot log",
+              String.format(
+                  "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                  DriverStation.getEventName()
+                      + "-"
+                      + DriverStation.getMatchNumber()
+                      + "-"
+                      + DriverStation.getReplayNumber(),
+                  DriverStation.isAutonomous()
+                      ? DriverStation.getMatchTime() + 135.
+                      : DriverStation.getMatchTime(),
+                  deg,
+                  ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
+                  Robot.shooterPivot.getLeftPosition(),
+                  Robot.elevator.getCurrentHeight(),
+                  Units.metersToInches(pos.getTranslation().getX()),
+                  Units.metersToInches(pos.getTranslation().getY()),
+                  // TODO: SHOULD CHASSIS SPEEDS BE FLIPPED?
+                  Units.metersToInches(Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond),
+                  Units.metersToInches(Robot.swerveDrive.getChassisSpeeds().vyMetersPerSecond),
+                  0.5));
+        });
+  }
+
+  public static void logShotFirst() {
+    Logger.recordOutput(
+        "Shot log", "event,time,theta,shooter_speed,pivot_angle,elevator_height,x,y,vx,vy,went_in");
   }
 }

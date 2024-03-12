@@ -2,36 +2,53 @@ package frc.robot.subsystems.shooterPivot;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAnalogSensor;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterPivotConstants;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
-  CANSparkMax spark;
-  SparkAnalogSensor analogSensor;
-
-  private double targetAngle;
+  CANSparkFlex left, right;
+  SparkAbsoluteEncoder throughBore;
 
   public ShooterPivotIOSparks() {
-    spark = new CANSparkMax(Constants.RobotMap.PIVOT_ID, MotorType.kBrushless);
-    analogSensor = spark.getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+    left = new CANSparkFlex(Constants.RobotMap.PIVOT_LEFT_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkFlex(Constants.RobotMap.PIVOT_RIGHT_CAN_ID, MotorType.kBrushless);
 
-    spark.restoreFactoryDefaults();
-    spark.getPIDController().setFeedbackDevice(analogSensor);
+    left.restoreFactoryDefaults();
+    right.restoreFactoryDefaults();
 
-    spark.setSmartCurrentLimit(20);
+    throughBore = left.getAbsoluteEncoder();
+
+    right.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
+    left.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
+
+    if (Math.abs(left.getEncoder().getPosition()) < 0.1) {
+      left.getEncoder().setPosition(54.255);
+    }
+
+    if (Math.abs(right.getEncoder().getPosition()) < 0.1) {
+      right.getEncoder().setPosition(54.255);
+    }
+
+    left.setSmartCurrentLimit(30);
+    right.setSmartCurrentLimit(30);
+
+    left.setSecondaryCurrentLimit(30);
+    right.setSecondaryCurrentLimit(30);
 
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
           {
-            put(PeriodicFrame.kStatus0, 60);
+            put(PeriodicFrame.kStatus0, 5);
             put(PeriodicFrame.kStatus1, 40);
             put(PeriodicFrame.kStatus2, 40);
             put(PeriodicFrame.kStatus3, 65535);
@@ -40,51 +57,69 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
             put(PeriodicFrame.kStatus6, 20);
           }
         },
-        spark);
+        left,
+        right);
 
-    spark.setIdleMode(IdleMode.kBrake);
-    spark.setInverted(false);
+    left.setIdleMode(IdleMode.kBrake);
+    right.setIdleMode(IdleMode.kBrake);
 
-    SparkPIDController pid = spark.getPIDController();
-    pid.setP(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKP());
-    pid.setI(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKI());
-    pid.setD(Constants.ShooterPivotConstants.SHOOTER_PIVOT_GAINS.getKD());
+    for (int i = 0; i < 10; i++) {
+      left.setInverted(true);
+      right.setInverted(false);
+    }
+
+    while (!left.getInverted()) {
+      left.setInverted(true);
+      Timer.delay(0.001);
+    }
+
+    while (right.getInverted()) {
+      right.setInverted(false);
+      Timer.delay(0.001);
+    }
+
+    // right.follow(left, true);
+
+    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(left.getPIDController(), 0);
+    ShooterPivotConstants.SHOOTER_PIVOT_UP_GAINS.applyTo(right.getPIDController(), 0);
+
+    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(left.getPIDController(), 1);
+    ShooterPivotConstants.SHOOTER_PIVOT_DOWN_GAINS.applyTo(right.getPIDController(), 1);
   }
 
   @Override
-  public void updateInputs(ShooterPivotInputs inputs, double ffVolts) {
+  public void updateInputs(ShooterPivotInputs inputs) {
+    inputs.angleDegreesLeft = left.getEncoder().getPosition();
 
-    inputs.absoluteEncoderAdjustedAngle =
-        Units.rotationsToDegrees(spark.getEncoder().getPosition());
-
-    inputs.angleDegreesOne = inputs.absoluteEncoderAdjustedAngle;
-
-    inputs.velocityDegreesPerSecondOne =
+    inputs.velocityDegreesPerSecondLeft =
         Units.radiansToDegrees(
-            Units.rotationsPerMinuteToRadiansPerSecond(spark.getEncoder().getVelocity()));
+            Units.rotationsPerMinuteToRadiansPerSecond(left.getEncoder().getVelocity()));
+    inputs.tempCelciusLeft = left.getMotorTemperature();
+    inputs.currentDrawAmpsLeft = left.getOutputCurrent();
+    inputs.outputVoltageLeft = left.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.tempCelciusOne = spark.getMotorTemperature();
+    inputs.angleDegreesRight = right.getEncoder().getPosition();
 
-    inputs.currentDrawOne = spark.getOutputCurrent();
+    inputs.velocityDegreesPerSecondRight =
+        Units.radiansToDegrees(
+            Units.rotationsPerMinuteToRadiansPerSecond(right.getEncoder().getVelocity()));
+    inputs.tempCelciusRight = right.getMotorTemperature();
+    inputs.currentDrawAmpsRight = right.getOutputCurrent();
+    inputs.outputVoltageRight = right.getAppliedOutput() * RobotController.getBatteryVoltage();
 
-    inputs.outputVoltage = spark.getBusVoltage();
-    spark.getPIDController().setReference(targetAngle, ControlType.kPosition, 0, ffVolts);
+    inputs.absoluteEncoderAdjustedAngle = throughBore.getPosition();
   }
 
   @Override
-  public void reseedPosition(double angleDeg) {
-    double trueAngle = angleDeg - Constants.ShooterPivotConstants.OFFSET;
-    spark.getEncoder().setPosition(trueAngle);
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    spark.setVoltage(volts);
-  }
-
-  @Override
-  public void setTargetPosition(double angleDeg) {
-    this.targetAngle = angleDeg;
-    this.spark.getPIDController().setReference(angleDeg, ControlType.kPosition);
+  public void setTargetAngle(double degrees) {
+    if (degrees > left.getEncoder().getPosition()) {
+      // if target is greater than current setpoint
+      // use the down gains (slot 1)
+      right.getPIDController().setReference(degrees, ControlType.kPosition, 1);
+      left.getPIDController().setReference(degrees, ControlType.kPosition, 1);
+    } else {
+      right.getPIDController().setReference(degrees, ControlType.kPosition, 0);
+      left.getPIDController().setReference(degrees, ControlType.kPosition, 0);
+    }
   }
 }

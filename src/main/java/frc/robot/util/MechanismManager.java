@@ -53,35 +53,3 @@ public class MechanismManager {
     shooter.setAngle(Robot.shooterPivot.getCurrentAngle());
   }
 }
-
-/*class Vector {
-    @ Getter private double x;
-    @ Getter private double y;
-
-    Vector(double x,double y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void add(Vector vec)
-    {
-        this.x+=vec.x;
-        this.y+=vec.x;
-    }
-
-    public void sub(Vector vec)
-    {
-        this.x-=vec.x;
-        this.y-=vec.x;
-    }
-
-    public static Vector staticAdd(Vector vec1, Vector vec2)
-    {
-        return new Vector(vec1.getX()+vec2.getX(), vec1.getY()+vec2.getY());
-    }
-    public static Vector staticSub(Vector vec1,Vector vec2)
-    {
-        return new Vector(vec1.getX()-vec2.getX(),vec1.getY()-vec2.getY());
-    }
-}*/

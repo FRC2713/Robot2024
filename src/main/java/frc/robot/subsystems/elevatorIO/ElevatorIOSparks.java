@@ -1,8 +1,9 @@
 package frc.robot.subsystems.elevatorIO;
 
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
@@ -10,17 +11,23 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSparks implements ElevatorIO {
-  private CANSparkFlex left, right;
+  private CANSparkMax left, right;
 
   public ElevatorIOSparks() {
-    left = new CANSparkFlex(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
-    right = new CANSparkFlex(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    left = new CANSparkMax(Constants.RobotMap.LEFT_ELEVATOR_CAN_ID, MotorType.kBrushless);
+    right = new CANSparkMax(Constants.RobotMap.RIGHT_ELEVATOR_CAN_ID, MotorType.kBrushless);
 
     left.restoreFactoryDefaults();
     right.restoreFactoryDefaults();
 
+    left.setIdleMode(IdleMode.kBrake);
+    right.setIdleMode(IdleMode.kBrake);
+
     left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
     right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+
+    left.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
+    right.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
 
     left.getPIDController().setP(ElevatorConstants.ELEVATOR_GAINS.getKP());
     left.getPIDController().setD(ElevatorConstants.ELEVATOR_GAINS.getKD());
@@ -30,7 +37,7 @@ public class ElevatorIOSparks implements ElevatorIO {
 
     for (int i = 0; i < 30; i++) {
       left.setInverted(true);
-      right.setInverted(false);
+      right.setInverted(true);
     }
   }
 
@@ -53,8 +60,10 @@ public class ElevatorIOSparks implements ElevatorIO {
 
   @Override
   public void reset() {
-    left.getEncoder().setPosition(0);
-    right.getEncoder().setPosition(0);
+    // left.getEncoder().setPosition(0);
+    // right.getEncoder().setPosition(0);
+
+    // left.getEncoder().setPositionConversionFactor(0);
   }
 
   @Override

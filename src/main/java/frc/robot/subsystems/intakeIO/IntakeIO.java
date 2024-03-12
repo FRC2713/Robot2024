@@ -18,14 +18,9 @@ public interface IntakeIO {
     public double rightTempCelcius = 0.0;
     public double rightCurrentAmps = 0.0;
     public double rightPositionRad = 0.0;
-
-    public double sensorRange = 0.0;
-    public String sensorStatus = "";
   }
 
   public void updateInputs(IntakeInputsAutoLogged inputs);
 
-  public void setCurrentLimit(int currentLimit);
-
-  public void setVoltage(double leftVolts, double rightVolts);
+  public void setVoltage(double bottomVolts, double topVolts);
 }

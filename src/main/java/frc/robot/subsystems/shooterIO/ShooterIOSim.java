@@ -1,13 +1,15 @@
 package frc.robot.subsystems.shooterIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.rhr.RHRPIDFFController;
+import frc.robot.util.PIDFFGains;
 
 public class ShooterIOSim implements ShooterIO {
-  RHRPIDFFController shooterController;
+  RHRPIDFFController leftController, rightController;
 
   private static final FlywheelSim leftFlyWheel =
       new FlywheelSim(
@@ -21,18 +23,31 @@ public class ShooterIOSim implements ShooterIO {
           Constants.ShooterConstants.GEARING,
           Constants.ShooterConstants.MOI);
 
-  private double leftVolts;
+  private static final FlywheelSim feeder = new FlywheelSim(DCMotor.getKrakenX60(1), 1.0, 0.0001);
 
-  private double rightVolts;
+  private double leftVolts, rightVolts, feederVolts;
+  Timer fakeGamepieceTimer = new Timer();
 
   public ShooterIOSim() {
-    shooterController = ShooterConstants.SHOOTER_GAINS.createRHRController();
+    var simGains = PIDFFGains.builder().kV(0.0017).build();
+    leftController = new RHRPIDFFController(simGains);
+    rightController = new RHRPIDFFController(simGains);
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs) {
+  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
+    feeder.update(0.02);
+
+    leftVolts =
+        MathUtil.clamp(leftController.calculate(leftFlyWheel.getAngularVelocityRPM()), -12, 12);
+    rightVolts =
+        MathUtil.clamp(rightController.calculate(rightFlyWheel.getAngularVelocityRPM()), -12, 12);
+
+    leftFlyWheel.setInputVoltage(leftVolts);
+    rightFlyWheel.setInputVoltage(rightVolts);
+    feeder.setInputVoltage(feederVolts);
 
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
@@ -48,25 +63,50 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.leftPosDeg = 0.0;
     inputs.rightPosDeg = 0.0;
+
+    inputs.feederOutputVolts = feederVolts;
+    inputs.feederVelocityRPM = feeder.getAngularVelocityRPM();
+    inputs.feederStatorCurrentAmps = feeder.getCurrentDrawAmps();
+    inputs.feederSupplyCurrentAmps = feeder.getCurrentDrawAmps();
+
+    if (state == Shooter.State.INTAKING) {
+      fakeGamepieceTimer.start();
+
+      // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
+      //   inputs.sensorVoltage = 4.5;
+      // } else {
+      //   inputs.sensorVoltage = 0.0;
+      // }
+    }
+
+    if (state == Shooter.State.HOLDING_GP) {
+      fakeGamepieceTimer.stop();
+      fakeGamepieceTimer.reset();
+      // inputs.sensorVoltage = 4.5;
+    }
+
+    if (state == Shooter.State.FENDER_SHOT) {
+      fakeGamepieceTimer.start();
+
+      if (fakeGamepieceTimer.get() <= 0.5) {
+        // inputs.sensorVoltage = 4.5;
+      } else {
+        // inputs.sensorVoltage = 0;
+      }
+    }
   }
 
   @Override
-  public void setLeftVoltage(double voltage) {
-    leftFlyWheel.setInputVoltage(voltage);
-    this.leftVolts = voltage;
+  public void setMotorSetPoint(double leftRPM, double rightRPM) {
+    leftController.setSetpoint(leftRPM);
+    rightController.setSetpoint(rightRPM);
   }
 
   @Override
-  public void setRightVoltage(double voltage) {
-    rightFlyWheel.setInputVoltage(voltage);
-    this.rightVolts = voltage;
+  public void setFeederVolts(double volts) {
+    this.feederVolts = volts;
   }
 
   @Override
-  public void setMotorSetPoint(double setpointRPM) {
-    shooterController.setSetpoint(setpointRPM);
-    var voltage = shooterController.calculate(setpointRPM);
-    setLeftVoltage(voltage);
-    setRightVoltage(voltage);
-  }
+  public void setShooterVolts(double lVolts, double rVolts) {}
 }

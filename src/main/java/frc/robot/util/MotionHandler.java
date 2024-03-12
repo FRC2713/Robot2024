@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
@@ -49,7 +50,7 @@ public class MotionHandler {
     double ySpeed =
         MathUtil.applyDeadband(-Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
             * speedFactor;
-    double rSpeed = (Robot.driver.getRightX()) * speedFactor;
+    double rSpeed = (-Robot.driver.getRightX()) * speedFactor;
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         xSpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,
         ySpeed * DriveConstants.MAX_SWERVE_VEL * SwerveSubsystem.allianceFlipper,
@@ -81,5 +82,20 @@ public class MotionHandler {
         };
 
     return swerveModuleStates;
+  }
+
+  public static ChassisSpeeds driveAlignToTag() {
+    if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
+
+      var error = VehicleState.getInstance().getCenterTagError();
+      if (error.isPresent()) {
+        SwerveHeadingController.getInstance()
+            .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+
+        VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+      }
+    }
+
+    return driveHeadingController();
   }
 }

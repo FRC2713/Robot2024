@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
@@ -27,7 +31,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class Constants {
 
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
   public static final boolean ENABLE_VISION_POSE_ESTIMATION = true;
   public static final int CAN_TIMEOUT_MS = 200;
 
@@ -39,19 +43,35 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double VISION_STD_DEVI_POSITION_IN_METERS = 0.9;
-    public static double VISION_STD_DEVI_ROTATION_IN_RADIANS = Units.degreesToRadians(5);
-    public static double MAX_POSE_JUMP_IN_INCHES = 6 * 12;
+    public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
+
+    public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
+      public PoseEstimatorErrorStDevs multiplyByRange(double range) {
+        return new PoseEstimatorErrorStDevs(this.translationalStDev * range, rotationalStDev);
+      }
+
+      public Matrix<N3, N1> toMatrix() {
+        return VecBuilder.fill(
+            this.translationalStDev, this.translationalStDev, this.rotationalStDev);
+      }
+    }
+
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
+        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
+        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(15));
+    public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
+        new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
 
     public static VisionInfo FRONT_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight")
+            .ntTableName("limelight-a")
             .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
     public static VisionInfo REAR_LIMELIGHT_INFO =
         VisionInfo.builder()
-            .ntTableName("limelight-rear")
+            .ntTableName("limelight-b")
             .location(new Transform3d())
             .mountingDirection(MountingDirection.VERTICAL_LL3)
             .build();
@@ -59,9 +79,9 @@ public final class Constants {
 
   @UtilityClass
   public static final class RobotMap {
-    public static final int PIGEON_CAN_ID = 60;
-    public static final int LEFT_ELEVATOR_CAN_ID = 3;
-    public static final int RIGHT_ELEVATOR_CAN_ID = 4;
+    public static final int PIGEON_CAN_ID = 20;
+    public static final int LEFT_ELEVATOR_CAN_ID = 10;
+    public static final int RIGHT_ELEVATOR_CAN_ID = 11;
 
     public static final int DRIVER_PORT = 0;
     public static final int OPERATOR_PORT = 1;
@@ -69,12 +89,12 @@ public final class Constants {
     public static final int SHOOTER_LEFT_FLYWHEEL_ID = 30;
     public static final int SHOOTER_RIGHT_FLYWHEEL_ID = 31;
 
-    public static final int INTAKE_TOF_SENSOR_ID = 70;
-    public static final int INTAKE_LEFT_MOTOR_CAN_ID = 8;
-    public static final int INTAKE_RIGHT_MOTOR_CAN_ID = 9;
+    public static final int INTAKE_BOTTOM_MOTOR_CAN_ID = 9;
+    public static final int INTAKE_TOP_MOTOR_CAN_ID = 8;
 
     public static final int FEEDER_CAN_ID = 6;
-    public static final int PIVOT_ID = 5;
+    public static final int PIVOT_LEFT_CAN_ID = 12;
+    public static final int PIVOT_RIGHT_CAN_ID = 13;
 
     public static final int FRONT_LEFT_AZIMUTH_CAN_ID = 1;
     public static final int FRONT_LEFT_DRIVE_CAN_ID = 41;
@@ -106,7 +126,8 @@ public final class Constants {
     public static final double MAX_RPM = 5000;
     // TODO: FIX
     public static final double MOI = 0.000001;
-    public static final double SENSOR_THRESHOLD = 10;
+
+    public static final double SENSOR_THRESHOLD = 1.6;
   }
 
   public static final class ShooterPivotConstants {
@@ -119,8 +140,10 @@ public final class Constants {
     public static final double STARTING_ANGLE_RADS = Units.degreesToRadians(30);
     public static final int SHOOTER_PIVOT_MAX_CURRENT = 30;
     public static final double MAX_DEGREES_PER_SECOND = 5;
-    public static final PIDFFGains SHOOTER_PIVOT_GAINS =
-        PIDFFGains.builder().name("ShooterPivot Controller").kP(0.0).kD(0).kG(0.0).build();
+    public static final PIDFFGains SHOOTER_PIVOT_UP_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Up Controller").kP(0.1).build();
+    public static final PIDFFGains SHOOTER_PIVOT_DOWN_GAINS =
+        PIDFFGains.builder().name("ShooterPivot Down Controller").kP(0.1).build();
     public static final double OFFSET = 118.7;
     public static final double FEEDING_ANGLE = 30;
     public static final double SHORT_AUTO_SHOTS = 45;
@@ -128,12 +151,12 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final PIDFFGains ELEVATOR_GAINS =
-        PIDFFGains.builder().name("Elevator Controller").kP(0.0).kD(0.0).kG(0.0).build();
+        PIDFFGains.builder().name("Elevator Controller").kP(1.5).kD(0.0).kG(0.275).build();
     public static final double GEARING = 5.0;
     public static final double CARRIAGE_MASS_KG = 0.3;
     public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
     public static final double MIN_HEIGHT_METERS = 0;
-    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(50);
+    public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(17);
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
@@ -172,9 +195,9 @@ public final class Constants {
     public static final double GEARING = 1;
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
-    public static final double MOI = 0.001;
+    public static final double MOI = 0.0001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0003).kD(0.0).kV(0.0001875).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kV(0.0001565).build();
   }
 
   @UtilityClass
@@ -186,11 +209,11 @@ public final class Constants {
     public static final double DIST_PER_PULSE =
         (1.0 / GEAR_RATIO) * Units.inchesToMeters(WHEEL_DIAMETER) * Math.PI;
     // 1;
-    public static final double MAX_SWERVE_VEL = Units.feetToMeters(15.0);
+    public static final double MAX_SWERVE_VEL = Units.feetToMeters(16.5);
     public static final double MAX_SWERVE_VEL_AUTO = Units.feetToMeters(12.0);
     public static final double MAX_SWERVE_AZI = Math.PI;
     public static final double MAX_SWERVE_ACCEL = Units.feetToMeters(5);
-    public static final double MAX_ROTATIONAL_SPEED_RAD_PER_SEC = Units.degreesToRadians(275);
+    public static final double MAX_ROTATIONAL_SPEED_RAD_PER_SEC = Units.degreesToRadians(360);
 
     public static final int DRIVE_CURRENT_LIMIT = 50;
     public static final int AZI_CURRENT_LIMIT = 20;
@@ -223,13 +246,7 @@ public final class Constants {
 
     public static final double HEADING_CONTROLLER_DRIVER_CHANGE_RATE = 4;
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
-        PIDFFGains.builder()
-            .name("Heading Controller")
-            .kP(12)
-            .kD(.35)
-            .kS(3)
-            .build()
-            .buildTunables();
+        PIDFFGains.builder().name("Heading Controller").kP(8).kD(0).kS(2).build().buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()
@@ -241,6 +258,7 @@ public final class Constants {
             .aziEncoderCANId(0)
             .offset(0.4711362627767633)
             .location(FRONT_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo FRONT_RIGHT =
@@ -253,6 +271,7 @@ public final class Constants {
             .aziEncoderCANId(1)
             .offset(0.280788243336548)
             .location(FRONT_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_LEFT =
@@ -265,6 +284,7 @@ public final class Constants {
             .aziEncoderCANId(2)
             .offset(0.7232726445483575)
             .location(BACK_LEFT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     public static final ModuleInfo BACK_RIGHT =
@@ -277,6 +297,7 @@ public final class Constants {
             .aziEncoderCANId(3)
             .offset(0.8124671353331704)
             .location(BACK_RIGHT_LOCATION)
+            .wheelDiameter(WHEEL_DIAMETER)
             .build();
 
     @UtilityClass
@@ -289,22 +310,12 @@ public final class Constants {
       public static final PIDFFGains K_DEFAULT_AZIMUTH_GAINS =
           PIDFFGains.builder()
               .name("Swerve/Defaults/Azimuth")
-              // 0.012
-              .kP(0.01)
+              // 0.03
+              .kP(0.03)
               .build();
-      // .buildTunables();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
-          PIDFFGains.builder()
-              .name("Swerve/Defaults/Driving")
-              // 0.25
-              .kP(0.01)
-              // 0.225
-              .kS(0)
-              // 0.114
-              .kV(0.11)
-              .build();
-      // .buildTunables();
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.).kS(0.09).kV(0.11).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(3).build();
@@ -315,5 +326,13 @@ public final class Constants {
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_ROTATION =
           PIDFFGains.builder().name("Trajectory/R").kP(0).build();
     }
+  }
+
+  public static final class DynamicShooterConstants {
+    public static final double limelightMountingHeightMeters = 0.642158;
+    public static final double limelightMouningAngleDegrees = 5;
+    public static final double tagMountingHeight = Units.inchesToMeters(57.5);
+    public static final double heading_kP = 1;
+    public static final double headingErrorDegree = 1;
   }
 }
