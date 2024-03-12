@@ -21,12 +21,21 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
+<<<<<<< HEAD
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.GPTest;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTFAmp;
+=======
+import frc.robot.commands.fullRoutines.BottomTwoBlue;
+import frc.robot.commands.fullRoutines.BottomTwoRed;
+import frc.robot.commands.fullRoutines.FourPiece;
+import frc.robot.commands.fullRoutines.NonAmpSideBlue;
+import frc.robot.commands.fullRoutines.NonAmpSideRed;
+import frc.robot.commands.otf.OTF;
+>>>>>>> b045f02 (FourPiece)
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -681,9 +690,11 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addDefaultOption("TestGP", new GPTest());
-    autoChooser.addOption("BottomTwo", new BottomTwo());
-    autoChooser.addOption("NonAmpSide", new NonAmpSide());
+    autoChooser.addDefaultOption("NonAmpSide - BLUE", new NonAmpSideBlue());
+    autoChooser.addOption("BottomTwo - BLUE", new BottomTwoBlue());
+    autoChooser.addOption("NonAmpSide - RED", new NonAmpSideRed());
+    autoChooser.addOption("BottomTwo - RED", new BottomTwoRed());
+    autoChooser.addOption("FourPiece - RED", new FourPiece());
   }
 
   public void updatePreMatchDashboardValues() {
