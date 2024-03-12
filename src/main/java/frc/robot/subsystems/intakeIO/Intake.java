@@ -40,7 +40,8 @@ public class Intake extends SubsystemBase {
     FULL_IN(fullInBottomVolts, fullInTopVolts),
     FULL_OUT(fullOutBottomVolts, fullOutTopVolts),
     NOTE_IN_CHASSIS(() -> -12, () -> 12),
-    OFF(() -> 0, () -> 0);
+    OFF(() -> 0, () -> 0),
+    CLEANING(() -> 1, () -> 1);
     private final DoubleSupplier bottomVolts, topVolts;
   }
 

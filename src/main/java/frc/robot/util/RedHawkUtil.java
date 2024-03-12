@@ -23,10 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import lombok.NonNull;
@@ -89,6 +86,19 @@ public final class RedHawkUtil {
       return traj;
     } else {
       return traj.flipped();
+    }
+  }
+
+  public static void maybeFlipLog(ChoreoTrajectory traj) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isEmpty()) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    }
+
+    if (alliance.get() == Alliance.Blue) {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+    } else {
+      Logger.recordOutput("SHOULD_BE_FLIPPING", true);
     }
   }
 
@@ -185,6 +195,10 @@ public final class RedHawkUtil {
       return new Translation3d(FieldConstants.fieldLength - old.getX(), old.getY(), old.getZ());
     }
 
+    public static Rotation2d reflect(Rotation2d old) {
+      return Rotation2d.fromDegrees(180).minus(old);
+    }
+
     public static double reflectIfRed(double x) {
       return reflectIfRed(new Translation2d(x, 0)).getX();
     }
@@ -273,9 +287,10 @@ public final class RedHawkUtil {
   }
 
   public static String getLogDirectory() {
-    Date now = Date.from(Instant.now());
-    String dateFormat = new SimpleDateFormat("MM/dd").format(now);
-    return String.format("/U/%s/", dateFormat);
+    // Date now = Date.from(Instant.now());
+    // String dateFormat = new SimpleDateFormat("MM/dd").format(now);
+    // return String.format("/U/%s/", dateFormat);
+    return "/U/logs";
   }
 
   public static Command logShot() {
@@ -298,7 +313,7 @@ public final class RedHawkUtil {
                       : DriverStation.getMatchTime(),
                   deg,
                   ((Robot.shooter.inputs.leftSpeedRPM + Robot.shooter.inputs.rightSpeedRPM) / 2),
-                  Robot.shooterPivot.getCurrentAngle(),
+                  Robot.shooterPivot.getLeftPosition(),
                   Robot.elevator.getCurrentHeight(),
                   Units.metersToInches(pos.getTranslation().getX()),
                   Units.metersToInches(pos.getTranslation().getY()),

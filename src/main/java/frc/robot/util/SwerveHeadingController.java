@@ -3,8 +3,6 @@ package frc.robot.util;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
@@ -47,10 +45,12 @@ public class SwerveHeadingController {
    * @param setpoint The new setpoint of the heading controller.
    */
   public void setSetpoint(Rotation2d setpoint) {
-    this.setpoint =
-        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
-            ? setpoint
-            : Rotation2d.fromDegrees((setpoint.getDegrees() + 180) % 360);
+    // this.setpoint =
+    //     DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+    //         ? setpoint
+    //         : Rotation2d.fromDegrees((setpoint.getDegrees() + 180) % 360);
+
+    this.setpoint = setpoint;
   }
 
   public void addToSetpoint(Rotation2d setpoint) {

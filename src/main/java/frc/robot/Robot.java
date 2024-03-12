@@ -20,7 +20,10 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
-import frc.robot.commands.fullRoutines.NonAmpSide;
+import frc.robot.commands.fullRoutines.BottomTwoBlue;
+import frc.robot.commands.fullRoutines.BottomTwoRed;
+import frc.robot.commands.fullRoutines.NonAmpSideBlue;
+import frc.robot.commands.fullRoutines.NonAmpSideRed;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -88,7 +91,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", GVersion.GIT_BRANCH);
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter(RedHawkUtil.getLogDirectory()));
+      Logger.addDataReceiver(new WPILOGWriter());
     }
 
     Logger.start();
@@ -148,12 +151,15 @@ public class Robot extends LoggedRobot {
                     .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
                     .andThen(
                         Commands.sequence(
+                            Commands.either(
+                                RumbleManager.driverBigOneSec(),
+                                new InstantCommand(() -> {}),
+                                shooter::hasGamePiece),
                             Intake.Commands.setMotionMode(Intake.State.OFF),
                             Commands.either(
                                 Shooter.Commands.setState(Shooter.State.OFF),
                                 new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING),
-                            RumbleManager.driverBigOneSec()))))
+                                () -> shooter.getState() == Shooter.State.INTAKING)))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
@@ -182,6 +188,25 @@ public class Robot extends LoggedRobot {
     // driver.povRight().onTrue(ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT));
 
     driver
+        .leftTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
+
+    driver
         .rightBumper()
         .onTrue(
             Commands.sequence(
@@ -204,17 +229,20 @@ public class Robot extends LoggedRobot {
         .rightTrigger(0.3)
         .onTrue(
             Commands.sequence(
+                new InstantCommand(
+                    () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.DYNAMIC_AIM),
                 Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
                 new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.ALIGN_TO_TAG)),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
-                            && SwerveHeadingController.getInstance().atSetpoint(0.5)),
+                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
+                new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)),
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
                     Shooter.Commands.setState(Shooter.State.HOLDING_GP),
@@ -266,7 +294,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(0))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 0
+                            : 180))));
 
     driver
         .povLeft()
@@ -276,7 +308,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 90
+                            : 270))));
 
     driver
         .povRight()
@@ -286,7 +322,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(270))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 270
+                            : 90))));
 
     driver
         .povDown()
@@ -296,7 +336,11 @@ public class Robot extends LoggedRobot {
                     () ->
                         Robot.swerveDrive.setMotionMode(
                             SwerveSubsystem.MotionMode.HEADING_CONTROLLER)),
-                SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(180))));
+                SwerveSubsystem.Commands.setHeading(
+                    Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                            ? 180
+                            : 0))));
   }
 
   public void createOperatorBindings() {
@@ -347,6 +391,25 @@ public class Robot extends LoggedRobot {
     operator
         .povDown()
         .onTrue(Commands.sequence(Elevator.Commands.setState(Elevator.State.MIN_HEIGHT)));
+
+    operator
+        .povLeft()
+        .onTrue(
+            Commands.sequence(
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
+                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
+        .onFalse(
+            Commands.sequence(
+                Intake.Commands.setMotionMode(Intake.State.OFF),
+                Commands.either(
+                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
+                    Shooter.Commands.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
 
     operator
         .rightBumper()
@@ -454,6 +517,14 @@ public class Robot extends LoggedRobot {
         .start()
         .onTrue(Intake.Commands.setMotionMode(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Intake.Commands.setMotionMode(Intake.State.OFF));
+
+    // operator
+    //     .back()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Intake.Commands.setMotionMode(Intake.State.CLEANING),
+    //             ShooterPivot.Commands.setMotionMode(ShooterPivot.State.CLEANING),
+    //             Shooter.Commands.setState(Shooter.State.CLEANING)));
   }
 
   public void createAutomaticTriggers() {
@@ -565,7 +636,10 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
+    autoChooser.addDefaultOption("NonAmpSide - BLUE", new NonAmpSideBlue());
+    autoChooser.addOption("BottomTwo - BLUE", new BottomTwoBlue());
+    autoChooser.addOption("NonAmpSide - RED", new NonAmpSideRed());
+    autoChooser.addOption("BottomTwo - RED", new BottomTwoRed());
   }
 
   public void updatePreMatchDashboardValues() {
@@ -592,24 +666,26 @@ public class Robot extends LoggedRobot {
 
   public void seedGyroBasedOnAlliance() {
     Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
+    var startingAngle = Rotation2d.fromRadians(-1.0303769170676331);
 
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(Rotation2d.fromRadians(-1.0303769170676331));
+      swerveDrive.resetGyro(startingAngle);
       SwerveSubsystem.allianceFlipper = 1;
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(Rotation2d.fromRadians(1.0303769170676331));
+      swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
     }
   }
 
   @Override
   public void driverStationConnected() {
+
     seedGyroBasedOnAlliance();
     buildAutoChooser();
     RedHawkUtil.logShotFirst();
