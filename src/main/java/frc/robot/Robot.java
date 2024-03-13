@@ -20,10 +20,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
-import frc.robot.commands.fullRoutines.BottomTwoBlue;
-import frc.robot.commands.fullRoutines.BottomTwoRed;
-import frc.robot.commands.fullRoutines.NonAmpSideBlue;
-import frc.robot.commands.fullRoutines.NonAmpSideRed;
+import frc.robot.commands.RHRFullRoutine;
+import frc.robot.commands.fullRoutines.BottomTwo;
+import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -48,6 +47,7 @@ import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOSim;
+import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
@@ -78,8 +78,12 @@ public class Robot extends LoggedRobot {
       new CommandXboxController(Constants.RobotMap.OPERATOR_PORT);
 
   private Command autoCommand;
-  private final LoggedDashboardChooser<Command> autoChooser =
+  private final LoggedDashboardChooser<RHRFullRoutine> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
+
+  private ChangeDetector<Optional<Alliance>> allianceChangeDetector;
+  private ChangeDetector<RHRFullRoutine> autoChangeDetector;
+  private Rotation2d gyroInitial = Rotation2d.fromRadians(0);
 
   @Override
   public void robotInit() {
@@ -134,6 +138,20 @@ public class Robot extends LoggedRobot {
     createDriverBindings();
     createOperatorBindings();
     createAutomaticTriggers();
+
+    allianceChangeDetector =
+        new ChangeDetector<>(
+            (c) -> {
+              seedGyroBasedOnAlliance();
+              buildAutoChooser();
+            });
+
+    autoChangeDetector =
+        new ChangeDetector<>(
+            (auto) -> {
+              gyroInitial = auto.traj1.getInitialPose().getRotation();
+              seedGyroBasedOnAlliance();
+            });
   }
 
   public void createDriverBindings() {
@@ -587,6 +605,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     swerveDrive.seed();
+    allianceChangeDetector.feed(DriverStation.getAlliance());
+    autoChangeDetector.feed(autoChooser.get());
   }
 
   @Override
@@ -636,10 +656,8 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addDefaultOption("NonAmpSide - BLUE", new NonAmpSideBlue());
-    autoChooser.addOption("BottomTwo - BLUE", new BottomTwoBlue());
-    autoChooser.addOption("NonAmpSide - RED", new NonAmpSideRed());
-    autoChooser.addOption("BottomTwo - RED", new BottomTwoRed());
+    autoChooser.addOption("BottomTwo", new BottomTwo());
+    autoChooser.addOption("NonAmpSide", new NonAmpSide());
   }
 
   public void updatePreMatchDashboardValues() {
@@ -666,7 +684,7 @@ public class Robot extends LoggedRobot {
 
   public void seedGyroBasedOnAlliance() {
     Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
-    var startingAngle = Rotation2d.fromRadians(-1.0303769170676331);
+    var startingAngle = gyroInitial;
 
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
