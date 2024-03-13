@@ -5,13 +5,6 @@ import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.RangingMode;
 import au.grapplerobotics.LaserCan.RegionOfInterest;
 import au.grapplerobotics.LaserCan.TimingBudget;
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -25,21 +18,17 @@ import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
 
-public class ShooterIOVortex implements ShooterIO {
+public class ShooterIOVortexVortex implements ShooterIO {
   private final CANSparkFlex leftMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_LEFT_FLYWHEEL_ID, MotorType.kBrushless);
   private final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
-  private final TalonFX feeder = new TalonFX(Constants.RobotMap.FEEDER_CAN_ID);
-
-  private StatusSignal<Double> feederMotorVoltage = feeder.getMotorVoltage();
-  private StatusSignal<Double> feederSupplyCurrent = feeder.getSupplyCurrent();
-  private StatusSignal<Double> feederStatorCurrent = feeder.getStatorCurrent();
-  private StatusSignal<Double> feederVelocity = feeder.getVelocity();
+  private final CANSparkFlex feederMotor =
+      new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
 
   private LaserCan laserCan = new LaserCan(0);
 
-  public ShooterIOVortex() {
+  public ShooterIOVortexVortex() {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
@@ -59,6 +48,18 @@ public class ShooterIOVortex implements ShooterIO {
     rightMotor.setInverted(true);
     leftMotor.setInverted(false);
 
+    feederMotor.restoreFactoryDefaults();
+
+    feederMotor.setIdleMode(IdleMode.kBrake);
+
+    feederMotor.setSmartCurrentLimit(30);
+    feederMotor.enableVoltageCompensation(12.0);
+
+    feederMotor.getEncoder().setMeasurementPeriod(10);
+    feederMotor.getEncoder().setAverageDepth(2);
+
+    feederMotor.setInverted(true);
+
     RedHawkUtil.configureCANSparkMAXStatusFrames(
         new HashMap<>() {
           {
@@ -72,24 +73,11 @@ public class ShooterIOVortex implements ShooterIO {
           }
         },
         leftMotor,
-        rightMotor);
-
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Voltage.PeakForwardVoltage = 12;
-    config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 30;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.Audio.BeepOnBoot = false;
-    config.Audio.BeepOnConfig = false;
-    RedHawkUtil.applyConfigs(feeder, config);
+        rightMotor,
+        feederMotor);
 
     ShooterConstants.SHOOTER_GAINS.applyTo(leftMotor.getPIDController());
     ShooterConstants.SHOOTER_GAINS.applyTo(rightMotor.getPIDController());
-
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        50, feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
 
     try {
       laserCan.setRangingMode(RangingMode.SHORT);
@@ -102,9 +90,6 @@ public class ShooterIOVortex implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
-    BaseStatusSignal.refreshAll(
-        feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
-
     inputs.leftOutputVoltage = RobotController.getBatteryVoltage() * leftMotor.getAppliedOutput();
     inputs.rightOutputVoltage = RobotController.getBatteryVoltage() * rightMotor.getAppliedOutput();
 
@@ -120,10 +105,10 @@ public class ShooterIOVortex implements ShooterIO {
     inputs.leftSpeedRPM = leftMotor.getEncoder().getVelocity();
     inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();
 
-    inputs.feederOutputVolts = feederMotorVoltage.getValue();
-    inputs.feederStatorCurrentAmps = feederStatorCurrent.getValue();
-    inputs.feederSupplyCurrentAmps = feederSupplyCurrent.getValue();
-    inputs.feederVelocityRPM = feederVelocity.getValue();
+    inputs.feederOutputVolts = RobotController.getBatteryVoltage() * feederMotor.getAppliedOutput();
+    inputs.feederStatorCurrentAmps = -1;
+    inputs.feederSupplyCurrentAmps = feederMotor.getOutputCurrent();
+    inputs.feederVelocityRPM = feederMotor.getEncoder().getVelocity();
 
     var sensorMeasurement = laserCan.getMeasurement();
     if (sensorMeasurement != null) {
@@ -148,7 +133,7 @@ public class ShooterIOVortex implements ShooterIO {
 
   @Override
   public void setFeederVolts(double volts) {
-    feeder.setControl(new VoltageOut(volts));
+    feederMotor.setVoltage(volts);
   }
 
   @Override
