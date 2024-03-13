@@ -150,7 +150,8 @@ public class Shooter extends SubsystemBase {
     OFF(() -> 0, () -> true),
     // OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
     CLEANING(() -> 1, () -> true),
-    FEEDER_SHOT(fenderShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle());
+    FEEDER_SHOT(fenderShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle()),
+    OUTTAKE_BACKWARDS;
     private final DoubleSupplier feederRpm;
     private final BooleanSupplier additionalFeederCondition;
   }
@@ -159,7 +160,11 @@ public class Shooter extends SubsystemBase {
   public enum FlywheelState {
     PRE_SPIN(preSpinRPM, preSpinRPM),
     OFF(() -> 0, () -> 0),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000);
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000),
+    FENDER_SHOT(() -> 4000, () -> 4000),
+    PODIUM_SHOT,
+    AMP_SHOT,
+    OUTTAKE_FORWARD;
     private final DoubleSupplier leftRpm, rightRpm;
   }
 

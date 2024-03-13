@@ -69,32 +69,6 @@ public class ShooterIOSim implements ShooterIO {
     inputs.feederVelocityRPM = feeder.getAngularVelocityRPM();
     inputs.feederStatorCurrentAmps = feeder.getCurrentDrawAmps();
     inputs.feederSupplyCurrentAmps = feeder.getCurrentDrawAmps();
-
-    if (state == Shooter.feederState.INTAKING) {
-      fakeGamepieceTimer.start();
-
-      // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
-      //   inputs.sensorVoltage = 4.5;
-      // } else {
-      //   inputs.sensorVoltage = 0.0;
-      // }
-    }
-
-    if (state == Shooter.feederState.HOLDING_GP) {
-      fakeGamepieceTimer.stop();
-      fakeGamepieceTimer.reset();
-      // inputs.sensorVoltage = 4.5;
-    }
-
-    if (state == Shooter.feederState.FENDER_SHOT) {
-      fakeGamepieceTimer.start();
-
-      if (fakeGamepieceTimer.get() <= 0.5) {
-        // inputs.sensorVoltage = 4.5;
-      } else {
-        // inputs.sensorVoltage = 0;
-      }
-    }
   }
 
   @Override

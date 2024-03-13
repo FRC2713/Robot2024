@@ -218,8 +218,8 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
@@ -229,7 +229,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
-                Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -237,8 +237,8 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
@@ -250,7 +250,7 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.DYNAMIC_AIM),
-                Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.FENDER_SHOT),
                 new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.ALIGN_TO_TAG)),
                 new WaitUntilCommand(
                     () ->
@@ -263,9 +263,9 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(() -> swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)),
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
+                    () -> shooter.getFlywheelState() == Shooter.FlywheelState.FENDER_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
@@ -367,7 +367,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FENDER_SHOT),
-                Shooter.Commands.setState(Shooter.State.FENDER_SHOT),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.FENDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -375,9 +375,9 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
+                    () -> shooter.getFlywheelState() == Shooter.FlywheelState.FENDER_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
@@ -386,7 +386,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.PODIUM_SHOT),
-                Shooter.Commands.setState(Shooter.State.PODIUM_SHOT),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.PODIUM_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -394,9 +394,9 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
+                    () -> shooter.getFlywheelState() == Shooter.FlywheelState.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
@@ -415,7 +415,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
-                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
+                Shooter.Commands.setFeederState(Shooter.FeederState.FEEDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -423,8 +423,8 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
@@ -437,14 +437,14 @@ public class Robot extends LoggedRobot {
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.AMP_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Shooter.Commands.setState(Shooter.State.AMP_SHOT)))
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.AMP_SHOT)))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
                     () -> shooter.hasGamePiece()),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING)));
 
@@ -454,13 +454,13 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
                 Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
-                Shooter.Commands.setState(Shooter.State.OUTTAKE_FORWARD),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OUTTAKE_FORWARD),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
                     () -> shooter.hasGamePiece())));
 
     operator
@@ -471,13 +471,13 @@ public class Robot extends LoggedRobot {
                 Elevator.Commands.setState(Elevator.State.MIN_HEIGHT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Shooter.Commands.setState(Shooter.State.OUTTAKE_BACKWARDS),
+                Shooter.Commands.setFeederState(Shooter.FeederState.OUTTAKE_BACKWARDS),
                 Intake.Commands.setMotionMode(Intake.State.OUTAKE_GP)))
         .onFalse(
             Commands.sequence(
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
     operator
@@ -673,7 +673,8 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
     SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
     SmartDashboard.putString("Dashboard/States/Intake", intake.getState().name());
-    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getState().name());
+    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getFlywheelState().name());
+    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getFeederState().name());
     SmartDashboard.putString("Dashboard/States/Pivot", shooterPivot.getState().name());
     SmartDashboard.putString("Dashboard/States/Swerve", swerveDrive.getMotionMode().name());
     SmartDashboard.putNumber("Dashboard/Elevator Left", elevator.getLeftPosition());

@@ -25,25 +25,25 @@ public class BottomTwo extends RHRFullRoutine {
 
         // Preload
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
-        ShootingCommands.runShooter(Shooter.State.FENDER_SHOT),
+        ShootingCommands.runShooter(Shooter.FlywheelState.FENDER_SHOT),
         RedHawkUtil.logShot(),
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
-            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.FlywheelState.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
         ShootingCommands.runShooterAndPivot(
-            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.FlywheelState.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 
         // Reset everything for teleop
-        Shooter.Commands.setState(Shooter.State.OFF),
+        Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF),
         Intake.Commands.setMotionMode(Intake.State.OFF),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
 

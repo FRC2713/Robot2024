@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.Shooter.FlywheelState;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
@@ -25,7 +26,7 @@ public class ShootingCommands {
 
   public static Command runPathAndShoot(
       ChoreoTrajectory choreoPath,
-      Shooter.State shooterState,
+      FlywheelState shooterState,
       ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -35,7 +36,7 @@ public class ShootingCommands {
   }
 
   public static Command runShooterAndPivot(
-      Shooter.State shooterState, ShooterPivot.State shooterPivotState) {
+      Shooter.FlywheelState shooterState, ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         ShootingCommands.runShooterPivot(shooterPivotState),
         ShootingCommands.runShooter(shooterState));
@@ -44,17 +45,17 @@ public class ShootingCommands {
   public static Command runIntake() {
     return Commands.sequence(
         Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-        Shooter.Commands.setState(Shooter.State.INTAKING),
+        Shooter.Commands.setFeederState(Shooter.FeederState.INTAKING),
         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));
   }
 
-  public static Command runShooter(Shooter.State shooterState) {
+  public static Command runShooter(Shooter.FlywheelState shooterState) {
     return new SequentialCommandGroup(
-        Shooter.Commands.setState(shooterState),
+        Shooter.Commands.setFlywheelState(shooterState),
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
         Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
         new WaitCommand(0.25),
-        Shooter.Commands.setState(Shooter.State.OFF));
+        Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF));
   }
 
   public static Command runShooterPivot(ShooterPivot.State shooterPivotState) {
