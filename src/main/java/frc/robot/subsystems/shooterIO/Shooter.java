@@ -82,7 +82,7 @@ public class Shooter extends SubsystemBase {
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
 
-  @RequiredArgsConstructor
+  /*@RequiredArgsConstructor
   public enum State {
     FENDER_SHOT(
         fenderShotShooterRpm,
@@ -120,9 +120,9 @@ public class Shooter extends SubsystemBase {
         fenderShotShooterRpm,
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
-    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
-    OFF(() -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
+    //PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
+    //OFF(() -> 0, () -> 0, () -> 0, () -> true),
+    //OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 1, () -> true),
     FEEDER_SHOT(
         feederShotRPM,
@@ -131,12 +131,50 @@ public class Shooter extends SubsystemBase {
         () -> Robot.shooterPivot.isAtTargetAngle());
     private final DoubleSupplier leftRpm, rightRpm, feederRpm;
     private final BooleanSupplier additionalFeederCondition;
+  }*/
+
+  @RequiredArgsConstructor
+  public enum FeederState {
+    FENDER_SHOT(fenderShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle()),
+    PODIUM_SHOT(podiumShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle()),
+    ELEVATOR_SHOT(elevatorShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle()),
+    HOLDING_GP(holdingFeederVolts, () -> true),
+    INTAKING(intakingFeederVolts, () -> true),
+    OUTTAKE_FORWARD(outtakingFeederVolts, () -> true),
+    FULL_OUT(fullOutFeederVolts, () -> true),
+    FULL_IN(fullInFeederVolts, () -> true),
+    AMP_SHOT(ampShotFeederVolts, () -> true),
+    FORCE_MANUAL_CONTROL(
+        () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
+        () -> true),
+    OFF(() -> 0, () -> true),
+    // OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
+    CLEANING(() -> 1, () -> true),
+    FEEDER_SHOT(fenderShotFeederVolts, () -> Robot.shooterPivot.isAtTargetAngle());
+    private final DoubleSupplier feederRpm;
+    private final BooleanSupplier additionalFeederCondition;
   }
 
+  @RequiredArgsConstructor
+  public enum FlywheelState {
+    PRE_SPIN(preSpinRPM, preSpinRPM),
+    OFF(() -> 0, () -> 0),
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000);
+    private final DoubleSupplier leftRpm, rightRpm;
+  }
+
+  /*@Setter
+  @Getter*/
+  @AutoLogOutput(key = "Shooter/FeederState")
   @Setter
   @Getter
-  @AutoLogOutput(key = "Shooter/State")
-  public State state = State.OFF;
+  public FeederState feederState = FeederState.OFF;
+  // public State state = State.OFF;
+  // @AutoLogOutput(key = "Shooter/flyWheelState")
+  @AutoLogOutput(key = "Shooter/FlywheelState")
+  @Setter
+  @Getter
+  public FlywheelState flywheelState = FlywheelState.OFF;
 
   private final ShooterIO IO;
   public final ShooterInputsAutoLogged inputs;
@@ -144,23 +182,23 @@ public class Shooter extends SubsystemBase {
   public Shooter(ShooterIO IO) {
     this.IO = IO;
     this.inputs = new ShooterInputsAutoLogged();
-    this.IO.updateInputs(inputs, state);
+    this.IO.updateInputs(inputs, feederState, flywheelState);
   }
 
   @Override
   public void periodic() {
-    IO.updateInputs(inputs, state);
+    IO.updateInputs(inputs, feederState, flywheelState);
 
     boolean shouldSpinFeeder = debouncer.calculate(isAtTarget());
     Logger.recordOutput("Shooter/Should spin feeder", shouldSpinFeeder);
 
-    if (state == State.INTAKING && hasGamePiece()) {
-      state = State.HOLDING_GP;
+    if (feederState == FeederState.INTAKING && hasGamePiece()) {
+      feederState = FeederState.HOLDING_GP;
     }
 
-    if ((shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean())
-        || this.state == Shooter.State.FORCE_MANUAL_CONTROL) {
-      IO.setFeederVolts(state.feederRpm.getAsDouble());
+    if ((shouldSpinFeeder && feederState.additionalFeederCondition.getAsBoolean())
+        || feederState == Shooter.FeederState.FORCE_MANUAL_CONTROL) {
+      IO.setFeederVolts(feederState.feederRpm.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
     }
@@ -175,11 +213,12 @@ public class Shooter extends SubsystemBase {
     //   differential = 0;
     // }
 
-    if (state == State.OFF) {
+    if (feederState == FeederState.OFF) {
       IO.setShooterVolts(0, 0);
     } else {
       IO.setMotorSetPoint(
-          state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
+          flywheelState.leftRpm.getAsDouble() + differential,
+          flywheelState.rightRpm.getAsDouble() - differential);
     }
     Logger.processInputs("Shooter", inputs);
   }
@@ -204,9 +243,9 @@ public class Shooter extends SubsystemBase {
     //   differential = 0;
     // }
 
-    return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
+    return Math.abs(flywheelState.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
             < atGoalThresholdRPM.get()
-        && Math.abs(state.rightRpm.getAsDouble() - differential - inputs.rightSpeedRPM)
+        && Math.abs(flywheelState.rightRpm.getAsDouble() - differential - inputs.rightSpeedRPM)
             < atGoalThresholdRPM.get();
   }
 
@@ -216,8 +255,16 @@ public class Shooter extends SubsystemBase {
   }
 
   public static class Commands {
-    public static Command setState(State mode) {
+    /*public static Command setState(State mode) {
       return new InstantCommand(() -> Robot.shooter.setState(mode));
+    }*/
+
+    public static Command setFlywheelState(FlywheelState mode) {
+      return new InstantCommand(() -> Robot.shooter.setFlywheelState(mode));
+    }
+
+    public static Command setFeederState(FeederState mode) {
+      return new InstantCommand(() -> Robot.shooter.setFeederState(mode));
     }
   }
 }
