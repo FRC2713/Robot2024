@@ -1,10 +1,22 @@
 package frc.robot.subsystems.shooterIO;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -124,6 +136,7 @@ public class Shooter extends SubsystemBase {
     OFF(() -> 0, () -> 0, () -> 0, () -> true),
     OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 1, () -> true),
+    CHARACTERIZATION(() -> 0, () -> 0, () -> 0, () -> true),
     FEEDER_SHOT(
         feederShotRPM,
         feederShotRPM,
@@ -141,18 +154,56 @@ public class Shooter extends SubsystemBase {
   private final ShooterIO IO;
   public final ShooterInputsAutoLogged inputs;
 
+  private final SysIdRoutine sysIdRoutine;
+
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+
   public Shooter(ShooterIO IO) {
     this.IO = IO;
     this.inputs = new ShooterInputsAutoLogged();
     this.IO.updateInputs(inputs, state);
+
+    sysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                (Measure<Voltage> volts) -> {
+                  this.IO.setShooterVolts(volts.in(Volts), volts.in(Volts));
+                },
+                log -> {
+                  log.motor("shooter")
+                      .voltage(m_appliedVoltage.mut_replace(inputs.leftOutputVoltage, Volts))
+                      .angularPosition(m_angle.mut_replace(inputs.leftPosDeg, Degrees))
+                      .angularVelocity(
+                          m_velocity.mut_replace(inputs.leftSpeedRPM / 60.0, RotationsPerSecond));
+                },
+                this));
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.dynamic(direction);
   }
 
   @Override
   public void periodic() {
     IO.updateInputs(inputs, state);
+    Logger.processInputs("Shooter", inputs);
 
     boolean shouldSpinFeeder = debouncer.calculate(isAtTarget());
     Logger.recordOutput("Shooter/Should spin feeder", shouldSpinFeeder);
+
+    if (state == State.CHARACTERIZATION) {
+      return;
+    }
 
     if (state == State.INTAKING && hasGamePiece()) {
       state = State.HOLDING_GP;
@@ -181,7 +232,6 @@ public class Shooter extends SubsystemBase {
       IO.setMotorSetPoint(
           state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
     }
-    Logger.processInputs("Shooter", inputs);
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")

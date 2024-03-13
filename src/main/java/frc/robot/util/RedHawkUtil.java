@@ -93,6 +93,7 @@ public final class RedHawkUtil {
     var alliance = DriverStation.getAlliance();
     if (alliance.isEmpty()) {
       Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+      return;
     }
 
     if (alliance.get() == Alliance.Blue) {

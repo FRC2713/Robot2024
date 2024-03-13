@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
@@ -132,6 +133,8 @@ public class Robot extends LoggedRobot {
     // isSimulation()
     // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
     // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+
+    DriverStation.silenceJoystickConnectionWarning(isSimulation());
 
     mechManager = new MechanismManager();
 
@@ -359,6 +362,30 @@ public class Robot extends LoggedRobot {
                         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
                             ? 180
                             : 0))));
+
+    driver
+        .a()
+        .whileTrue(
+            Commands.runOnce(() -> shooter.setState(Shooter.State.CHARACTERIZATION))
+                .andThen(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)));
+
+    driver
+        .b()
+        .whileTrue(
+            Commands.runOnce(() -> shooter.setState(Shooter.State.CHARACTERIZATION))
+                .andThen(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)));
+
+    driver
+        .x()
+        .whileTrue(
+            Commands.runOnce(() -> shooter.setState(Shooter.State.CHARACTERIZATION))
+                .andThen(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward)));
+
+    driver
+        .y()
+        .whileTrue(
+            Commands.runOnce(() -> shooter.setState(Shooter.State.CHARACTERIZATION))
+                .andThen(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)));
   }
 
   public void createOperatorBindings() {
