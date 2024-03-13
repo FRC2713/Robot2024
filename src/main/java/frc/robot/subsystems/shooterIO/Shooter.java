@@ -9,7 +9,6 @@ import frc.robot.Robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -82,7 +81,6 @@ public class Shooter extends SubsystemBase {
   private final Debouncer debouncer =
       new Debouncer(WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE, DebounceType.kRising);
 
-  @RequiredArgsConstructor
   public enum State {
     FENDER_SHOT(
         fenderShotShooterRpm,
@@ -99,8 +97,9 @@ public class Shooter extends SubsystemBase {
         elevatorShotShooterRPM,
         elevatorShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
-    HOLDING_GP(holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true),
-    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true),
+    HOLDING_GP(
+        holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true, () -> true),
+    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true, () -> true),
     OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
     FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, fullOutFeederVolts, () -> true),
     FULL_IN(fullInShooterRPM, fullInShooterRPM, fullInFeederVolts, () -> true),
@@ -129,8 +128,33 @@ public class Shooter extends SubsystemBase {
         feederShotRPM,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle());
-    private final DoubleSupplier leftRpm, rightRpm, feederRpm;
-    private final BooleanSupplier additionalFeederCondition;
+    private final DoubleSupplier leftRpm, rightRpm, feederVolts;
+    private final BooleanSupplier additionalFeederCondition, limitSwitchOn;
+
+    private State(
+        DoubleSupplier leftRpm,
+        DoubleSupplier rightRpm,
+        DoubleSupplier feederVolts,
+        BooleanSupplier additionalFeederCondition) {
+      this.leftRpm = leftRpm;
+      this.rightRpm = rightRpm;
+      this.feederVolts = feederVolts;
+      this.additionalFeederCondition = additionalFeederCondition;
+      this.limitSwitchOn = () -> false;
+    }
+
+    private State(
+        DoubleSupplier leftRpm,
+        DoubleSupplier rightRpm,
+        DoubleSupplier feederVolts,
+        BooleanSupplier additionalFeederCondition,
+        BooleanSupplier limitSwitchOn) {
+      this.leftRpm = leftRpm;
+      this.rightRpm = rightRpm;
+      this.feederVolts = feederVolts;
+      this.additionalFeederCondition = additionalFeederCondition;
+      this.limitSwitchOn = limitSwitchOn;
+    }
   }
 
   @Setter
@@ -145,6 +169,7 @@ public class Shooter extends SubsystemBase {
     this.IO = IO;
     this.inputs = new ShooterInputsAutoLogged();
     this.IO.updateInputs(inputs, state);
+    IO.setDisableOnLimitSwitch(true);
   }
 
   @Override
@@ -158,22 +183,16 @@ public class Shooter extends SubsystemBase {
       state = State.HOLDING_GP;
     }
 
+    IO.setDisableOnLimitSwitch(state.limitSwitchOn.getAsBoolean());
+
     if ((shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean())
         || this.state == Shooter.State.FORCE_MANUAL_CONTROL) {
-      IO.setFeederVolts(state.feederRpm.getAsDouble());
+      IO.setFeederVolts(state.feederVolts.getAsDouble());
     } else {
       IO.setFeederVolts(0.0);
     }
 
-    // if (state == State.FENDER_SHOT && !debouncer.calculate(hasGamePiece())) {
-    // state = State.OFF;
-    // }
-
     double differential = shooterDifferentialRpm.getAsDouble();
-
-    // if (state == State.FEEDING) {
-    //   differential = 0;
-    // }
 
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
@@ -201,7 +220,7 @@ public class Shooter extends SubsystemBase {
     double differential = shooterDifferentialRpm.getAsDouble();
 
     // if (state == State.FEEDING) {
-    //   differential = 0;
+    // differential = 0;
     // }
 
     return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
@@ -212,7 +231,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")
   public boolean hasGamePiece() {
-    return (inputs.laserCanDistanceMM < 65);
+    return inputs.LSTripped;
   }
 
   public static class Commands {
