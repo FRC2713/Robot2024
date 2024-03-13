@@ -2,11 +2,8 @@ package frc.robot.subsystems.elevatorIO;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -104,9 +101,5 @@ public class Elevator extends SubsystemBase {
     return inputs.heightInchesRight;
   }
 
-  public static class Commands {
-    public static Command setState(State state) {
-      return new InstantCommand(() -> Robot.elevator.setState(state));
-    }
-  }
+  public static class Commands {}
 }

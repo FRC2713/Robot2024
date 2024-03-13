@@ -1,13 +1,15 @@
 package frc.robot.subsystems.shooterPivot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.VehicleState;
+import frc.robot.commands.Cmds;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -53,6 +55,7 @@ public class ShooterPivot extends SubsystemBase {
   }
 
   @Getter
+  @Setter
   @AutoLogOutput(key = "ShooterPivot/State")
   private State state = State.OFF;
 
@@ -97,14 +100,9 @@ public class ShooterPivot extends SubsystemBase {
   }
 
   public static class Commands {
-    public static Command setMotionMode(State mode) {
-      return new InstantCommand(() -> Robot.shooterPivot.state = mode);
-    }
-
     public static Command setModeAndWait(State mode) {
-      return Commands.setMotionMode(mode)
-          .repeatedly()
-          .until(() -> (Robot.shooterPivot.isAtTargetAngle()));
+      return Cmds.setState(mode)
+          .andThen(new WaitUntilCommand(() -> (Robot.shooterPivot.isAtTargetAngle())));
     }
   }
 }

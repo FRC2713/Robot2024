@@ -1,9 +1,6 @@
 package frc.robot.subsystems.intakeIO;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -65,9 +62,5 @@ public class Intake extends SubsystemBase {
     IO.setVoltage(state.bottomVolts.getAsDouble(), state.topVolts.getAsDouble());
   }
 
-  public static class Commands {
-    public static Command setMotionMode(State mode) {
-      return new InstantCommand(() -> Robot.intake.setState(mode));
-    }
-  }
+  public static class Commands {}
 }
