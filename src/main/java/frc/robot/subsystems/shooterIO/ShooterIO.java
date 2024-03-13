@@ -27,7 +27,8 @@ public interface ShooterIO {
     public int laserCanAmbientLightLevel = 0;
   }
 
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, Shooter.FeederState state, Shooter.FlywheelState state2);
 
   public void setMotorSetPoint(double leftRPM, double rightRPM);
 
