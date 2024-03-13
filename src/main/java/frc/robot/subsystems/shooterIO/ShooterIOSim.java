@@ -25,6 +25,8 @@ public class ShooterIOSim implements ShooterIO {
 
   private static final FlywheelSim feeder = new FlywheelSim(DCMotor.getKrakenX60(1), 1.0, 0.0001);
 
+  private boolean useFlywheelPID = false;
+
   private double leftVolts, rightVolts, feederVolts;
   Timer fakeGamepieceTimer = new Timer();
 
@@ -36,18 +38,22 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
-    leftFlyWheel.update(0.02);
-    rightFlyWheel.update(0.02);
-    feeder.update(0.02);
+    if (useFlywheelPID) {
+      leftVolts =
+          MathUtil.clamp(leftController.calculate(leftFlyWheel.getAngularVelocityRPM()), -12, 12);
+      rightVolts =
+          MathUtil.clamp(rightController.calculate(rightFlyWheel.getAngularVelocityRPM()), -12, 12);
+    }
 
-    leftVolts =
-        MathUtil.clamp(leftController.calculate(leftFlyWheel.getAngularVelocityRPM()), -12, 12);
-    rightVolts =
-        MathUtil.clamp(rightController.calculate(rightFlyWheel.getAngularVelocityRPM()), -12, 12);
+    System.err.println(useFlywheelPID + " - updating with volts " + leftVolts);
 
     leftFlyWheel.setInputVoltage(leftVolts);
     rightFlyWheel.setInputVoltage(rightVolts);
     feeder.setInputVoltage(feederVolts);
+
+    leftFlyWheel.update(0.02);
+    rightFlyWheel.update(0.02);
+    feeder.update(0.02);
 
     inputs.leftOutputVoltage = this.leftVolts;
     inputs.rightOutputVoltage = this.rightVolts;
@@ -100,6 +106,7 @@ public class ShooterIOSim implements ShooterIO {
   public void setMotorSetPoint(double leftRPM, double rightRPM) {
     leftController.setSetpoint(leftRPM);
     rightController.setSetpoint(rightRPM);
+    useFlywheelPID = true;
   }
 
   @Override
@@ -108,5 +115,10 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setShooterVolts(double lVolts, double rVolts) {}
+  public void setShooterVolts(double lVolts, double rVolts) {
+    System.err.println("set shooter volts to " + lVolts);
+    useFlywheelPID = false;
+    leftVolts = lVolts;
+    rightVolts = rVolts;
+  }
 }
