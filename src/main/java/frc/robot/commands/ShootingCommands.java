@@ -43,21 +43,21 @@ public class ShootingCommands {
 
   public static Command runIntake() {
     return Commands.sequence(
-        Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-        Shooter.Commands.setState(Shooter.State.INTAKING),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING));
+        Cmds.setState(Intake.State.INTAKE_GP),
+        Cmds.setState(Shooter.State.INTAKING),
+        Cmds.setState(ShooterPivot.State.INTAKING));
   }
 
   public static Command runShooter(Shooter.State shooterState) {
     return new SequentialCommandGroup(
-        Shooter.Commands.setState(shooterState),
+        Cmds.setState(shooterState),
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
-        Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
+        Cmds.setState(Intake.State.INTAKE_GP),
         new WaitCommand(0.25),
-        Shooter.Commands.setState(Shooter.State.OFF));
+        Cmds.setState(Shooter.State.OFF));
   }
 
   public static Command runShooterPivot(ShooterPivot.State shooterPivotState) {
-    return ShooterPivot.Commands.setMotionMode(shooterPivotState);
+    return Cmds.setState(shooterPivotState);
   }
 }

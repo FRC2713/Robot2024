@@ -3,6 +3,7 @@ package frc.robot.commands.fullRoutines;
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
@@ -35,7 +36,7 @@ public class NonAmpSide extends RHRFullRoutine {
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+        Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
@@ -44,12 +45,12 @@ public class NonAmpSide extends RHRFullRoutine {
         ShootingCommands.runShooterAndPivot(
             Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+        Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Reset everything for teleop
-        Shooter.Commands.setState(Shooter.State.OFF),
-        Intake.Commands.setMotionMode(Intake.State.OFF),
-        ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING),
+        Cmds.setState(Shooter.State.OFF),
+        Cmds.setState(Intake.State.OFF),
+        Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Go for 3
         ShootingCommands.runPathAndIntake(traj3));
