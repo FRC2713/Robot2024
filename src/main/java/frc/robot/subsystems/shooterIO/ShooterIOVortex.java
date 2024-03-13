@@ -101,7 +101,8 @@ public class ShooterIOVortex implements ShooterIO {
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, Shooter.FeederState state, Shooter.FlywheelState state2) {
     BaseStatusSignal.refreshAll(
         feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
 
