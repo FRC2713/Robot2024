@@ -25,6 +25,7 @@ public interface ShooterIO {
     public int laserCanStatus = 0;
     public int laserCanDistanceMM = 0;
     public int laserCanAmbientLightLevel = 0;
+    public boolean LSTripped = false;
   }
 
   public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);
@@ -34,4 +35,7 @@ public interface ShooterIO {
   public void setFeederVolts(double volts);
 
   public void setShooterVolts(double lVolts, double rVolts);
+
+  public default void setDisableOnLimitSwitch(boolean val) {}
+  ;
 }
