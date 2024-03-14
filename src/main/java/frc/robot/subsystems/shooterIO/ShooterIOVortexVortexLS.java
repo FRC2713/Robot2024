@@ -25,7 +25,7 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
   private final CANSparkFlex rightMotor =
       new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
   private final CANSparkFlex feederMotor =
-      new CANSparkFlex(Constants.RobotMap.SHOOTER_RIGHT_FLYWHEEL_ID, MotorType.kBrushless);
+      new CANSparkFlex(Constants.RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
   private final SparkLimitSwitch limitSwitch =
       feederMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
