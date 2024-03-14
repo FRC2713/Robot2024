@@ -92,7 +92,7 @@ public final class Constants {
     public static final int INTAKE_BOTTOM_MOTOR_CAN_ID = 9;
     public static final int INTAKE_TOP_MOTOR_CAN_ID = 8;
 
-    public static final int FEEDER_CAN_ID = 6;
+    public static final int FEEDER_CAN_ID = 14;
     public static final int PIVOT_LEFT_CAN_ID = 12;
     public static final int PIVOT_RIGHT_CAN_ID = 13;
 
