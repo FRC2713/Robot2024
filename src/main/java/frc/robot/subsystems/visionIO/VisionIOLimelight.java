@@ -122,7 +122,7 @@ public class VisionIOLimelight implements VisionIO {
   public void updateInputs(VisionInputs inputs) {
     var lvfData = table.getEntry("botpose_wpiblue").getDoubleArray(new double[] {});
 
-    if (lvfData.length > 0) {
+    if (lvfData.length > 10) {
       var lvf = this.getLimelightVisionFrame(lvfData);
       inputs.hasTarget = lvf.tagCount > 0;
       inputs.tagCount = lvf.tagCount;

@@ -73,7 +73,7 @@ public final class Constants {
         VisionInfo.builder()
             .ntTableName("limelight-b")
             .location(new Transform3d())
-            .mountingDirection(MountingDirection.VERTICAL_LL3)
+            .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
   }
 
@@ -160,7 +160,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
-    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
+    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = Units.inchesToMeters(31.25);
   }
 
   public static final class SuperStructure {

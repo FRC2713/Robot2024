@@ -42,11 +42,13 @@ public class VehicleState {
 
   public void updateDynamicPivotAngle(double estimateDistanceToTag) {
     dynamicPivotAngle = Rotation2d.fromDegrees(dynamicPivotMap.get(estimateDistanceToTag));
+    Logger.recordOutput("Dynamic pivot angle", dynamicPivotAngle);
   }
 
-  public void updateCenterTagError(VisionInputs visionInputs) {
-    if (visionInputs.tagId == 7 || visionInputs.tagId == 3) {
-      centerTagError = Optional.of(Rotation2d.fromDegrees(visionInputs.horizontalOffsetFromTarget));
+  public void updateCenterTagError(VisionInputs leftVisionInputs, VisionInputs rightVisionInputs) {
+    if (leftVisionInputs.tagId == 7 || leftVisionInputs.tagId == 3) {
+      centerTagError =
+          Optional.of(Rotation2d.fromDegrees(leftVisionInputs.horizontalOffsetFromTarget));
     } else {
 
       centerTagError = Optional.empty();

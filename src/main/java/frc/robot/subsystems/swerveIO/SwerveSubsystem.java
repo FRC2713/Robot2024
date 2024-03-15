@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.ErrorTracker;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
+import frc.robot.util.RedHawkUtil;
 import frc.robot.util.SwerveHeadingController;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -280,6 +282,49 @@ public class SwerveSubsystem extends SubsystemBase {
         + frontRight.getTotalCurrentDraw()
         + backLeft.getTotalCurrentDraw()
         + backRight.getTotalCurrentDraw();
+  }
+
+  public void poseEstimationFromVision(VisionInputs left, VisionInputs right) {
+    Pose2d visionBotPose = RedHawkUtil.Pose3dTo2d(left.botPoseBlue);
+    // invalid LL data
+    if (visionBotPose.getX() == 0.0) {
+      return;
+    }
+
+    // distance from current pose to vision estimated pose
+    double poseDifference =
+        getUsablePose().getTranslation().getDistance(visionBotPose.getTranslation());
+
+    if (left.hasTarget) {
+      double xyStds;
+      double degStds;
+      // multiple targets detected
+      if (left.tagCount >= 2) {
+        xyStds = 0.5;
+        degStds = 6;
+      }
+      // 1 target with large area and close to estimated pose
+      // else if (m_visionSystem.getBestTargetArea() > 0.8 && poseDifference < 0.5) {
+      //   xyStds = 1.0;
+      //   degStds = 12;
+      // }
+      // 1 target farther away and estimated pose is close
+      // else if (m_visionSystem.getBestTargetArea() > 0.1 && poseDifference < 0.3) {
+      else {
+        xyStds = 2.0;
+        degStds = 30;
+      }
+      // }
+      // conditions don't match to add a vision measurement
+      // else {
+      //   return;
+      // }
+
+      poseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+      poseEstimator.addVisionMeasurement(
+          visionBotPose, Timer.getFPGATimestamp() - left.totalLatencyMs);
+    }
   }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {

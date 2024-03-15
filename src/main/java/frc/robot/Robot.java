@@ -64,7 +64,7 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
-  public static Vision visionFront, visionRear;
+  public static Vision visionRight, visionLeft;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
@@ -122,11 +122,17 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionFront =
+    visionRight =
         new Vision(
             isSimulation()
                 ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
                 : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+
+    visionLeft =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
+                : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
     // visionRear =
     // new Vision(
@@ -229,11 +235,11 @@ public class Robot extends LoggedRobot {
         .rightTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                new InstantCommand(
-                    () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
+                // new InstantCommand(
+                //     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
                 Cmds.setState(Shooter.State.FENDER_SHOT),
-                Cmds.setState(MotionMode.ALIGN_TO_TAG),
+                // Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
@@ -500,12 +506,14 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 new InstantCommand(
                     () -> {
-                      visionFront.setLEDMode(LEDMode.FORCE_BLINK);
+                      visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+                      visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
                     }),
                 new WaitCommand(2),
                 new InstantCommand(
                     () -> {
-                      visionFront.setLEDMode(LEDMode.PIPELINE);
+                      visionRight.setLEDMode(LEDMode.PIPELINE);
+                      visionLeft.setLEDMode(LEDMode.PIPELINE);
                     })));
   }
 
@@ -535,10 +543,17 @@ public class Robot extends LoggedRobot {
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
     VehicleState.getInstance()
-        .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
-    VehicleState.getInstance().updateCenterTagError(visionFront.getInputs());
-    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(),
-    // visionFront.getInputs());
+        .updateDynamicPivotAngle(
+            (visionLeft.getInputs().verticalOffsetFromTarget
+                    + visionRight.getInputs().verticalOffsetFromTarget)
+                / 2);
+    VehicleState.getInstance()
+        .updateCenterTagError(visionLeft.getInputs(), visionRight.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionLeft.getInfo(),
+    // visionLeft.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionRight.getInfo(),
+    // visionRight.getInputs());
+    swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
   }
 
   @Override
