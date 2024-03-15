@@ -3,7 +3,7 @@ package frc.robot.subsystems.swerveIO.module;
 import static frc.robot.util.RedHawkUtil.cOk;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,6 +17,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.rhr.RHRFeedForward;
 import frc.robot.util.OffsetAbsoluteAnalogEncoder;
 import frc.robot.util.RedHawkUtil;
@@ -50,9 +51,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     info.getDriveGains().applyTo(config);
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 40;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 60;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = 60;
 
     config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
     config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.02;
@@ -61,6 +61,11 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Audio.BeepOnBoot = false;
     config.Audio.BeepOnConfig = false;
+
+    config.Slot0.kS = DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS.getKS();
+    config.Slot0.kV = DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS.getKV();
+    config.Slot0.kP = DriveConstants.Gains.K_DEFAULT_DRIVING_GAINS.getKP();
+
     RedHawkUtil.applyConfigs(drive, config);
 
     azimuthEncoder = new OffsetAbsoluteAnalogEncoder(info.getAziEncoderCANId(), info.getOffset());
@@ -147,14 +152,14 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
   public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
     var desiredRotationsPerSecond =
         setpointMetersPerSecond / RedHawkUtil.getDistPerPulse(info.getWheelDiameter());
-    final VelocityVoltage m_request = new VelocityVoltage(desiredRotationsPerSecond).withSlot(0);
-    double ffVolts = ff.calculate(setpointMetersPerSecond);
+    final VelocityTorqueCurrentFOC m_request =
+        new VelocityTorqueCurrentFOC(desiredRotationsPerSecond).withSlot(0);
+
     Logger.recordOutput(
         "Swerve/" + info.getName() + "/Drive Setpoint MPS", setpointMetersPerSecond);
     Logger.recordOutput(
         "Swerve/" + info.getName() + "/Drive Setpoint RPS", desiredRotationsPerSecond);
-    Logger.recordOutput("Swerve/" + info.getName() + "/Drive kV and kS", ffVolts);
-    drive.setControl(m_request.withFeedForward(ffVolts));
+    drive.setControl(m_request);
   }
 
   @Override
