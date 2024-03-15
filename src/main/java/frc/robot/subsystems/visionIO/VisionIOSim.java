@@ -5,7 +5,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import lombok.SneakyThrows;
 import org.photonvision.PhotonCamera;
@@ -45,7 +44,6 @@ public class VisionIOSim implements VisionIO {
     cameraSim.enableProcessedStream(true);
     cameraSim.enableRawStream(true);
     visionSim.addCamera(cameraSim, this.info.getLocation());
-    SmartDashboard.putData(visionSim.getDebugField());
   }
 
   public VisionInfo getName() {
@@ -55,10 +53,6 @@ public class VisionIOSim implements VisionIO {
   @Override
   public void updateInputs(VisionInputs inputs) {
     visionSim.update(Robot.swerveDrive.getWheelPose());
-    visionSim
-        .getDebugField()
-        .getObject("VisionEstimation")
-        .setPose(Robot.swerveDrive.getWheelPose());
 
     var res = cameraHw.getLatestResult();
 
@@ -71,7 +65,7 @@ public class VisionIOSim implements VisionIO {
           PhotonUtils.estimateFieldToRobotAprilTag(
               target.getBestCameraToTarget(),
               layout.getTagPose(target.getFiducialId()).get(),
-              this.info.getLocation());
+              this.info.getLocation().inverse());
 
       inputs.botPoseBlue = robotPose;
       inputs.botPoseBlueTimestamp = imageCaptureTime;
@@ -86,7 +80,7 @@ public class VisionIOSim implements VisionIO {
       inputs.tagId = res.getBestTarget().getFiducialId();
 
       inputs.horizontalOffsetFromTarget = target.getYaw();
-      inputs.verticalOffsetFromTarget = target.getPitch();
+      inputs.verticalOffsetFromTarget = -target.getPitch();
 
     } else {
       inputs.botPoseBlue = new Pose3d();
@@ -102,10 +96,7 @@ public class VisionIOSim implements VisionIO {
   }
 
   @Override
-  public void setLEDMode(LEDMode mode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setLEDMode'");
-  }
+  public void setLEDMode(LEDMode mode) {}
 
   @Override
   public void setCameraMode(CameraMode mode) {
