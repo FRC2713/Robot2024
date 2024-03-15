@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
     shooterPivot =
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
-    candle = new Candle();
+    candle = new Candle(isSimulation());
 
     swerveDrive =
         isSimulation()

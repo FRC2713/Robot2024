@@ -9,21 +9,24 @@ import frc.robot.Robot;
 
 public class Candle extends SubsystemBase {
 
-  private CANdle m_candle = new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
+  private CANdle m_candle;
   private Animation m_animation = null;
 
-  // TODO:
-  // create class variabls r, g, and b that are integers
-private int r = 0;
-private int g = 0;
-private int b = 0;
-private double brightness = 0;
-private double speed = 0;
-private int numLed = 0;
-private double sparking = 0;
-private double cooling = 0;
-private boolean reverseDirection;
-private int ledOffset = 0;
+  private int r = 0;
+  private int g = 0;
+  private int b = 0;
+  private double brightness = 0;
+  private double speed = 0;
+  private int numLed = 0;
+  private double sparking = 0;
+  private double cooling = 0;
+  private boolean reverseDirection;
+  private int ledOffset = 0;
+
+  public Candle(boolean isSimulation) {
+    this.m_candle = isSimulation ? null : new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
+  }
+
   public enum AnimationTypes {
     ColorFlow,
     Fire,
@@ -39,7 +42,13 @@ private int ledOffset = 0;
 
   @Override
   public void periodic() {
-    m_candle.animate(m_animation);
+    if (m_candle == null) {
+      // do nothing
+    } else if (m_animation == null) {
+      m_candle.setLEDs(this.r, this.g, this.b);
+    } else {
+      m_candle.animate(m_animation);
+    }
   }
 
   public void changeAnimation(AnimationTypes led_animation) {
