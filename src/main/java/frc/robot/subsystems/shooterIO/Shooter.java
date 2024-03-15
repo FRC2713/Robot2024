@@ -4,6 +4,8 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.util.SupplierHelpers;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -83,59 +85,75 @@ public class Shooter extends SubsystemBase {
     FENDER_SHOT(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
+        () -> 0,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     PODIUM_SHOT(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
+        shooterDifferentialRpm,
         podiumShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     ELEVATOR_SHOT(
         elevatorShotShooterRPM,
         elevatorShotShooterRPM,
+        shooterDifferentialRpm,
         elevatorShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     HOLDING_GP(
-        holdingGpShooterRpm, holdingGpShooterRpm, holdingFeederVolts, () -> true, () -> true),
-    INTAKING(intakingShooterRpm, intakingShooterRpm, intakingFeederVolts, () -> true, () -> true),
-    OUTTAKE_FORWARD(outtakingShooterRpm, outtakingShooterRpm, outtakingFeederVolts, () -> true),
-    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, fullOutFeederVolts, () -> true),
-    FULL_IN(fullInShooterRPM, fullInShooterRPM, fullInFeederVolts, () -> true),
-    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, ampShotFeederVolts, () -> true),
+        holdingGpShooterRpm, holdingGpShooterRpm,
+        () -> 0, holdingFeederVolts, () -> true, () -> true),
+    INTAKING(intakingShooterRpm, intakingShooterRpm,
+        () -> 0, intakingFeederVolts, () -> true, () -> true),
+    OUTTAKE_FORWARD(outtakingShooterRpm,
+        shooterDifferentialRpm, () -> 0, outtakingFeederVolts, () -> true),
+    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM,
+        () -> 0, fullOutFeederVolts, () -> true),
+    FULL_IN(fullInShooterRPM, fullInShooterRPM,
+        () -> 0, fullInFeederVolts, () -> true),
+    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM,
+        () -> 0, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
+        shooterDifferentialRpm,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     AUTO_SHOT_NonAmpSide_2(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
+        shooterDifferentialRpm,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     FORCE_MANUAL_CONTROL(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
+        shooterDifferentialRpm,
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
-    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> true),
-    OFF(() -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> -5, () -> true),
-    CLEANING(() -> 10, () -> 10, () -> 1, () -> true),
+    PRE_SPIN(preSpinRPM, preSpinRPM,
+        () -> 0, () -> 0, () -> true),
+    OFF(() -> 0, () -> 0, ()-> 0, () -> 0, () -> true),
+    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> 0,  () -> -5, () -> true),
+    CLEANING(() -> 10, () -> 10, () -> 0, () -> 1, () -> true),
     FEEDER_SHOT(
         feederShotRPM,
         feederShotRPM,
+        shooterDifferentialRpm,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle());
-    private final DoubleSupplier leftRpm, rightRpm, feederVolts;
+    private final DoubleSupplier leftRpm, rightRpm, differentialRpm, feederVolts;
     private final BooleanSupplier additionalFeederCondition, limitSwitchOn;
 
     private State(
         DoubleSupplier leftRpm,
         DoubleSupplier rightRpm,
+        DoubleSupplier differentialRpm,
         DoubleSupplier feederVolts,
         BooleanSupplier additionalFeederCondition) {
       this.leftRpm = leftRpm;
       this.rightRpm = rightRpm;
+      this.differentialRpm = differentialRpm;
       this.feederVolts = feederVolts;
       this.additionalFeederCondition = additionalFeederCondition;
       this.limitSwitchOn = () -> false;
@@ -144,11 +162,13 @@ public class Shooter extends SubsystemBase {
     private State(
         DoubleSupplier leftRpm,
         DoubleSupplier rightRpm,
+        DoubleSupplier differentialRpm,
         DoubleSupplier feederVolts,
         BooleanSupplier additionalFeederCondition,
         BooleanSupplier limitSwitchOn) {
       this.leftRpm = leftRpm;
       this.rightRpm = rightRpm;
+      this.differentialRpm = differentialRpm;
       this.feederVolts = feederVolts;
       this.additionalFeederCondition = additionalFeederCondition;
       this.limitSwitchOn = limitSwitchOn;
@@ -190,15 +210,24 @@ public class Shooter extends SubsystemBase {
       IO.setFeederVolts(0.0);
     }
 
-    double differential = shooterDifferentialRpm.getAsDouble();
-
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
     } else {
-      IO.setMotorSetPoint(
-          state.leftRpm.getAsDouble() + differential, state.rightRpm.getAsDouble() - differential);
+    this.setShooterRpms(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble(), state.differentialRpm.getAsDouble());
     }
     Logger.processInputs("Shooter", inputs);
+  }
+
+  /**
+   * 
+   * @param leftRPM
+   * @param rightRPM
+   * @param differentialRpm
+   */
+  private void setShooterRpms(double leftRPM, double rightRPM, double differentialRpm){
+      IO.setMotorSetPoint(
+          state.leftRpm.getAsDouble() + differentialRpm, state.rightRpm.getAsDouble() - differentialRpm);
+
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")

@@ -36,6 +36,5 @@ public interface ShooterIO {
 
   public void setShooterVolts(double lVolts, double rVolts);
 
-  public default void setDisableOnLimitSwitch(boolean val) {}
-  ;
+  public default void setDisableOnLimitSwitch(boolean val) {};
 }
