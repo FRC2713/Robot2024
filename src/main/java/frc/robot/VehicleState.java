@@ -51,8 +51,9 @@ public class VehicleState {
       centerTagError =
           Optional.of(
               Rotation2d.fromDegrees(
-                  Math.abs(leftVisionInputs.horizontalOffsetFromTarget)
-                      - Math.abs(rightVisionInputs.horizontalOffsetFromTarget)));
+                  leftVisionInputs.horizontalOffsetFromTarget
+                      + rightVisionInputs.horizontalOffsetFromTarget));
+      Logger.recordOutput("Center tag error", centerTagError.get());
     } else {
       centerTagError = Optional.empty();
     }

@@ -235,11 +235,11 @@ public class Robot extends LoggedRobot {
         .rightTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                // new InstantCommand(
-                //     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
+                new InstantCommand(
+                    () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
                 Cmds.setState(Shooter.State.FENDER_SHOT),
-                // Cmds.setState(MotionMode.ALIGN_TO_TAG),
+                Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
