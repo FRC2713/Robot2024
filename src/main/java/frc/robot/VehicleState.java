@@ -46,11 +46,14 @@ public class VehicleState {
   }
 
   public void updateCenterTagError(VisionInputs leftVisionInputs, VisionInputs rightVisionInputs) {
-    if (leftVisionInputs.tagId == 7 || leftVisionInputs.tagId == 3) {
+    if ((leftVisionInputs.tagId == 7 || leftVisionInputs.tagId == 3)
+        && (rightVisionInputs.tagId == 7 || rightVisionInputs.tagId == 3)) {
       centerTagError =
-          Optional.of(Rotation2d.fromDegrees(leftVisionInputs.horizontalOffsetFromTarget));
+          Optional.of(
+              Rotation2d.fromDegrees(
+                  Math.abs(leftVisionInputs.horizontalOffsetFromTarget)
+                      - Math.abs(rightVisionInputs.horizontalOffsetFromTarget)));
     } else {
-
       centerTagError = Optional.empty();
     }
 

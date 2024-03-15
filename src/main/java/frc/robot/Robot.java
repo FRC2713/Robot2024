@@ -553,7 +553,7 @@ public class Robot extends LoggedRobot {
     // visionLeft.getInputs());
     // swerveDrive.updateOdometryFromVision(visionRight.getInfo(),
     // visionRight.getInputs());
-    swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
+    // swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
   }
 
   @Override

@@ -324,10 +324,10 @@ public class SwerveSubsystem extends SubsystemBase {
       //   return;
       // }
 
-      poseEstimator.setVisionMeasurementStdDevs(
-          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
       poseEstimator.addVisionMeasurement(
-          visionBotPose, Timer.getFPGATimestamp() - left.totalLatencyMs);
+          visionBotPose,
+          Timer.getFPGATimestamp() - left.totalLatencyMs,
+          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
     }
   }
 
