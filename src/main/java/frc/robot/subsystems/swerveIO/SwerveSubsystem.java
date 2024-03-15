@@ -257,6 +257,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getWheelPose() {
+    return getRegularPose();
+  }
+
   public Pose2d getUsablePose() {
     if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
       return getEstimatedPose();

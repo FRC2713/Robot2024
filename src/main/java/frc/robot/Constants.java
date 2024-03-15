@@ -63,16 +63,32 @@ public final class Constants {
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
         new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
 
-    public static VisionInfo FRONT_LIMELIGHT_INFO =
+    public static VisionInfo LEFT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-a")
-            .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
+            .location(
+                new Transform3d(
+                    Units.inchesToMeters(10.072374),
+                    Units.inchesToMeters(9.304687),
+                    Units.inchesToMeters(24.149765),
+                    new Rotation3d(
+                        0,
+                        Units.degreesToRadians(-14.209976),
+                        Units.degreesToRadians(180 - 160.800285))))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
-    public static VisionInfo REAR_LIMELIGHT_INFO =
+    public static VisionInfo RIGHT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-b")
-            .location(new Transform3d())
+            .location(
+                new Transform3d(
+                    Units.inchesToMeters(-10.012360),
+                    Units.inchesToMeters(9.445222),
+                    Units.inchesToMeters(24.185351),
+                    new Rotation3d(
+                        0,
+                        Units.degreesToRadians(-14.209976),
+                        Units.degreesToRadians(-(180 - 160.800285)))))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
   }
