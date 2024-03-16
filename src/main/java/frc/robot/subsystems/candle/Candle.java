@@ -112,45 +112,36 @@ public class Candle extends SubsystemBase {
     public static Command changeAnimation(AnimationTypes type) {
       return new InstantCommand(() -> Robot.candle.changeAnimation(type));
     }
+
     public static Command hasGamePieceAnimation(boolean hasGamePiece) {
       if (hasGamePiece) {
         return new SequentialCommandGroup(
-          blinkLEDs(0, 255, 0),
-          new WaitCommand(2),
-          setLEDs(0, 255, 0)
-        );
-        
-          
-        
+            blinkLEDs(0, 255, 0), new WaitCommand(2), setLEDs(0, 255, 0));
 
-      } else { 
-        return new SequentialCommandGroup(
-          setLEDs(0, 0, 0)
-        );
+      } else {
+        return new SequentialCommandGroup(setLEDs(0, 0, 0));
       }
     }
+
     public static Command shootingAnimation() {
-      return new SequentialCommandGroup( 
-          changeAnimation(AnimationTypes.Larson),
-          new WaitCommand(2),
-          setLEDs(0, 0, 0)
-          
-      );
+      return new SequentialCommandGroup(
+          changeAnimation(AnimationTypes.Larson), new WaitCommand(2), setLEDs(0, 0, 0));
     }
+
     public static Command setLEDs(int r, int g, int b) {
-      return new InstantCommand( () -> {
-        Robot.candle.setRGBValue(r, g, b);
-        Robot.candle.changeAnimation(AnimationTypes.SetAll);
-      } );
+      return new InstantCommand(
+          () -> {
+            Robot.candle.setRGBValue(r, g, b);
+            Robot.candle.changeAnimation(AnimationTypes.SetAll);
+          });
     }
+
     public static Command blinkLEDs(int r, int g, int b) {
       return new InstantCommand(
-        () -> {
-          Robot.candle.setRGBValue(r, g, b);
-          Robot.candle.changeAnimation(AnimationTypes.Strobe);
-        }
-      );
-    }
+          () -> {
+            Robot.candle.setRGBValue(r, g, b);
+            Robot.candle.changeAnimation(AnimationTypes.Strobe);
+          });
     }
   }
 }
