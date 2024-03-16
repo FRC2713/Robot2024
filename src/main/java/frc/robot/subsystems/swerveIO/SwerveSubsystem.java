@@ -313,6 +313,10 @@ public class SwerveSubsystem extends SubsystemBase {
             .getDistance(visionInputs.botPoseBlue.getTranslation());
 
     if (visionInputs.hasTarget) {
+      if (visionInputs.averageTagDistanceFromCamera >= 4.5) {
+        return;
+      }
+
       double xyStds;
       double degStds;
       // multiple targets detected
@@ -321,14 +325,12 @@ public class SwerveSubsystem extends SubsystemBase {
         degStds = 6;
       }
       // 1 target with large area and close to estimated pose
-      else if (
-      /* m_visionSystem.getBestTargetArea() > 0.8 && */ poseDifference < 0.5) {
+      else if (visionInputs.averageTagArea > 0.8 && poseDifference < 0.5) {
         xyStds = 1.0;
         degStds = 12;
       }
       // 1 target farther away and estimated pose is close
-      else if (
-      /*m_visionSystem.getBestTargetArea() > 0.1 &&*/ poseDifference < 0.3) {
+      else if (visionInputs.averageTagArea > 0.1 && poseDifference < 0.3) {
         xyStds = 2.0;
         degStds = 30;
       } else if (DriverStation.isDisabled()) {
@@ -450,8 +452,7 @@ public class SwerveSubsystem extends SubsystemBase {
         });
 
     if (DriverStation.isEnabled()) {
-      poseEstimator.updateWithTime(
-          Timer.getFPGATimestamp(),
+      poseEstimator.update(
           Rotation2d.fromDegrees(inputs.gyroYawPosition),
           new SwerveModulePosition[] {
             frontLeft.getPosition(),

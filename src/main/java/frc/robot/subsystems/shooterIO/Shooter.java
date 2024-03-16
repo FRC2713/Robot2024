@@ -137,7 +137,7 @@ public class Shooter extends SubsystemBase {
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> 0, () -> -5, () -> true),
+    OUTTAKE_BACKWARDS(() -> -1000, () -> -1000, () -> 0, () -> -3, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 0, () -> 1, () -> true),
     FEEDER_SHOT(
         feederShotRPM,

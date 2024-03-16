@@ -46,7 +46,6 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
-import frc.robot.subsystems.visionIO.VisionIOLimelight;
 import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
@@ -133,7 +132,7 @@ public class Robot extends LoggedRobot {
         new Vision(
             isSimulation()
                 ? new VisionIOSim(LimeLightConstants.RIGHT_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.RIGHT_LIMELIGHT_INFO));
+                : new VisionIOLimelightLib(LimeLightConstants.RIGHT_LIMELIGHT_INFO));
 
     // visionRear =
     // new Vision(

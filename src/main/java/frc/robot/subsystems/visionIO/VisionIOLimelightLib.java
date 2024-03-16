@@ -18,6 +18,8 @@ public class VisionIOLimelightLib implements VisionIO {
     inputs.hasTarget = x.tagCount > 0;
     inputs.tagCount = x.tagCount;
     inputs.totalLatencyMs = x.latency;
+    inputs.averageTagArea = x.avgTagArea;
+    inputs.averageTagDistanceFromCamera = x.avgTagDist;
   }
 
   @Override
@@ -27,8 +29,23 @@ public class VisionIOLimelightLib implements VisionIO {
 
   @Override
   public void setLEDMode(LEDMode mode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setLEDMode'");
+
+    switch (mode) {
+      case FORCE_BLINK:
+        LimelightHelpers.setLEDMode_ForceBlink(this.getInfo().getNtTableName());
+        break;
+      case FORCE_OFF:
+        LimelightHelpers.setLEDMode_ForceOff(this.getInfo().getNtTableName());
+        break;
+      case FORCE_ON:
+        LimelightHelpers.setLEDMode_ForceOn(this.getInfo().getNtTableName());
+        break;
+      case PIPELINE:
+        LimelightHelpers.setLEDMode_PipelineControl(this.getInfo().getNtTableName());
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
