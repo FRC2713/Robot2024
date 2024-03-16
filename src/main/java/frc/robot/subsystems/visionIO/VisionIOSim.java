@@ -3,7 +3,6 @@ package frc.robot.subsystems.visionIO;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Robot;
 import lombok.SneakyThrows;
@@ -67,7 +66,7 @@ public class VisionIOSim implements VisionIO {
               layout.getTagPose(target.getFiducialId()).get(),
               this.info.getLocation().inverse());
 
-      inputs.botPoseBlue = robotPose;
+      inputs.botPoseBlue = robotPose.toPose2d();
       inputs.botPoseBlueTimestamp = imageCaptureTime;
       inputs.horizontalOffsetFromTarget = target.getYaw();
       inputs.verticalOffsetFromTarget = target.getPitch();
@@ -83,7 +82,7 @@ public class VisionIOSim implements VisionIO {
       inputs.verticalOffsetFromTarget = -target.getPitch();
 
     } else {
-      inputs.botPoseBlue = new Pose3d();
+      inputs.botPoseBlue = new Pose2d();
       inputs.botPoseBlueTimestamp = 0.0;
       inputs.horizontalOffsetFromTarget = 0.0;
       inputs.verticalOffsetFromTarget = 0.0;

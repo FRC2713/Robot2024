@@ -1,6 +1,7 @@
 package frc.robot.subsystems.visionIO;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -126,7 +127,7 @@ public class VisionIOLimelight implements VisionIO {
       var lvf = this.getLimelightVisionFrame(lvfData);
       inputs.hasTarget = lvf.tagCount > 0;
       inputs.tagCount = lvf.tagCount;
-      inputs.botPoseBlue = lvf.getPose();
+      inputs.botPoseBlue = lvf.getPose().toPose2d();
       inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
       inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
       inputs.tagId = table.getEntry("tid").getDouble(0);
@@ -139,6 +140,10 @@ public class VisionIOLimelight implements VisionIO {
       inputs.horizontalOffsetFromTarget = 0;
       inputs.verticalOffsetFromTarget = 0;
       inputs.totalLatencyMs = 0;
+      inputs.botPoseBlue = new Pose2d();
+      inputs.botPoseBlueTimestamp = 0;
+      inputs.totalLatencyMs = 0;
+      inputs.tagId = 0;
     }
 
     // var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());

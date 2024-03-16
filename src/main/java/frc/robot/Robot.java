@@ -47,6 +47,7 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
@@ -126,7 +127,7 @@ public class Robot extends LoggedRobot {
         new Vision(
             isSimulation()
                 ? new VisionIOSim(LimeLightConstants.LEFT_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.LEFT_LIMELIGHT_INFO));
+                : new VisionIOLimelightLib(LimeLightConstants.LEFT_LIMELIGHT_INFO));
 
     visionRight =
         new Vision(
@@ -549,8 +550,9 @@ public class Robot extends LoggedRobot {
                 / 2);
     VehicleState.getInstance()
         .updateCenterTagError(visionLeft.getInputs(), visionRight.getInputs());
-    swerveDrive.updateOdometryFromVision(visionLeft.getInfo(), visionLeft.getInputs());
-    swerveDrive.updateOdometryFromVision(visionRight.getInfo(), visionRight.getInputs());
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(
+        visionRight.getInfo(), visionRight.getInputs());
     // swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
   }
 

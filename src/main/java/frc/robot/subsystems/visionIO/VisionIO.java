@@ -1,12 +1,13 @@
 package frc.robot.subsystems.visionIO;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
   @AutoLog
   public static class VisionInputs {
-    public Pose3d botPoseBlue = new Pose3d();
+    public Pose2d botPoseBlue = new Pose2d();
     // public Pose3d botPose = new Pose3d();
     // public Pose3d botPoseRed = new Pose3d();
     // public Pose3d cameraPoseInTargetSpace = new Pose3d();
