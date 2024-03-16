@@ -55,14 +55,17 @@ public class Candle extends SubsystemBase {
 
   public void changeAnimation(AnimationTypes led_animation) {
 
-    // TODO: for relavant animations, use the r, g, and b class variabls instead of the hard coded ones
+    // TODO: for relavant animations, use the r, g, and b class variabls instead of the hard coded
+    // ones
 
     switch (led_animation) {
       case ColorFlow:
         m_animation = new ColorFlowAnimation(r, g, b);
         break;
       case Fire:
-        m_animation = new FireAnimation(brightness, speed, numLed, sparking, cooling, reverseDirection, ledOffset);
+        m_animation =
+            new FireAnimation(
+                brightness, speed, numLed, sparking, cooling, reverseDirection, ledOffset);
         break;
       case Larson:
         m_animation = new LarsonAnimation(r, g, b);
@@ -92,22 +95,26 @@ public class Candle extends SubsystemBase {
   }
 
   // TODO: with a method, set r, g, and b
-    public void setRGBValue(int r, int g, int b) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-    }
-    public void setBrSpNl(double brightness, double speed, int numLed) {
-      this.brightness = brightness;
-      this.speed = speed;
-      this.numLed = numLed;
-    }
-    public void setSpCoRdLo(double sparking, double cooling, boolean reverseDirection, int ledOffset) {
-      this.sparking = sparking;
-      this.cooling = cooling;
-      this.reverseDirection = reverseDirection;
-      this.ledOffset = ledOffset;
-    }
+  public void setRGBValue(int r, int g, int b) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  }
+
+  public void setBrSpNl(double brightness, double speed, int numLed) {
+    this.brightness = brightness;
+    this.speed = speed;
+    this.numLed = numLed;
+  }
+
+  public void setSpCoRdLo(
+      double sparking, double cooling, boolean reverseDirection, int ledOffset) {
+    this.sparking = sparking;
+    this.cooling = cooling;
+    this.reverseDirection = reverseDirection;
+    this.ledOffset = ledOffset;
+  }
+
   public static class Commands {
     public static Command changeAnimation(AnimationTypes type) {
       return new InstantCommand(() -> Robot.candle.changeAnimation(type));

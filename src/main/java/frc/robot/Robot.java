@@ -22,8 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
-import frc.robot.commands.fullRoutines.BottomTwo;
-import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTF;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.candle.Candle;
@@ -620,17 +618,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testExit() {}
 
-  public void buildAutoChooser() {
-    RHRNamedCommands.registerGenericCommands();
-
-    // SwerveSubsystem.allianceFlipper = DriverStation.getAlliance() == Alliance.Red
-    // ? -1 : 1;
-    autoChooser.addDefaultOption("ThreePiece", ThreePiece.getAutonomousCommand());
-    autoChooser.addOption("SimpleChoreo", SimpleChoreo.getAutonomousCommand());
-    autoChooser.addOption("ThreePieceChoreo", new ThreePieceChoreo());
-    autoChooser.addOption("Selfish", SelfishAuto.getAutonomousCommand());
-    autoChooser.addOption("Week0MobilityChoreo", new Week0MobilityChoreo());
-  }
+  public void buildAutoChooser() {}
 
   public void updatePreMatchDashboardValues() {
     var encoderReadings = swerveDrive.getAbsoluteEncoderAngles();
@@ -673,7 +661,7 @@ public class Robot extends LoggedRobot {
       swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
       // TODO: use the candle subsystem to set the animation to ColorFlow and Red
-      candle.setRGBValue(255, 0,0);
+      candle.setRGBValue(255, 0, 0);
     }
   }
 
