@@ -549,10 +549,8 @@ public class Robot extends LoggedRobot {
                 / 2);
     VehicleState.getInstance()
         .updateCenterTagError(visionLeft.getInputs(), visionRight.getInputs());
-    // swerveDrive.updateOdometryFromVision(visionLeft.getInfo(),
-    // visionLeft.getInputs());
-    // swerveDrive.updateOdometryFromVision(visionRight.getInfo(),
-    // visionRight.getInputs());
+    swerveDrive.updateOdometryFromVision(visionLeft.getInfo(), visionLeft.getInputs());
+    swerveDrive.updateOdometryFromVision(visionRight.getInfo(), visionRight.getInputs());
     // swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
   }
 

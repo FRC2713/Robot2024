@@ -43,7 +43,7 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
+    public static double MAX_POSE_JUMP_METERS = 0.5; // Units.feetToMeters(5);
 
     public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
       public PoseEstimatorErrorStDevs multiplyByRange(double range) {
@@ -59,9 +59,9 @@ public final class Constants {
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
         new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(15));
+        new PoseEstimatorErrorStDevs(0.2, Units.degreesToRadians(10));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
+        new PoseEstimatorErrorStDevs(0.001, Units.degreesToRadians(0.06));
 
     public static VisionInfo LEFT_LIMELIGHT_INFO =
         VisionInfo.builder()

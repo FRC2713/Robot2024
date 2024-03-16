@@ -38,7 +38,6 @@ import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.ErrorTracker;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
-import frc.robot.util.RedHawkUtil;
 import frc.robot.util.SwerveHeadingController;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -287,24 +286,31 @@ public class SwerveSubsystem extends SubsystemBase {
         + backRight.getTotalCurrentDraw();
   }
 
-  public void poseEstimationFromVision(VisionInputs left, VisionInputs right) {
-    Pose2d visionBotPose = RedHawkUtil.Pose3dTo2d(left.botPoseBlue);
-    // invalid LL data
-    if (visionBotPose.getX() == 0.0) {
-      return;
-    }
+  // public void poseEstimationFromVision(VisionInputs left, VisionInputs right) {
+  //   var multiTagXYStdev = 0.005;
+  //   var multiTagRotationStdev = 0.001;
+  //   var singleTagXYStdev = 0.2;
+  //   var singleTagRotationStdev = 0.1;
 
-    // distance from current pose to vision estimated pose
-    double poseDifference =
-        getUsablePose().getTranslation().getDistance(visionBotPose.getTranslation());
+  //   for (var inputs : new VisionInputs[] {left, right}) {
+  //     if (!inputs.hasTarget) {
+  //       continue;
+  //     }
 
-    var multiTagXYStdev = 0.005;
-    var multiTagRotationStdev = 0.001;
-    var singleTagXYStdev = 0.2;
-    var singleTagRotationStdev = 0.1;
+  //     // distance from current pose to vision estimated pose
+  //     Pose2d visionBotPose = inputs.botPoseBlue.toPose2d();
+  //     double poseDifference =
+  //         getUsablePose().getTranslation().getDistance(visionBotPose.getTranslation());
 
-    for (var inputs : new VisionInputs[] {left, right}) {}
-  }
+  //     double xyStdev = inputs.tagCount >= 2 ? multiTagXYStdev : singleTagXYStdev;
+  //     double rotStdev = inputs.tagCount >= 2 ? multiTagRotationStdev : singleTagRotationStdev;
+
+  //     poseEstimator.addVisionMeasurement(
+  //         visionBotPose,
+  //         Timer.getFPGATimestamp() - Units.millisecondsToSeconds(inputs.totalLatencyMs),
+  //         VecBuilder.fill(xyStdev, xyStdev, rotStdev));
+  //   }
+  // }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
     if (!visionInputs.hasTarget) {

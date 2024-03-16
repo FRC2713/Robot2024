@@ -130,11 +130,15 @@ public class VisionIOLimelight implements VisionIO {
       inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
       inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
       inputs.tagId = table.getEntry("tid").getDouble(0);
+      inputs.totalLatencyMs = lvf.totalLatency;
+      inputs.botPoseBlueTimestamp =
+          Timer.getFPGATimestamp() - Units.millisecondsToSeconds(lvf.totalLatency);
     } else {
       inputs.hasTarget = false;
       inputs.tagCount = 0;
       inputs.horizontalOffsetFromTarget = 0;
       inputs.verticalOffsetFromTarget = 0;
+      inputs.totalLatencyMs = 0;
     }
 
     // var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());
