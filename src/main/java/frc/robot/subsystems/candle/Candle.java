@@ -19,7 +19,7 @@ public class Candle extends SubsystemBase {
   private int b = 0;
   private double brightness = 0;
   private double speed = 0;
-  private int numLed = 0;
+  private int numLed = 55;
   private double sparking = 0;
   private double cooling = 0;
   private boolean reverseDirection;
