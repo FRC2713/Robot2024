@@ -46,18 +46,12 @@ public class Candle extends SubsystemBase {
   public void periodic() {
     if (m_candle == null) {
       // do nothing
-    } else if (m_animation == null) {
-      m_candle.setLEDs(this.r, this.g, this.b);
     } else {
-      m_candle.animate(m_animation);
+      m_candle.setLEDs(this.r, this.g, this.b);
     }
   }
 
   public void changeAnimation(AnimationTypes led_animation) {
-
-    // TODO: for relavant animations, use the r, g, and b class variabls instead of the hard coded
-    // ones
-
     switch (led_animation) {
       case ColorFlow:
         m_animation = new ColorFlowAnimation(r, g, b);
@@ -92,9 +86,9 @@ public class Candle extends SubsystemBase {
         m_animation = null;
         break;
     }
+    m_candle.animate(m_animation);
   }
 
-  // TODO: with a method, set r, g, and b
   public void setRGBValue(int r, int g, int b) {
     this.r = r;
     this.g = g;
