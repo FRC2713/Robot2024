@@ -46,17 +46,17 @@ public class VehicleState {
   }
 
   public void updateCenterTagError(VisionInputs leftVisionInputs, VisionInputs rightVisionInputs) {
-    if ((leftVisionInputs.tagId == 7 || leftVisionInputs.tagId == 3)
-        && (rightVisionInputs.tagId == 7 || rightVisionInputs.tagId == 3)) {
-      centerTagError =
-          Optional.of(
-              Rotation2d.fromDegrees(
-                  leftVisionInputs.horizontalOffsetFromTarget
-                      + rightVisionInputs.horizontalOffsetFromTarget));
-      Logger.recordOutput("Center tag error", centerTagError.get());
-    } else {
-      centerTagError = Optional.empty();
-    }
+    // if ((leftVisionInputs.tagId == 7 || leftVisionInputs.tagId == 3)
+    //     && (rightVisionInputs.tagId == 7 || rightVisionInputs.tagId == 3)) {
+    //   centerTagError =
+    //       Optional.of(
+    //           Rotation2d.fromDegrees(
+    //               leftVisionInputs.horizontalOffsetFromTarget
+    //                   + rightVisionInputs.horizontalOffsetFromTarget));
+    //   Logger.recordOutput("Center tag error", centerTagError.get());
+    // } else {
+    //   centerTagError = Optional.empty();
+    // }
 
     Logger.recordOutput("Center tag error has value", centerTagError.isPresent());
     if (centerTagError.isPresent()) {

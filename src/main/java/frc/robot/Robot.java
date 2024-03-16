@@ -237,7 +237,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
-                Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
+                Cmds.setState(ShooterPivot.State.FENDER_SHOT),
                 Cmds.setState(Shooter.State.FENDER_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
@@ -542,11 +542,13 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    VehicleState.getInstance()
-        .updateDynamicPivotAngle(
-            (visionLeft.getInputs().verticalOffsetFromTarget
-                    + visionRight.getInputs().verticalOffsetFromTarget)
-                / 2);
+    // VehicleState.getInstance()
+    //     .updateDynamicPivotAngle(
+    //         (visionLeft.getInputs().verticalOffsetFromTarget
+    //                 + visionRight.getInputs().verticalOffsetFromTarget)
+    //             / 2);
+
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
     VehicleState.getInstance()
         .updateCenterTagError(visionLeft.getInputs(), visionRight.getInputs());
     swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
@@ -599,9 +601,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {}

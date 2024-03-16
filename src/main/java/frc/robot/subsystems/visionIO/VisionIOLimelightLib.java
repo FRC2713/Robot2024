@@ -20,6 +20,8 @@ public class VisionIOLimelightLib implements VisionIO {
     inputs.totalLatencyMs = x.latency;
     inputs.averageTagArea = x.avgTagArea;
     inputs.averageTagDistanceFromCamera = x.avgTagDist;
+
+    inputs.results = LimelightHelpers.getLatestResults(this.info.getNtTableName());
   }
 
   @Override

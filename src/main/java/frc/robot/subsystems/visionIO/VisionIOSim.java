@@ -68,28 +68,28 @@ public class VisionIOSim implements VisionIO {
 
       inputs.botPoseBlue = robotPose.toPose2d();
       inputs.botPoseBlueTimestamp = imageCaptureTime;
-      inputs.horizontalOffsetFromTarget = target.getYaw();
-      inputs.verticalOffsetFromTarget = target.getPitch();
-      inputs.targetArea = target.getArea();
-      inputs.pipelineLatencyMs = res.getLatencyMillis();
-      inputs.captureLatencyMs = 0.0;
-      inputs.totalLatencyMs = inputs.pipelineLatencyMs + inputs.captureLatencyMs;
-      inputs.activePipeline = 0;
-      inputs.tagCount = res.getTargets().size();
-      inputs.tagId = res.getBestTarget().getFiducialId();
+      // inputs.horizontalOffsetFromTarget = target.getYaw();
+      // inputs.verticalOffsetFromTarget = target.getPitch();
+      // inputs.targetArea = target.getArea();
+      // inputs.pipelineLatencyMs = res.getLatencyMillis();
+      // inputs.captureLatencyMs = 0.0;
+      // inputs.totalLatencyMs = inputs.pipelineLatencyMs + inputs.captureLatencyMs;
+      // inputs.activePipeline = 0;
+      // inputs.tagCount = res.getTargets().size();
+      // inputs.tagId = res.getBestTarget().getFiducialId();
 
-      inputs.horizontalOffsetFromTarget = target.getYaw();
-      inputs.verticalOffsetFromTarget = -target.getPitch();
+      // inputs.horizontalOffsetFromTarget = target.getYaw();
+      // inputs.verticalOffsetFromTarget = -target.getPitch();
 
     } else {
       inputs.botPoseBlue = new Pose2d();
       inputs.botPoseBlueTimestamp = 0.0;
-      inputs.horizontalOffsetFromTarget = 0.0;
-      inputs.verticalOffsetFromTarget = 0.0;
-      inputs.targetArea = 0.0;
-      inputs.pipelineLatencyMs = 0.0;
-      inputs.captureLatencyMs = 0.0;
-      inputs.activePipeline = 0;
+      // inputs.horizontalOffsetFromTarget = 0.0;
+      // inputs.verticalOffsetFromTarget = 0.0;
+      // inputs.targetArea = 0.0;
+      // inputs.pipelineLatencyMs = 0.0;
+      // inputs.captureLatencyMs = 0.0;
+      // inputs.activePipeline = 0;
       inputs.tagCount = 0;
     }
   }
