@@ -3,7 +3,9 @@ package frc.robot.subsystems.candle;
 import com.ctre.phoenix.led.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
@@ -109,6 +111,46 @@ public class Candle extends SubsystemBase {
   public static class Commands {
     public static Command changeAnimation(AnimationTypes type) {
       return new InstantCommand(() -> Robot.candle.changeAnimation(type));
+    }
+    public static Command hasGamePieceAnimation(boolean hasGamePiece) {
+      if (hasGamePiece) {
+        return new SequentialCommandGroup(
+          blinkLEDs(0, 255, 0),
+          new WaitCommand(2),
+          setLEDs(0, 255, 0)
+        );
+        
+          
+        
+
+      } else { 
+        return new SequentialCommandGroup(
+          setLEDs(0, 0, 0)
+        );
+      }
+    }
+    public static Command shootingAnimation() {
+      return new SequentialCommandGroup( 
+          changeAnimation(AnimationTypes.Larson),
+          new WaitCommand(2),
+          setLEDs(0, 0, 0)
+          
+      );
+    }
+    public static Command setLEDs(int r, int g, int b) {
+      return new InstantCommand( () -> {
+        Robot.candle.setRGBValue(r, g, b);
+        Robot.candle.changeAnimation(AnimationTypes.SetAll);
+      } );
+    }
+    public static Command blinkLEDs(int r, int g, int b) {
+      return new InstantCommand(
+        () -> {
+          Robot.candle.setRGBValue(r, g, b);
+          Robot.candle.changeAnimation(AnimationTypes.Strobe);
+        }
+      );
+    }
     }
   }
 }
