@@ -8,7 +8,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
-import frc.robot.VehicleState;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
@@ -88,18 +87,18 @@ public class MotionHandler {
   public static ChassisSpeeds driveAlignToTag() {
     // if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
 
-      // var error = VehicleState.getInstance().getCenterTagError();
+    // var error = VehicleState.getInstance().getCenterTagError();
 
-      // if (error.isPresent()) {
-      //   SwerveHeadingController.getInstance()
-      //       .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+    // if (error.isPresent()) {
+    //   SwerveHeadingController.getInstance()
+    //       .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
 
-      //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-      // }
-      // }
+    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+    // }
+    // }
 
-      SwerveHeadingController.getInstance()
-          .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose()));
+    SwerveHeadingController.getInstance()
+        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose()));
 
     //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
     // }

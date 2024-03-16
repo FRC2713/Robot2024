@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -164,29 +165,24 @@ public class Robot extends LoggedRobot {
   public void createDriverBindings() {
     driver
         .leftBumper()
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new WaitUntilCommand(elevator::atTargetHeight),
-                Commands.sequence(
-                        Cmds.setState(Intake.State.INTAKE_GP),
-                        Cmds.setState(Shooter.State.INTAKING),
-                        Cmds.setState(ShooterPivot.State.INTAKING))
-                    .repeatedly()
-                    .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
-                    .andThen(
-                        Commands.sequence(
-                            Commands.either(
-                                RumbleManager.driverBigOneSec(),
-                                new InstantCommand(() -> {}),
-                                shooter::hasGamePiece),
-                            Cmds.setState(Intake.State.OFF),
-                            Commands.either(
-                                Cmds.setState(Shooter.State.OFF),
-                                new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)))))
+                Commands.parallel(
+                    Cmds.setState(ShooterPivot.State.INTAKING),
+                    Cmds.setState(Elevator.State.MIN_HEIGHT)),
+                new WaitUntilCommand(
+                    () -> elevator.atTargetHeight() && shooterPivot.isAtTargetAngle()),
+                Commands.parallel(
+                    Cmds.setState(Intake.State.INTAKE_GP),
+                    Cmds.setState(Shooter.State.INTAKING),
+                    Cmds.setState(ShooterPivot.State.INTAKING)),
+                Commands.waitUntil(() -> shooter.hasGamePiece()),
+                Commands.parallel(
+                    new ScheduleCommand(RumbleManager.driverBigOneSec()),
+                    Commands.sequence(
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.HOLDING_GP)))))
         .onFalse(
-            Commands.sequence(
+            Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.OFF),
@@ -233,11 +229,11 @@ public class Robot extends LoggedRobot {
 
     driver
         .rightTrigger(0.3)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
-                Cmds.setState(ShooterPivot.State.FENDER_SHOT),
+                Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
                 Cmds.setState(Shooter.State.FENDER_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
@@ -542,11 +538,8 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    // VehicleState.getInstance()
-    //     .updateDynamicPivotAngle(
-    //         (visionLeft.getInputs().verticalOffsetFromTarget
-    //                 + visionRight.getInputs().verticalOffsetFromTarget)
-    //             / 2);
+    VehicleState.getInstance()
+        .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
 
     RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
     VehicleState.getInstance()
