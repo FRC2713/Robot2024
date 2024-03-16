@@ -249,16 +249,14 @@ public class Shooter extends SubsystemBase {
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
     // rightTarget;
 
-    double differential = shooterDifferentialRpm.getAsDouble();
+    double differential = state.differentialRpm.getAsDouble();
 
     // if (state == State.FEEDING) {
     // differential = 0;
     // }
 
-    double leftError =
-        (inputs.leftSpeedRPM + differential) - (state.leftRpm.getAsDouble() + differential);
-    double rightError =
-        (inputs.rightSpeedRPM + differential) - (state.rightRpm.getAsDouble() + differential);
+    double leftError = (inputs.leftSpeedRPM) - (state.leftRpm.getAsDouble() + differential);
+    double rightError = (inputs.rightSpeedRPM) - (state.rightRpm.getAsDouble() - differential);
 
     Logger.recordOutput("Shooter/Left error", leftError);
     Logger.recordOutput("Shooter/Right error", rightError);

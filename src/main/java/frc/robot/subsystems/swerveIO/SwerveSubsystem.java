@@ -19,7 +19,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -299,36 +298,12 @@ public class SwerveSubsystem extends SubsystemBase {
     double poseDifference =
         getUsablePose().getTranslation().getDistance(visionBotPose.getTranslation());
 
-    if (left.hasTarget) {
-      double xyStds;
-      double degStds;
-      // multiple targets detected
-      if (left.tagCount >= 2) {
-        xyStds = 0.5;
-        degStds = 6;
-      }
-      // 1 target with large area and close to estimated pose
-      // else if (m_visionSystem.getBestTargetArea() > 0.8 && poseDifference < 0.5) {
-      //   xyStds = 1.0;
-      //   degStds = 12;
-      // }
-      // 1 target farther away and estimated pose is close
-      // else if (m_visionSystem.getBestTargetArea() > 0.1 && poseDifference < 0.3) {
-      else {
-        xyStds = 2.0;
-        degStds = 30;
-      }
-      // }
-      // conditions don't match to add a vision measurement
-      // else {
-      //   return;
-      // }
+    var multiTagXYStdev = 0.005;
+    var multiTagRotationStdev = 0.001;
+    var singleTagXYStdev = 0.2;
+    var singleTagRotationStdev = 0.1;
 
-      poseEstimator.addVisionMeasurement(
-          visionBotPose,
-          Timer.getFPGATimestamp() - left.totalLatencyMs,
-          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
-    }
+    for (var inputs : new VisionInputs[] {left, right}) {}
   }
 
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
