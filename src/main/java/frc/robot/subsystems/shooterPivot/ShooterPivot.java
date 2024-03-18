@@ -1,11 +1,13 @@
 package frc.robot.subsystems.shooterPivot;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.VehicleState;
 import frc.robot.commands.Cmds;
+import frc.robot.commands.otf.RotateScore;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,10 @@ public class ShooterPivot extends SubsystemBase {
     PODIUM_SHOT(podiumShotAngleDegrees),
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
+    POSE_AIM(
+        () ->
+            RotateScore.getOptimalShooterAngle(
+                SwerveDrivePoseEstimator.getUsablePose, Robot.Elevator.getLeftPosition)),
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
