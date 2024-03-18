@@ -163,7 +163,7 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(elevator::atTargetHeight),
                 Commands.sequence(
                         Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
-                        Shooter.Commands.setState(Shooter.State.INTAKING),
+                        Shooter.Commands.setFeederState(Shooter.FeederState.INTAKING),
                         ShooterPivot.Commands.setMotionMode(ShooterPivot.State.INTAKING))
                     .repeatedly()
                     .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
@@ -175,16 +175,16 @@ public class Robot extends LoggedRobot {
                                 shooter::hasGamePiece),
                             Intake.Commands.setMotionMode(Intake.State.OFF),
                             Commands.either(
-                                Shooter.Commands.setState(Shooter.State.OFF),
+                                Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
                                 new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)))))
+                                () -> shooter.getFeederState() == Shooter.FeederState.INTAKING)))))
         .onFalse(
             Commands.sequence(
                 Intake.Commands.setMotionMode(Intake.State.OFF),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
                     new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING)));
+                    () -> shooter.getFeederState() == Shooter.FeederState.INTAKING)));
 
     // driver
     // .povUp()
@@ -210,7 +210,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.FEEDER_SHOT),
-                Shooter.Commands.setState(Shooter.State.FEEDER_SHOT),
+                Shooter.Commands.setFeederState(Shooter.FeederState.FEEDER_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Intake.Commands.setMotionMode(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -482,12 +482,14 @@ public class Robot extends LoggedRobot {
 
     operator
         .b()
-        .onTrue(Commands.sequence(Shooter.Commands.setState(Shooter.State.FORCE_MANUAL_CONTROL)))
+        .onTrue(
+            Commands.sequence(
+                Shooter.Commands.setFeederState(Shooter.FeederState.FORCE_MANUAL_CONTROL)))
         .onFalse(
             Commands.sequence(
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
     operator
@@ -496,13 +498,16 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Elevator.Commands.setState(Elevator.State.ELEVATORSHOT),
                 ShooterPivot.Commands.setMotionMode(ShooterPivot.State.ELEVATOR_SHOT),
-                Shooter.Commands.setState(Shooter.State.ELEVATOR_SHOT)))
+                Shooter.Commands.setFeederState(Shooter.FeederState.ELEVATOR_SHOT),
+                Shooter.Commands.setFlywheelState(Shooter.FlywheelState.ELEVATOR_SHOT)))
         .onFalse(
             Commands.sequence(
                 Elevator.Commands.setState(Elevator.State.ELEVATORSHOT),
                 Commands.either(
-                    Shooter.Commands.setState(Shooter.State.HOLDING_GP),
-                    Shooter.Commands.setState(Shooter.State.OFF),
+                    Shooter.Commands.setFeederState(Shooter.FeederState.HOLDING_GP),
+                    Commands.sequence(
+                        Shooter.Commands.setFeederState(Shooter.FeederState.OFF),
+                        Shooter.Commands.setFlywheelState(Shooter.FlywheelState.OFF)),
                     () -> shooter.hasGamePiece())));
 
     // operator
