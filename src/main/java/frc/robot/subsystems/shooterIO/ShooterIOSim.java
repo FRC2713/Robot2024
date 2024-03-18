@@ -69,6 +69,8 @@ public class ShooterIOSim implements ShooterIO {
     inputs.feederStatorCurrentAmps = feeder.getCurrentDrawAmps();
     inputs.feederSupplyCurrentAmps = feeder.getCurrentDrawAmps();
 
+    inputs.LSTripped = false;
+
     if (state == Shooter.State.INTAKING) {
       fakeGamepieceTimer.start();
 
