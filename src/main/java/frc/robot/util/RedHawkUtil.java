@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -64,6 +65,11 @@ public final class RedHawkUtil {
 
   public static Translation2d Translation3dTo2d(Translation3d trans) {
     return new Translation2d(trans.getX(), trans.getY());
+  }
+
+  public static Pose2d Pose3dTo2d(Pose3d pose) {
+    return new Pose2d(
+        new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
   }
 
   /**

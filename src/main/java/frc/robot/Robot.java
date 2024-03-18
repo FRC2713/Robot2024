@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -43,6 +44,10 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
+import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
+import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
+import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.MotionHandler;
@@ -158,29 +163,24 @@ public class Robot extends LoggedRobot {
   public void createDriverBindings() {
     driver
         .leftBumper()
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new WaitUntilCommand(elevator::atTargetHeight),
-                Commands.sequence(
-                        Cmds.setState(Intake.State.INTAKE_GP),
-                        Cmds.setState(Shooter.State.INTAKING),
-                        Cmds.setState(ShooterPivot.State.INTAKING))
-                    .repeatedly()
-                    .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
-                    .andThen(
-                        Commands.sequence(
-                            Commands.either(
-                                RumbleManager.driverBigOneSec(),
-                                new InstantCommand(() -> {}),
-                                shooter::hasGamePiece),
-                            Cmds.setState(Intake.State.OFF),
-                            Commands.either(
-                                Cmds.setState(Shooter.State.OFF),
-                                new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)))))
+                Commands.parallel(
+                    Cmds.setState(ShooterPivot.State.INTAKING),
+                    Cmds.setState(Elevator.State.MIN_HEIGHT)),
+                new WaitUntilCommand(
+                    () -> elevator.atTargetHeight() && shooterPivot.isAtTargetAngle()),
+                Commands.parallel(
+                    Cmds.setState(Intake.State.INTAKE_GP),
+                    Cmds.setState(Shooter.State.INTAKING),
+                    Cmds.setState(ShooterPivot.State.INTAKING)),
+                Commands.waitUntil(() -> shooter.hasGamePiece()),
+                Commands.parallel(
+                    new ScheduleCommand(RumbleManager.driverBigOneSec()),
+                    Commands.sequence(
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.HOLDING_GP)))))
         .onFalse(
-            Commands.sequence(
+            Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.OFF),
@@ -254,7 +254,7 @@ public class Robot extends LoggedRobot {
 
     driver
         .rightTrigger(0.3)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
@@ -612,9 +612,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {}

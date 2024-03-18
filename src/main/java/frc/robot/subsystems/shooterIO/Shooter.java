@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Shooter/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 6);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 3.5);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 4000);
@@ -57,9 +57,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
 
   private static final LoggedTunableNumber ampShotShooterRPM =
-      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
+      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", 3000);
   private static final LoggedTunableNumber ampShotFeederVolts =
-      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", 5);
 
   private static final LoggedTunableNumber elevatorShotShooterRPM =
       new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
@@ -137,7 +137,7 @@ public class Shooter extends SubsystemBase {
         () -> true),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> 0, () -> true),
     OFF(() -> 0, () -> 0, () -> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> 0, () -> -5, () -> true),
+    OUTTAKE_BACKWARDS(() -> -1000, () -> -1000, () -> 0, () -> -3, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 0, () -> 1, () -> true),
     FEEDER_SHOT(
         feederShotRPM,
@@ -249,16 +249,20 @@ public class Shooter extends SubsystemBase {
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
     // rightTarget;
 
-    double differential = shooterDifferentialRpm.getAsDouble();
+    double differential = state.differentialRpm.getAsDouble();
 
     // if (state == State.FEEDING) {
     // differential = 0;
     // }
 
-    return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
-            < atGoalThresholdRPM.get()
-        && Math.abs(state.rightRpm.getAsDouble() - differential - inputs.rightSpeedRPM)
-            < atGoalThresholdRPM.get();
+    double leftError = (inputs.leftSpeedRPM) - (state.leftRpm.getAsDouble() + differential);
+    double rightError = (inputs.rightSpeedRPM) - (state.rightRpm.getAsDouble() - differential);
+
+    Logger.recordOutput("Shooter/Left error", leftError);
+    Logger.recordOutput("Shooter/Right error", rightError);
+
+    return Math.abs(leftError) < atGoalThresholdRPM.get()
+        && Math.abs(rightError) < atGoalThresholdRPM.get();
   }
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")

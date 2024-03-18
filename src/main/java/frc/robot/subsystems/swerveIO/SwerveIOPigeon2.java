@@ -13,9 +13,9 @@ public class SwerveIOPigeon2 implements SwerveIO {
 
   public SwerveIOPigeon2() {
     gyro = new Pigeon2(RobotMap.PIGEON_CAN_ID);
-    gyro.getYaw().setUpdateFrequency(50);
-    gyro.getPitch().setUpdateFrequency(50);
-    gyro.getRoll().setUpdateFrequency(50);
+    gyro.getYaw().setUpdateFrequency(100);
+    gyro.getPitch().setUpdateFrequency(100);
+    gyro.getRoll().setUpdateFrequency(100);
     gyro.optimizeBusUtilization();
 
     // gyro.zeroGyroBiasNow();

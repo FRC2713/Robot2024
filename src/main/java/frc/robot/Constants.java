@@ -43,7 +43,7 @@ public final class Constants {
 
   public final class LimeLightConstants {
     public static double CAMERA_TO_TAG_MAX_DIST_INCHES = 120;
-    public static double MAX_POSE_JUMP_METERS = Units.inchesToMeters(6 * 12);
+    public static double MAX_POSE_JUMP_METERS = 0.5; // Units.feetToMeters(5);
 
     public record PoseEstimatorErrorStDevs(double translationalStDev, double rotationalStDev) {
       public PoseEstimatorErrorStDevs multiplyByRange(double range) {
@@ -57,23 +57,39 @@ public final class Constants {
     }
 
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_STATE_STDEVS =
-        new PoseEstimatorErrorStDevs(0.1, Units.degreesToRadians(0));
+        new PoseEstimatorErrorStDevs(1.0, Units.degreesToRadians(1));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.6, Units.degreesToRadians(15));
+        new PoseEstimatorErrorStDevs(0.2, Units.degreesToRadians(10));
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
-        new PoseEstimatorErrorStDevs(0.01, Units.degreesToRadians(2));
+        new PoseEstimatorErrorStDevs(0.001, Units.degreesToRadians(0.06));
 
-    public static VisionInfo FRONT_LIMELIGHT_INFO =
+    public static VisionInfo LEFT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-a")
-            .location(new Transform3d(0.354453, 9.148643, -19.964190, new Rotation3d(0, 75, 90)))
+            .location(
+                new Transform3d(
+                    Units.inchesToMeters(-10.072374),
+                    Units.inchesToMeters(9.304687),
+                    Units.inchesToMeters(24.149765),
+                    new Rotation3d(
+                        0,
+                        Units.degreesToRadians(-14.209976),
+                        Units.degreesToRadians(180 - 71.409653 + 90))))
             .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
-    public static VisionInfo REAR_LIMELIGHT_INFO =
+    public static VisionInfo RIGHT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-b")
-            .location(new Transform3d())
-            .mountingDirection(MountingDirection.VERTICAL_LL3)
+            .location(
+                new Transform3d(
+                    Units.inchesToMeters(-10.062783),
+                    Units.inchesToMeters(-9.304855),
+                    Units.inchesToMeters(24.185351),
+                    new Rotation3d(
+                        0,
+                        Units.degreesToRadians(-14.209976),
+                        Units.degreesToRadians(180 - 23.725656))))
+            .mountingDirection(MountingDirection.HORIZONTAL_LL3)
             .build();
   }
 
@@ -160,7 +176,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final PIDFFGains ELEVATOR_GAINS =
-        PIDFFGains.builder().name("Elevator Controller").kP(1.5).kD(0.0).kG(0.275).build();
+        PIDFFGains.builder().name("Elevator Controller").kP(1.5).kD(0.0).kG(0.24).build();
     public static final double GEARING = 5.0;
     public static final double CARRIAGE_MASS_KG = 0.3;
     public static final double DRUM_RADIUS_METERS = Units.inchesToMeters(1);
@@ -169,7 +185,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
-    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = 0.0;
+    public static final double FLOOR_TO_ELEVATOR_BASE_METRES = Units.inchesToMeters(31.25);
   }
 
   public static final class SuperStructure {

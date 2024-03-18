@@ -3,7 +3,9 @@ package frc.robot.commands.otf;
 import static frc.robot.util.RedHawkUtil.Translation3dTo2d;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,7 +20,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
   private static Translation3d speakerLoc =
-      RedHawkUtil.Reflections.reflectIfRed(new Translation3d(0.695, 5.552, 2.11));
+      RedHawkUtil.Reflections.reflectIfRed(
+          new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
 
   public static Rotation2d getOptimalAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
@@ -27,6 +30,7 @@ public class RotateScore extends SequentialCommandGroup {
     if (position.getY() < speakerLoc.getY()) {
       optimalAngle *= -1;
     }
+    Logger.recordOutput("OTF/Speaker Loc", new Pose3d(speakerLoc, new Rotation3d()));
     Logger.recordOutput(
         "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
     return RedHawkUtil.Reflections.reflectIfRed(new Rotation2d(optimalAngle));

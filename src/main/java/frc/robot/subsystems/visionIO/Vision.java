@@ -9,13 +9,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
   private final VisionIO io;
-  private final VisionInputsAutoLogged inputs;
+  private final VisionInputs inputs;
   private final String key;
 
   public Vision(VisionIO io) {
     this.io = io;
     this.key = String.format("Vision/%s", io.getInfo().getNtTableName());
-    inputs = new VisionInputsAutoLogged();
+    inputs = new VisionInputs();
     io.updateInputs(inputs);
   }
 
@@ -27,14 +27,13 @@ public class Vision extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs(key, inputs);
 
-    Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPoseBlue.toPose2d());
+    Logger.recordOutput(outputKey("Bot Pose (2d)"), inputs.botPoseBlue);
   }
 
   @AutoLogOutput(key = "Vision/estimate")
   public double estimateDistanceToTag() {
     double angleToTagDegrees =
-        Constants.DynamicShooterConstants.limelightMouningAngleDegrees
-            + this.getInputs().verticalOffsetFromTarget;
+        Constants.DynamicShooterConstants.limelightMouningAngleDegrees + 0; // this.getInputs();
     double angleToTagRadians = angleToTagDegrees * (Math.PI / 180.0);
     return (Constants.DynamicShooterConstants.tagMountingHeight
             - Constants.DynamicShooterConstants.limelightMountingHeightMeters)

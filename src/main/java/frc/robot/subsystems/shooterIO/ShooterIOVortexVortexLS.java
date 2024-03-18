@@ -1,10 +1,5 @@
 package frc.robot.subsystems.shooterIO;
 
-import au.grapplerobotics.ConfigurationFailedException;
-import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.LaserCan.RangingMode;
-import au.grapplerobotics.LaserCan.RegionOfInterest;
-import au.grapplerobotics.LaserCan.TimingBudget;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -28,8 +23,6 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
       new CANSparkFlex(Constants.RobotMap.FEEDER_CAN_ID, MotorType.kBrushless);
   private final SparkLimitSwitch limitSwitch =
       feederMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
-
-  private LaserCan laserCan = new LaserCan(0);
 
   public ShooterIOVortexVortexLS() {
     leftMotor.restoreFactoryDefaults();
@@ -81,14 +74,6 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
 
     ShooterConstants.SHOOTER_GAINS.applyTo(leftMotor.getPIDController());
     ShooterConstants.SHOOTER_GAINS.applyTo(rightMotor.getPIDController());
-
-    try {
-      laserCan.setRangingMode(RangingMode.SHORT);
-      laserCan.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
-      laserCan.setRegionOfInterest(new RegionOfInterest(8, 8, 16, 16));
-    } catch (ConfigurationFailedException e) {
-      System.err.println("Could not configure LaserCAN!");
-    }
   }
 
   @Override

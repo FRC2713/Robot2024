@@ -1,59 +1,58 @@
 package frc.robot.subsystems.visionIO;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import org.littletonrobotics.junction.AutoLog;
+import frc.robot.util.LimelightHelpers.LimelightResults;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
+import java.util.Optional;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public interface VisionIO {
-  @AutoLog
-  public static class VisionInputs {
-    public Pose3d botPoseBlue = new Pose3d();
-    // public Pose3d botPose = new Pose3d();
-    // public Pose3d botPoseRed = new Pose3d();
-    // public Pose3d cameraPoseInTargetSpace = new Pose3d();
-    // public Pose3d targetPoseInCameraSpace = new Pose3d();
-    // public Pose3d targetPoseInRobotSpace = new Pose3d();
-    // public Pose3d botPoseInTargetSpace = new Pose3d();
-    // public Pose3d cameraPoseInRobotSpace = new Pose3d();
-
+  public static class VisionInputs implements LoggableInputs {
+    public Pose2d botPoseBlue = new Pose2d();
     public double botPoseBlueTimestamp = 0;
-    // public double botPoseTimestamp = 0;
-    // public double botPoseRedTimestamp = 0;
-    // public double cameraPoseInTargetSpaceTimestamp = 0;
-    // public double targetPoseInCameraSpaceTimestamp = 0;
-    // public double targetPoseInRobotSpaceTimestamp = 0;
-    // public double botPoseInTargetSpaceTimestamp = 0;
-    // public double cameraPoseInRobotSpaceTimestamp = 0;
-
-    // public double aprilTagId = 0;
-    // public boolean hasValidTarget = false;
-    // public double horizontalOffsetFromTarget = 0;
-    // public double verticalOffsetFromTarget = 0;
-    // public double targetArea = 0;
-    // public double pipelineLatency = 0;
-    // public double captureLatency = 0;
-    // public double totalLatency = 0;
-    // public double shortestBoundingBoxSidelength = 0;
-    // public double longestBoundingBoxSideLength = 0;
-    // public double horizontalBoundingBoxSideLength = 0;
-    // public double verticalBoundingBoxSideLength = 0;
-    // public double activePipeline = 0;
-    // public double neuralNetClassId = 0;
-    // public double[] averageHsvColor = new double[] {};
-    // public int targetCountFiducials = 0;
-
     public boolean hasTarget = false;
-    public double horizontalOffsetFromTarget = 0;
-    public double verticalOffsetFromTarget = 0;
-    public double targetArea = 0;
-    public double pipelineLatencyMs = 0;
-    public double captureLatencyMs = 0;
-    public double totalLatencyMs = 0;
-    public double activePipeline = 0;
     public double tagCount = 0;
-    public double tagSpan = 0;
+    public double totalLatencyMs = 0;
     public double averageTagDistanceFromCamera = 0;
     public double averageTagArea = 0;
-    public double tagId = 0;
+
+    public LimelightResults results;
+
+    @Override
+    public void toLog(LogTable table) {
+
+      table.put("BotPoseBlue", botPoseBlue);
+      table.put("BotPoseBlueTimestamp", botPoseBlueTimestamp);
+      table.put("HasTarget", hasTarget);
+      table.put("TagCount", tagCount);
+      table.put("TotalLatencyMs", totalLatencyMs);
+      table.put("AverageTagDistanceFromCamera", averageTagDistanceFromCamera);
+      table.put("AverageTagArea", averageTagArea);
+
+      var targets = results.targetingResults.targets_Fiducials;
+      for (int i = 0; i < targets.length; i++) {
+        var prefix = "Targets/Tag_" + targets[i].fiducialID;
+        table.put(prefix + "_tx", targets[i].tx);
+        table.put(prefix + "_ty", targets[i].ty);
+        table.put(prefix + "_ta", targets[i].ta);
+        table.put(prefix + "_ts", targets[i].ts);
+      }
+    }
+
+    @Override
+    public void fromLog(LogTable table) {}
+
+    public Optional<LimelightTarget_Fiducial> getByTagId(double tagId) {
+      for (var x : this.results.targetingResults.targets_Fiducials) {
+        if (x.fiducialID == tagId) {
+          return Optional.of(x);
+        }
+      }
+
+      return Optional.empty();
+    }
   }
 
   public void updateInputs(VisionInputs inputs);

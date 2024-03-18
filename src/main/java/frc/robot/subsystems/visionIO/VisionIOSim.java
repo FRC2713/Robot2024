@@ -2,10 +2,8 @@ package frc.robot.subsystems.visionIO;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import lombok.SneakyThrows;
 import org.photonvision.PhotonCamera;
@@ -23,6 +21,8 @@ public class VisionIOSim implements VisionIO {
   AprilTagFieldLayout layout;
   VisionInfo info;
 
+  Pose2d estimatedPose;
+
   @SneakyThrows
   public VisionIOSim(VisionInfo info) {
     this.info = info;
@@ -32,7 +32,7 @@ public class VisionIOSim implements VisionIO {
 
     var cameraProp = new SimCameraProperties();
     cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
-    cameraProp.setCalibError(0.35, 0.10);
+    cameraProp.setCalibError(0.1, 0.05);
     cameraProp.setFPS(15);
     cameraProp.setAvgLatencyMs(50);
     cameraProp.setLatencyStdDevMs(15);
@@ -42,8 +42,7 @@ public class VisionIOSim implements VisionIO {
     cameraSim.enableDrawWireframe(true);
     cameraSim.enableProcessedStream(true);
     cameraSim.enableRawStream(true);
-    visionSim.addCamera(cameraSim, new Transform3d());
-    SmartDashboard.putData(visionSim.getDebugField());
+    visionSim.addCamera(cameraSim, this.info.getLocation());
   }
 
   public VisionInfo getName() {
@@ -52,11 +51,7 @@ public class VisionIOSim implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    visionSim.update(Robot.swerveDrive.getUsablePose());
-    visionSim
-        .getDebugField()
-        .getObject("VisionEstimation")
-        .setPose(Robot.swerveDrive.getUsablePose());
+    visionSim.update(Robot.swerveDrive.getWheelPose());
 
     var res = cameraHw.getLatestResult();
 
@@ -69,36 +64,38 @@ public class VisionIOSim implements VisionIO {
           PhotonUtils.estimateFieldToRobotAprilTag(
               target.getBestCameraToTarget(),
               layout.getTagPose(target.getFiducialId()).get(),
-              new Transform3d());
+              this.info.getLocation().inverse());
 
-      inputs.botPoseBlue = robotPose;
+      inputs.botPoseBlue = robotPose.toPose2d();
       inputs.botPoseBlueTimestamp = imageCaptureTime;
-      inputs.horizontalOffsetFromTarget = target.getYaw();
-      inputs.verticalOffsetFromTarget = target.getPitch();
-      inputs.targetArea = target.getArea();
-      inputs.pipelineLatencyMs = res.getLatencyMillis();
-      inputs.captureLatencyMs = 0.0;
-      inputs.activePipeline = 0;
-      inputs.tagCount = res.getTargets().size();
-      inputs.tagId = res.getBestTarget().getFiducialId();
+      // inputs.horizontalOffsetFromTarget = target.getYaw();
+      // inputs.verticalOffsetFromTarget = target.getPitch();
+      // inputs.targetArea = target.getArea();
+      // inputs.pipelineLatencyMs = res.getLatencyMillis();
+      // inputs.captureLatencyMs = 0.0;
+      // inputs.totalLatencyMs = inputs.pipelineLatencyMs + inputs.captureLatencyMs;
+      // inputs.activePipeline = 0;
+      // inputs.tagCount = res.getTargets().size();
+      // inputs.tagId = res.getBestTarget().getFiducialId();
+
+      // inputs.horizontalOffsetFromTarget = target.getYaw();
+      // inputs.verticalOffsetFromTarget = -target.getPitch();
+
     } else {
-      inputs.botPoseBlue = new Pose3d();
+      inputs.botPoseBlue = new Pose2d();
       inputs.botPoseBlueTimestamp = 0.0;
-      inputs.horizontalOffsetFromTarget = 0.0;
-      inputs.verticalOffsetFromTarget = 0.0;
-      inputs.targetArea = 0.0;
-      inputs.pipelineLatencyMs = 0.0;
-      inputs.captureLatencyMs = 0.0;
-      inputs.activePipeline = 0;
+      // inputs.horizontalOffsetFromTarget = 0.0;
+      // inputs.verticalOffsetFromTarget = 0.0;
+      // inputs.targetArea = 0.0;
+      // inputs.pipelineLatencyMs = 0.0;
+      // inputs.captureLatencyMs = 0.0;
+      // inputs.activePipeline = 0;
       inputs.tagCount = 0;
     }
   }
 
   @Override
-  public void setLEDMode(LEDMode mode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setLEDMode'");
-  }
+  public void setLEDMode(LEDMode mode) {}
 
   @Override
   public void setCameraMode(CameraMode mode) {
