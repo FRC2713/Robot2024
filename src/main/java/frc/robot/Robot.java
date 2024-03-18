@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
@@ -45,12 +43,15 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
+import frc.robot.subsystems.visionIO.LimelightGP;
 import frc.robot.subsystems.visionIO.Vision;
 import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.MotionHandler;
+import frc.robot.util.ObjectDetection;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
@@ -61,11 +62,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+import org.opencv.core.Point;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
   private OTF otf = new OTF();
-  public static Vision visionRight, visionLeft;
+  public static LimelightGP visionFront;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
@@ -123,23 +125,19 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionLeft =
-        new Vision(
-            isSimulation()
-                ? new VisionIOSim(LimeLightConstants.LEFT_LIMELIGHT_INFO)
-                : new VisionIOLimelightLib(LimeLightConstants.LEFT_LIMELIGHT_INFO));
-
-    visionRight =
-        new Vision(
-            isSimulation()
-                ? new VisionIOSim(LimeLightConstants.RIGHT_LIMELIGHT_INFO)
-                : new VisionIOLimelightLib(LimeLightConstants.RIGHT_LIMELIGHT_INFO));
+    // visionFront =
+    //     new Vision(
+    //         isSimulation()
+    //             ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
+    //             : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
 
     // visionRear =
     // new Vision(
     // isSimulation()
     // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
     // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+
+    visionFront = new LimelightGP(Constants.LimeLightConstants.REAR_LIMELIGHT_INFO);
 
     mechManager = new MechanismManager();
 
@@ -193,20 +191,47 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(Shooter.State.FEEDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
+                Cmds.setState(Shooter.State.INTAKING),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                new InstantCommand(
+                    () -> {
+                      Robot.swerveDrive.setMotionMode(MotionMode.DRIVE_TOWARDS_GP);
+                      MotionHandler.hasGPLock = false;
+                      MotionHandler.closestResult = new ObjectDetection(new Point(), 0, 0);
+                    })))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece()),
-                new WaitCommand(0.05),
-                Cmds.setState(ShooterPivot.State.INTAKING)));
+                    new InstantCommand(),
+                    () -> shooter.getState() == Shooter.State.INTAKING),
+                new InstantCommand(
+                    () -> {
+                      Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                      MotionHandler.hasGPLock = false;
+                      MotionHandler.closestResult = new ObjectDetection(new Point(), 0, 0);
+                    })));
+    // driver
+    //     .leftTrigger(0.3)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+    //             Cmds.setState(Shooter.State.FEEDER_SHOT),
+    //             new WaitUntilCommand(() -> shooter.isAtTarget()),
+    //             Cmds.setState(Intake.State.INTAKE_GP),
+    //             RedHawkUtil.logShot()))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Cmds.setState(Intake.State.OFF),
+    //             Commands.either(
+    //                 Cmds.setState(Shooter.State.HOLDING_GP),
+    //                 Cmds.setState(Shooter.State.OFF),
+    //                 () -> shooter.hasGamePiece()),
+    //             new WaitCommand(0.05),
+    //             Cmds.setState(ShooterPivot.State.INTAKING)));
 
     driver
         .rightBumper()
@@ -497,20 +522,18 @@ public class Robot extends LoggedRobot {
 
   public void createAutomaticTriggers() {
 
-    new Trigger(() -> shooter.hasGamePiece())
-        .onTrue(
-            Commands.sequence(
-                new InstantCommand(
-                    () -> {
-                      visionRight.setLEDMode(LEDMode.FORCE_BLINK);
-                      visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
-                    }),
-                new WaitCommand(2),
-                new InstantCommand(
-                    () -> {
-                      visionRight.setLEDMode(LEDMode.PIPELINE);
-                      visionLeft.setLEDMode(LEDMode.PIPELINE);
-                    })));
+    // new Trigger(() -> shooter.hasGamePiece())
+    //     .onTrue(
+    //         Commands.sequence(
+    //             new InstantCommand(
+    //                 () -> {
+    //                   visionFront.setLEDMode(LEDMode.FORCE_BLINK);
+    //                 }),
+    //             new WaitCommand(2),
+    //             new InstantCommand(
+    //                 () -> {
+    //                   visionFront.setLEDMode(LEDMode.PIPELINE);
+    //                 })));
   }
 
   @Override
@@ -538,16 +561,11 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    VehicleState.getInstance()
-        .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
-
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-    VehicleState.getInstance()
-        .updateCenterTagError(visionLeft.getInputs(), visionRight.getInputs());
-    swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
-    swerveDrive.updatePoseEstimatorWithVisionBotPose(
-        visionRight.getInfo(), visionRight.getInputs());
-    // swerveDrive.poseEstimationFromVision(visionLeft.getInputs(), visionRight.getInputs());
+    // VehicleState.getInstance()
+    //     .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
+    // VehicleState.getInstance().updateCenterTagError(visionFront.getInputs());
+    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(),
+    // visionFront.getInputs());
   }
 
   @Override

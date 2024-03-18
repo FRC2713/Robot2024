@@ -94,6 +94,15 @@ public final class Constants {
   }
 
   @UtilityClass
+  public static final class AutoIntakeConstants {
+    public static final double MIN_TX_LL1 = -27;
+    public static final double MAX_TX_LL1 = 27;
+
+    public static final double MIN_TX_LL2 = -29.8;
+    public static final double MAX_TX_LL2 = 29.8;
+  }
+
+  @UtilityClass
   public static final class RobotMap {
     public static final int PIGEON_CAN_ID = 20;
     public static final int LEFT_ELEVATOR_CAN_ID = 10;
