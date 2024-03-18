@@ -35,4 +35,14 @@ public class ObjectDetection {
 
     return new ObjectDetection(new Point(tlx + (width / 2), tly + (height / 2)), width, height);
   }
+
+  public static ObjectDetection fromImageRelativeCentre(
+      double imwidth, double imheight, double tlx, double tly, double width, double height) {
+    tlx /= imwidth;
+    tly /= imheight;
+    width /= imwidth;
+    height /= imheight;
+
+    return new ObjectDetection(new Point(tlx, tly), width, height);
+  }
 }

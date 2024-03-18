@@ -12,6 +12,7 @@ import frc.robot.Robot;
 import frc.robot.VehicleState;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
+import java.util.ArrayList;
 import org.littletonrobotics.junction.Logger;
 import org.opencv.core.Point;
 
@@ -122,8 +123,7 @@ public class MotionHandler {
     SwerveHeadingController.getInstance()
         .setSetpoint(Rotation2d.fromDegrees(angle).plus(Robot.swerveDrive.getYaw()));
 
-    return ChassisSpeeds.fromRobotRelativeSpeeds(
-        0.5, 0, SwerveHeadingController.getInstance().update(), Rotation2d.fromDegrees(0));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(0.5, 0, 0, Rotation2d.fromDegrees(0));
   }
 
   public static boolean hasGPLock = false;
@@ -152,7 +152,7 @@ public class MotionHandler {
 
     Logger.recordOutput("OTF/DrivingToGP/Goodness", closestResult.goodness());
 
-    if (closestResult.goodness() < 0.01) {
+    if (closestResult.goodness() < 0.0) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low");
       return driveFullControl();
@@ -163,10 +163,7 @@ public class MotionHandler {
     return goClosestGP(closestResult);
   }
 
-  private static ObjectDetection[] getObjectDetectionResults() {
-    return new ObjectDetection[] {
-      new ObjectDetection(new Point(0.5, 0.5), 0.02, 0.02),
-      new ObjectDetection(new Point(0.2, 0.2), 0.1, 0.1)
-    };
+  private static ArrayList<ObjectDetection> getObjectDetectionResults() {
+    return Robot.visionFront.detections;
   }
 }
