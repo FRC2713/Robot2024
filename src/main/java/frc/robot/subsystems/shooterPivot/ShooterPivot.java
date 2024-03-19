@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooterPivot;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -48,7 +47,8 @@ public class ShooterPivot extends SubsystemBase {
     POSE_AIM(
         () ->
             RotateScore.getOptimalShooterAngle(
-                SwerveDrivePoseEstimator.getUsablePose, Robot.Elevator.getLeftPosition)),
+                    Robot.swerveDrive.getUsablePose(), Robot.elevator.getCurrentHeight())
+                .getDegrees()),
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
