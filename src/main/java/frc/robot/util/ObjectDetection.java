@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -44,5 +45,10 @@ public class ObjectDetection {
     height /= imheight;
 
     return new ObjectDetection(new Point(tlx, tly), width, height);
+  }
+
+  public static ObjectDetection fromLimelight(LimelightTarget_Detector detection) {
+    return new ObjectDetection(
+        new Point(detection.tx, detection.ty), Math.sqrt(detection.ta), Math.sqrt(detection.ta));
   }
 }

@@ -19,12 +19,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTF;
-import frc.robot.commands.otf.RotateScore;
+import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
@@ -44,10 +45,6 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
-import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
-import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
-import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
 import frc.robot.util.MotionHandler;
@@ -73,6 +70,7 @@ public class Robot extends LoggedRobot {
   public static Elevator elevator;
   public static Shooter shooter;
   public static Intake intake;
+  public static Candle candle;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -110,6 +108,10 @@ public class Robot extends LoggedRobot {
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
+    candle = new Candle(isSimulation());
+
+    candle.setRGBValue(0, 0, 255);
+
     swerveDrive =
         isSimulation()
             ? new SwerveSubsystem(
@@ -137,7 +139,7 @@ public class Robot extends LoggedRobot {
     // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
     // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
 
-    visionFront = new LimelightGP(Constants.LimeLightConstants.REAR_LIMELIGHT_INFO);
+    visionFront = new LimelightGP(Constants.LimeLightConstants.RIGHT_LIMELIGHT_INFO);
 
     mechManager = new MechanismManager();
 
@@ -511,6 +513,11 @@ public class Robot extends LoggedRobot {
         .onTrue(Cmds.setState(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Cmds.setState(Intake.State.OFF));
 
+    operator
+        .back()
+        .onTrue(Cmds.setState(Intake.State.OUTAKE_GP))
+        .onFalse(Cmds.setState(Intake.State.OFF));
+
     // operator
     //     .back()
     //     .onTrue(
@@ -522,18 +529,13 @@ public class Robot extends LoggedRobot {
 
   public void createAutomaticTriggers() {
 
-    // new Trigger(() -> shooter.hasGamePiece())
-    //     .onTrue(
-    //         Commands.sequence(
-    //             new InstantCommand(
-    //                 () -> {
-    //                   visionFront.setLEDMode(LEDMode.FORCE_BLINK);
-    //                 }),
-    //             new WaitCommand(2),
-    //             new InstantCommand(
-    //                 () -> {
-    //                   visionFront.setLEDMode(LEDMode.PIPELINE);
-    //                 })));
+    new Trigger(() -> shooter.hasGamePiece())
+        .onTrue(Candle.Commands.hasGamePieceAnimation(true))
+        .onFalse(Candle.Commands.hasGamePieceAnimation(false));
+
+    new Trigger(() -> !visionFront.detections.isEmpty() && !shooter.hasGamePiece())
+        .onTrue(Candle.Commands.gamePieceLockedOn())
+        .onFalse(Candle.Commands.LEDsOff());
   }
 
   @Override
@@ -543,7 +545,8 @@ public class Robot extends LoggedRobot {
     mechManager.periodic();
     updatePreMatchDashboardValues();
 
-    if (Math.abs(driver.getRightX()) > 0.25) {
+    if (Math.abs(driver.getRightX()) > 0.25
+        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 

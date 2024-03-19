@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
 import frc.robot.commands.otf.RotateScore;
@@ -114,27 +113,36 @@ public class MotionHandler {
     Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
     Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
 
-    var angle = 0;
+    double angle = 0;
 
-    // Get robot angle from where centre point is
-    if (gp.centre.x > 0.5) {
-      angle += Constants.AutoIntakeConstants.MAX_TX_LL1 * (gp.centre.x - 0.5);
-    }
-    if (gp.centre.x < 0.5) {
-      angle += Constants.AutoIntakeConstants.MIN_TX_LL1 * (gp.centre.x + 0.5);
-    }
+    // // Get robot angle from where centre point is
+    // if (gp.centre.x > 0.5) {
+    //   angle += Constants.AutoIntakeConstants.MAX_TX_LL1 * (gp.centre.x - 0.5);
+    // }
+    // if (gp.centre.x < 0.5) {
+    //   angle += Constants.AutoIntakeConstants.MIN_TX_LL1 * (gp.centre.x + 0.5);
+    // }
+    angle += (-1 * gp.centre.x);
 
     Logger.recordOutput("OTF/DrivingToGP/Angle", angle);
     Logger.recordOutput("OTF/DrivingToGP/Closest X", gp.centre.x);
 
-    SwerveHeadingController.getInstance()
-        .setSetpoint(Rotation2d.fromDegrees(angle).plus(Robot.swerveDrive.getYaw()));
+    SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(yaw));
 
-    return ChassisSpeeds.fromRobotRelativeSpeeds(0.5, 0, 0, Rotation2d.fromDegrees(0));
+    double xSpeed =
+        MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
+            * 1.5;
+
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        xSpeed,
+        0,
+        Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
+        Rotation2d.fromDegrees(0));
   }
 
   public static boolean hasGPLock = false;
   public static ObjectDetection closestResult = new ObjectDetection(new Point(), 0, 0);
+  public static Rotation2d yaw = new Rotation2d();
 
   public static ChassisSpeeds driveTowardsGP() {
     Logger.recordOutput("OTF/DrivingToGP/HasGPLock", hasGPLock);
@@ -159,13 +167,14 @@ public class MotionHandler {
 
     Logger.recordOutput("OTF/DrivingToGP/Goodness", closestResult.goodness());
 
-    if (closestResult.goodness() < 0.0) {
+    if (closestResult.goodness() < 0.0000000000001) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low");
       return driveFullControl();
     }
 
     hasGPLock = true;
+    yaw = Robot.swerveDrive.getYaw();
 
     return goClosestGP(closestResult);
   }

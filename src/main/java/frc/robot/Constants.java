@@ -100,6 +100,11 @@ public final class Constants {
 
     public static final double MIN_TX_LL2 = -29.8;
     public static final double MAX_TX_LL2 = 29.8;
+
+    public static final double MIN_TX_LL3 =
+        -1 * (VisionInfo.MountingDirection.HORIZONTAL_LL3.getHorizontalFOV() / 2);
+    public static final double MAX_TX_LL3 =
+        VisionInfo.MountingDirection.HORIZONTAL_LL3.getHorizontalFOV() / 2;
   }
 
   @UtilityClass
@@ -132,6 +137,8 @@ public final class Constants {
 
     public static final int BACK_RIGHT_DRIVE_CAN_ID = 44;
     public static final int BACK_RIGHT_AZIMUTH_CAN_ID = 4;
+
+    public static final int CANDLE_CAN_ID = 0;
   }
 
   public static final class IntakeConstants {

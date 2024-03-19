@@ -18,14 +18,7 @@ public class LimelightGP extends SubsystemBase {
     var table = LimelightHelpers.getLatestResults(info.getNtTableName());
     detections.clear();
     for (var detection : table.targetingResults.targets_Detector) {
-      detections.add(
-          ObjectDetection.fromImageRelativeCentre(
-              320,
-              240,
-              detection.tx_pixels,
-              detection.ty_pixels,
-              Math.sqrt(detection.ta),
-              Math.sqrt(detection.ta)));
+      detections.add(ObjectDetection.fromLimelight(detection));
     }
   }
 }
