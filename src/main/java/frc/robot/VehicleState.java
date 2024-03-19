@@ -140,8 +140,8 @@ public class VehicleState {
     SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
 
     double xSpeed =
-        MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
-            * 1.5;
+        Math.abs(MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE))
+        + Math.abs(MathUtil.applyDeadband(-Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE));
 
     return ChassisSpeeds.fromRobotRelativeSpeeds(
         xSpeed,
