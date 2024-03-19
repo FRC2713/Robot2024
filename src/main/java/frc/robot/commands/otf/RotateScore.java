@@ -33,6 +33,9 @@ public class RotateScore extends SequentialCommandGroup {
 
   public static Double getOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    Logger.recordOutput(
+        "OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
     return Angle.get(distance);
   }
 
