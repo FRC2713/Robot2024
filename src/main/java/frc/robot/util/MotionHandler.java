@@ -8,12 +8,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
-import java.util.ArrayList;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
 import org.littletonrobotics.junction.Logger;
-import org.opencv.core.Point;
 
 public class MotionHandler {
 
@@ -109,43 +109,8 @@ public class MotionHandler {
     return driveHeadingController();
   }
 
-  public static ChassisSpeeds goClosestGP(ObjectDetection gp) {
-    Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
-    Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
-
-    double angle = 0;
-
-    // // Get robot angle from where centre point is
-    // if (gp.centre.x > 0.5) {
-    //   angle += Constants.AutoIntakeConstants.MAX_TX_LL1 * (gp.centre.x - 0.5);
-    // }
-    // if (gp.centre.x < 0.5) {
-    //   angle += Constants.AutoIntakeConstants.MIN_TX_LL1 * (gp.centre.x + 0.5);
-    // }
-    angle += (-1 * gp.centre.x);
-
-    Logger.recordOutput("OTF/DrivingToGP/Angle", angle);
-    Logger.recordOutput("OTF/DrivingToGP/Closest X", gp.centre.x);
-
-    SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(yaw));
-
-    double xSpeed =
-        MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
-            * 1.5;
-
-    return ChassisSpeeds.fromRobotRelativeSpeeds(
-        xSpeed,
-        0,
-        Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
-        Rotation2d.fromDegrees(0));
-  }
-
-  public static boolean hasGPLock = false;
-  public static ObjectDetection closestResult = new ObjectDetection(new Point(), 0, 0);
-  public static Rotation2d yaw = new Rotation2d();
-
   public static ChassisSpeeds driveTowardsGP() {
-    Logger.recordOutput("OTF/DrivingToGP/HasGPLock", hasGPLock);
+    Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
 
     if (Robot.shooter.hasGamePiece()) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
@@ -153,33 +118,34 @@ public class MotionHandler {
       return driveFullControl();
     }
 
-    if (hasGPLock) {
-      return goClosestGP(closestResult);
+    if (VehicleState.getInstance().hasGPLock) {
+      return VehicleState.getInstance().goClosestGP();
     }
 
     var results = getObjectDetectionResults();
 
     for (var result : results) {
-      if (result.goodness() > closestResult.goodness()) {
-        closestResult = result;
+      if (result.goodness() > VehicleState.getInstance().closestResult.goodness()) {
+        VehicleState.getInstance().closestResult = result;
       }
     }
 
-    Logger.recordOutput("OTF/DrivingToGP/Goodness", closestResult.goodness());
+    Logger.recordOutput(
+        "OTF/DrivingToGP/Goodness", VehicleState.getInstance().closestResult.goodness());
 
-    if (closestResult.goodness() < 0.0000000000001) {
+    if (VehicleState.getInstance().closestResult.goodness() < 0.0000000000001) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low");
       return driveFullControl();
     }
 
-    hasGPLock = true;
-    yaw = Robot.swerveDrive.getYaw();
+    VehicleState.getInstance().hasGPLock = true;
+    VehicleState.getInstance().GPyaw = Robot.swerveDrive.getYaw();
 
-    return goClosestGP(closestResult);
+    return VehicleState.getInstance().goClosestGP();
   }
 
-  private static ArrayList<ObjectDetection> getObjectDetectionResults() {
-    return Robot.visionFront.detections;
+  private static LimelightTarget_Detector[] getObjectDetectionResults() {
+    return Robot.visionGP.detections;
   }
 }

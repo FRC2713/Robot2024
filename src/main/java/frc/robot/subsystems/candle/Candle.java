@@ -26,7 +26,7 @@ public class Candle extends SubsystemBase {
   private int ledOffset = 0;
 
   public Candle(boolean isSimulation) {
-    this.m_candle = isSimulation ? null : new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
+    this.m_candle = isSimulation ? new CandleSim() : new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
   }
 
   public enum AnimationTypes {
@@ -44,11 +44,7 @@ public class Candle extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (m_candle == null) {
-      // do nothing
-    } else {
-      m_candle.setLEDs(this.r, this.g, this.b);
-    }
+    m_candle.setLEDs(this.r, this.g, this.b);
   }
 
   public void changeAnimation(AnimationTypes led_animation) {
@@ -147,6 +143,14 @@ public class Candle extends SubsystemBase {
 
     public static Command LEDsOff() {
       return Candle.Commands.setLEDs(0, 0, 0);
+    }
+
+    public static Command gamePieceDetected() {
+      return new InstantCommand(
+          () -> {
+            Robot.candle.setRGBValue(255, 165, 0);
+            Robot.candle.changeAnimation(AnimationTypes.SetAll);
+          });
     }
 
     public static Command gamePieceLockedOn() {

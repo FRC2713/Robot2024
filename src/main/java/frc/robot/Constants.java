@@ -79,6 +79,21 @@ public final class Constants {
             .build();
     public static VisionInfo RIGHT_LIMELIGHT_INFO =
         VisionInfo.builder()
+            .ntTableName("limelight-c")
+            .location(
+                new Transform3d(
+                    Units.inchesToMeters(-10.062783),
+                    Units.inchesToMeters(-9.304855),
+                    Units.inchesToMeters(24.185351),
+                    new Rotation3d(
+                        0,
+                        Units.degreesToRadians(-14.209976),
+                        Units.degreesToRadians(180 - 23.725656))))
+            .mountingDirection(MountingDirection.HORIZONTAL_LL3)
+            .build();
+
+    public static VisionInfo GP_LIMELIGHT_INFO =
+        VisionInfo.builder()
             .ntTableName("limelight-b")
             .location(
                 new Transform3d(

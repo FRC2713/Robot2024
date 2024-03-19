@@ -5,6 +5,9 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Robot;
+import frc.robot.util.LimelightHelpers.LimelightResults;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
+import java.util.ArrayList;
 import lombok.SneakyThrows;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -80,7 +83,20 @@ public class VisionIOSim implements VisionIO {
 
       // inputs.horizontalOffsetFromTarget = target.getYaw();
       // inputs.verticalOffsetFromTarget = -target.getPitch();
-
+      var resultsSim = new LimelightResults();
+      var resultsBuilder = new ArrayList<LimelightTarget_Fiducial>();
+      for (var t : res.getTargets()) {
+        var thisResult = new LimelightTarget_Fiducial();
+        thisResult.ta = t.getArea();
+        thisResult.tx = t.getYaw();
+        thisResult.ty = -t.getPitch();
+        thisResult.ts = t.getSkew();
+        thisResult.fiducialID = t.getFiducialId();
+        resultsBuilder.add(thisResult);
+      }
+      resultsSim.targetingResults.targets_Fiducials =
+          resultsBuilder.toArray(new LimelightTarget_Fiducial[resultsBuilder.size()]);
+      inputs.results = resultsSim;
     } else {
       inputs.botPoseBlue = new Pose2d();
       inputs.botPoseBlueTimestamp = 0.0;
@@ -91,6 +107,7 @@ public class VisionIOSim implements VisionIO {
       // inputs.captureLatencyMs = 0.0;
       // inputs.activePipeline = 0;
       inputs.tagCount = 0;
+      inputs.results = new LimelightResults();
     }
   }
 

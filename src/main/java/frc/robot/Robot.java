@@ -20,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
+import frc.robot.commands.fullRoutines.GPTest;
 import frc.robot.commands.fullRoutines.NonAmpSide;
-import frc.robot.commands.otf.OTF;
+import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
@@ -45,10 +47,12 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
+import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
+import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
+import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
-import frc.robot.util.MotionHandler;
-import frc.robot.util.ObjectDetection;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
@@ -59,12 +63,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
-import org.opencv.core.Point;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
-  private OTF otf = new OTF();
-  public static LimelightGP visionFront;
+  public static LimelightGP visionGP;
+  public static Vision visionLeft, visionRight;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
@@ -127,19 +130,19 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    // visionFront =
-    //     new Vision(
-    //         isSimulation()
-    //             ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-    //             : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+    visionLeft =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.LEFT_LIMELIGHT_INFO)
+                : new VisionIOLimelightLib(LimeLightConstants.LEFT_LIMELIGHT_INFO));
 
-    // visionRear =
-    // new Vision(
-    // isSimulation()
-    // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+    visionRight =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.RIGHT_LIMELIGHT_INFO)
+                : new VisionIOLimelightLib(LimeLightConstants.RIGHT_LIMELIGHT_INFO));
 
-    visionFront = new LimelightGP(Constants.LimeLightConstants.RIGHT_LIMELIGHT_INFO);
+    visionGP = new LimelightGP(Constants.LimeLightConstants.GP_LIMELIGHT_INFO, isSimulation());
 
     mechManager = new MechanismManager();
 
@@ -152,6 +155,7 @@ public class Robot extends LoggedRobot {
             (c) -> {
               seedGyroBasedOnAlliance();
               buildAutoChooser();
+              RotateScore.updateSpeakerLoc();
             });
 
     autoChangeDetector =
@@ -200,8 +204,7 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.DRIVE_TOWARDS_GP);
-                      MotionHandler.hasGPLock = false;
-                      MotionHandler.closestResult = new ObjectDetection(new Point(), 0, 0);
+                      VehicleState.getInstance().resetClosestGP();
                     })))
         .onFalse(
             Commands.sequence(
@@ -213,8 +216,7 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
-                      MotionHandler.hasGPLock = false;
-                      MotionHandler.closestResult = new ObjectDetection(new Point(), 0, 0);
+                      VehicleState.getInstance().resetClosestGP();
                     })));
     // driver
     //     .leftTrigger(0.3)
@@ -528,12 +530,33 @@ public class Robot extends LoggedRobot {
   }
 
   public void createAutomaticTriggers() {
-
     new Trigger(() -> shooter.hasGamePiece())
-        .onTrue(Candle.Commands.hasGamePieceAnimation(true))
+        .onTrue(
+            Commands.parallel(
+                Candle.Commands.hasGamePieceAnimation(true),
+                Commands.sequence(
+                    new InstantCommand(
+                        () -> {
+                          visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+                          visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
+                        }),
+                    new WaitCommand(2),
+                    new InstantCommand(
+                        () -> {
+                          visionRight.setLEDMode(LEDMode.PIPELINE);
+                          visionLeft.setLEDMode(LEDMode.PIPELINE);
+                        }))))
         .onFalse(Candle.Commands.hasGamePieceAnimation(false));
 
-    new Trigger(() -> !visionFront.detections.isEmpty() && !shooter.hasGamePiece())
+    new Trigger(
+            () ->
+                visionGP.detections.length > 0
+                    && !shooter.hasGamePiece()
+                    && !VehicleState.getInstance().hasGPLock)
+        .onTrue(Candle.Commands.gamePieceDetected())
+        .onFalse(Candle.Commands.LEDsOff());
+
+    new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
         .onTrue(Candle.Commands.gamePieceLockedOn())
         .onFalse(Candle.Commands.LEDsOff());
   }
@@ -564,11 +587,13 @@ public class Robot extends LoggedRobot {
         "Memory Usage",
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
-    // VehicleState.getInstance()
-    //     .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
-    // VehicleState.getInstance().updateCenterTagError(visionFront.getInputs());
-    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(),
-    // visionFront.getInputs());
+    VehicleState.getInstance()
+        .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(
+        visionRight.getInfo(), visionRight.getInputs());
   }
 
   @Override
@@ -632,6 +657,7 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
+    autoChooser.addDefaultOption("TestGP", new GPTest());
     autoChooser.addOption("BottomTwo", new BottomTwo());
     autoChooser.addOption("NonAmpSide", new NonAmpSide());
   }

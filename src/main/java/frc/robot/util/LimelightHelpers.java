@@ -257,6 +257,10 @@ public class LimelightHelpers {
     @JsonProperty("typ")
     public double ty_pixels;
 
+    public double goodness() {
+      return ta;
+    }
+
     public LimelightTarget_Detector() {}
   }
 

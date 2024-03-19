@@ -19,9 +19,17 @@ import frc.robot.util.SwerveHeadingController;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
-  private static Translation3d speakerLoc =
-      RedHawkUtil.Reflections.reflectIfRed(
-          new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+  private static Translation3d speakerLoc;
+
+  static {
+    updateSpeakerLoc();
+  }
+
+  public static void updateSpeakerLoc() {
+    speakerLoc =
+        RedHawkUtil.Reflections.reflectIfRed(
+            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+  }
 
   public static Rotation2d getOptimalAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));

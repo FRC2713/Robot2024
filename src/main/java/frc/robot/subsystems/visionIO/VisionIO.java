@@ -20,6 +20,19 @@ public interface VisionIO {
 
     public LimelightResults results;
 
+    public static String[][] stringTitles;
+
+    static {
+      int size = 30;
+      stringTitles = new String[4][size];
+      for (int i = 0; i < size; i++) {
+        stringTitles[0][i] = "Targets/" + i + "/tx";
+        stringTitles[1][i] = "Targets/" + i + "/ty";
+        stringTitles[2][i] = "Targets/" + i + "/ta";
+        stringTitles[3][i] = "Targets/" + i + "/ts";
+      }
+    }
+
     @Override
     public void toLog(LogTable table) {
 
@@ -33,11 +46,11 @@ public interface VisionIO {
 
       var targets = results.targetingResults.targets_Fiducials;
       for (int i = 0; i < targets.length; i++) {
-        var prefix = "Targets/Tag_" + targets[i].fiducialID;
-        table.put(prefix + "_tx", targets[i].tx);
-        table.put(prefix + "_ty", targets[i].ty);
-        table.put(prefix + "_ta", targets[i].ta);
-        table.put(prefix + "_ts", targets[i].ts);
+        int fiducialID = (int) targets[i].fiducialID;
+        table.put(stringTitles[0][fiducialID], targets[i].tx);
+        table.put(stringTitles[1][fiducialID], targets[i].ty);
+        table.put(stringTitles[2][fiducialID], targets[i].ta);
+        table.put(stringTitles[3][fiducialID], targets[i].ts);
       }
     }
 

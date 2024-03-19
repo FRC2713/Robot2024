@@ -1,8 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
+import frc.robot.util.SwerveHeadingController;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -109,5 +115,38 @@ public class VehicleState {
     if (centerTagError.isPresent()) {
       Logger.recordOutput("Center tag error", centerTagError.get());
     }
+  }
+
+  public boolean hasGPLock = false;
+  public LimelightTarget_Detector closestResult = new LimelightTarget_Detector();
+  public Rotation2d GPyaw = new Rotation2d();
+
+  public void resetClosestGP() {
+    hasGPLock = false;
+    closestResult = new LimelightTarget_Detector();
+    closestResult.tx = 0;
+    closestResult.ty = 0;
+    closestResult.ta = 0;
+  }
+
+  public ChassisSpeeds goClosestGP() {
+    Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
+    Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
+
+    double angle = (-1 * closestResult.tx);
+
+    Logger.recordOutput("OTF/DrivingToGP/Angle", angle);
+
+    SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
+
+    double xSpeed =
+        MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
+            * 1.5;
+
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        xSpeed,
+        0,
+        Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
+        Rotation2d.fromDegrees(0));
   }
 }
