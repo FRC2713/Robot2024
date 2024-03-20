@@ -346,8 +346,22 @@ public class Robot extends LoggedRobot {
         .whileTrue(
             Commands.sequence(
                 new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
-                OTFAmp.getInstance().run()))
+                Commands.parallel(
+                    OTFAmp.getInstance().run(),
+                    Cmds.setState(Elevator.State.AMP),
+                    Cmds.setState(ShooterPivot.State.AMP_SHOT),
+                    new WaitUntilCommand(elevator::atTargetHeight),
+                    new WaitUntilCommand(shooterPivot::isAtTargetAngle))))
         .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
+
+    driver
+        .y()
+        .onTrue(Cmds.setState(Shooter.State.AMP_SHOT))
+        .onFalse(
+            Commands.either(
+                Cmds.setState(Shooter.State.HOLDING_GP),
+                Cmds.setState(Shooter.State.OFF),
+                () -> shooter.getState() == Shooter.State.FENDER_SHOT));
   }
 
   public void createOperatorBindings() {
