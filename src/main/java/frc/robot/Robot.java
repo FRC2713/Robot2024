@@ -48,7 +48,6 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
 import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
@@ -532,20 +531,20 @@ public class Robot extends LoggedRobot {
   public void createAutomaticTriggers() {
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
-            Commands.parallel(
-                Candle.Commands.hasGamePieceAnimation(true),
-                Commands.sequence(
-                    new InstantCommand(
-                        () -> {
-                          visionRight.setLEDMode(LEDMode.FORCE_BLINK);
-                          visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
-                        }),
-                    new WaitCommand(2),
-                    new InstantCommand(
-                        () -> {
-                          visionRight.setLEDMode(LEDMode.PIPELINE);
-                          visionLeft.setLEDMode(LEDMode.PIPELINE);
-                        }))))
+            Candle.Commands.hasGamePieceAnimation(true)
+            // Commands.sequence(
+            //     new InstantCommand(
+            //         () -> {
+            //           visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+            //           visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
+            //         }),
+            //     new WaitCommand(2),
+            //     new InstantCommand(
+            //         () -> {
+            //           visionRight.setLEDMode(LEDMode.PIPELINE);
+            //           visionLeft.setLEDMode(LEDMode.PIPELINE);
+            //         })))
+            )
         .onFalse(Candle.Commands.hasGamePieceAnimation(false));
 
     new Trigger(

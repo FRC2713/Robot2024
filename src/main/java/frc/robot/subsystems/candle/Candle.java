@@ -148,7 +148,7 @@ public class Candle extends SubsystemBase {
     public static Command gamePieceDetected() {
       return new InstantCommand(
           () -> {
-            Robot.candle.setRGBValue(255, 165, 0);
+            Robot.candle.setRGBValue(240, 147, 0);
             Robot.candle.changeAnimation(AnimationTypes.SetAll);
           });
     }
@@ -156,7 +156,7 @@ public class Candle extends SubsystemBase {
     public static Command gamePieceLockedOn() {
       return new InstantCommand(
           () -> {
-            Robot.candle.setRGBValue(255, 165, 0);
+            Robot.candle.setRGBValue(240, 147, 0);
             Robot.candle.changeAnimation(AnimationTypes.Strobe);
           });
     }

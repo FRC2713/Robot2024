@@ -36,7 +36,7 @@ public class RotateScore extends SequentialCommandGroup {
     Logger.recordOutput("OTF/Speaker Loc", new Pose3d(speakerLoc, new Rotation3d()));
     Logger.recordOutput(
         "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
-    return RedHawkUtil.Reflections.reflectIfRed(new Rotation2d(optimalAngle));
+    return new Rotation2d(optimalAngle);
   }
 
   public static Double getOptimalShooterAngle(Pose2d position) {
