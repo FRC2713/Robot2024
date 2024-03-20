@@ -2,6 +2,7 @@ package frc.robot.commands.otf;
 
 import static frc.robot.util.RedHawkUtil.Translation3dTo2d;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,21 +42,23 @@ public class RotateScore extends SequentialCommandGroup {
 
   public static Double getOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-    Logger.recordOutput(
-        "OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
-    return Angle.get(distance);
+    return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
   private static InterpolatingTreeMap<Double, Double> Angle =
       new InterpolatingTreeMap<>() {
         {
           // Dist (metres), Angle (Degrees)
-          put(0., 0.);
-          put(1., 5.);
-          put(2., 10.);
-          put(3., 15.);
+          put(1.08, 48.);
+          put(1.31, 44.);
+          put(1.62, 41.);
+          put(1.955, 36.);
           put(4., 20.);
+          put(2.27, 32.);
+          put(2.5, 30.);
+          put(3.1, 27.);
         }
       };
 }

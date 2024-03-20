@@ -26,6 +26,7 @@ import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.GPTest;
 import frc.robot.commands.fullRoutines.NonAmpSide;
+import frc.robot.commands.otf.OTFAmp;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.elevatorIO.Elevator;
@@ -261,7 +262,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
-                Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
+                Cmds.setState(ShooterPivot.State.POSE_AIM),
                 Cmds.setState(Shooter.State.FENDER_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
@@ -339,6 +340,14 @@ public class Robot extends LoggedRobot {
                         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
                             ? 180
                             : 0))));
+
+    driver
+        .x()
+        .whileTrue(
+            Commands.sequence(
+                new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
+                OTFAmp.getInstance().run()))
+        .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
   }
 
   public void createOperatorBindings() {
@@ -578,6 +587,8 @@ public class Robot extends LoggedRobot {
     }
 
     // swerveDrive.seed();
+
+    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose());
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
