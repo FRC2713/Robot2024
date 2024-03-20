@@ -8,14 +8,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.RedHawkUtil;
-import frc.robot.util.SwerveHeadingController;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
@@ -44,42 +39,18 @@ public class RotateScore extends SequentialCommandGroup {
     return RedHawkUtil.Reflections.reflectIfRed(new Rotation2d(optimalAngle));
   }
 
-  public static Command optimalShoot() {
-    return new InstantCommand(
-        () -> {
-          var optimalHeight = getOptimalElevatorHeightMetres(Robot.swerveDrive.getUsablePose());
-          Logger.recordOutput("OTF/Optimal Height", optimalHeight);
-          // Elevator.Commands.setToHeightAndWait(optimalHeight).schedule();
-          var optimalShooterAngle =
-              getOptimalShooterAngle(Robot.swerveDrive.getUsablePose(), optimalHeight);
-          Logger.recordOutput("OTF/Optimal Shooter Angle", optimalShooterAngle.getDegrees() + 90);
-          // Robot.shooterPivot.setTargetAngle(optimalShooterAngle.getDegrees());
-          Rotation2d optimalRotation =
-              RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-          SwerveHeadingController.getInstance().setSetpoint(optimalRotation);
-        });
-  }
-
-  public static Rotation2d getOptimalShooterAngle(Pose2d position, double elevatorHeight) {
+  public static Double getOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     Logger.recordOutput(
-        "OTF/Offset Speaker Height",
-        speakerLoc.getZ()
-            - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
-            - Units.inchesToMeters(elevatorHeight));
-    Logger.recordOutput("OTF/DIST", distance);
-    return new Rotation2d(
-        Math.atan(
-            (speakerLoc.getZ()
-                    - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
-                    - elevatorHeight)
-                / distance));
+        "OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
+    return Angle.get(distance);
   }
 
-  private static InterpolatingTreeMap<Double, Double> heights =
+  private static InterpolatingTreeMap<Double, Double> Angle =
       new InterpolatingTreeMap<>() {
         {
-          // Dist (metres), Height (in)
+          // Dist (metres), Angle (Degrees)
           put(0., 0.);
           put(1., 5.);
           put(2., 10.);
@@ -87,9 +58,4 @@ public class RotateScore extends SequentialCommandGroup {
           put(4., 20.);
         }
       };
-
-  public static double getOptimalElevatorHeightMetres(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-    return heights.get(distance);
-  }
 }
