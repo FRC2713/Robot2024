@@ -13,6 +13,7 @@ public class Candle extends SubsystemBase {
 
   private CANdle m_candle;
   private Animation m_animation = null;
+  private CANdleConfiguration config = new CANdleConfiguration();
 
   private int r = 0;
   private int g = 0;
@@ -27,6 +28,9 @@ public class Candle extends SubsystemBase {
 
   public Candle(boolean isSimulation) {
     this.m_candle = isSimulation ? new CandleSim() : new CANdle(Constants.RobotMap.CANDLE_CAN_ID);
+    this.config.brightnessScalar = 1;
+
+    this.m_candle.configAllSettings(config);
   }
 
   public enum AnimationTypes {

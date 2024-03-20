@@ -28,12 +28,16 @@ public class RotateScore extends SequentialCommandGroup {
   }
 
   public static Rotation2d getOptimalAngle(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    // var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
 
-    var optimalAngle = Math.acos((position.getX() - speakerLoc.getX()) / distance);
-    if (position.getY() < speakerLoc.getY()) {
-      optimalAngle *= -1;
-    }
+    // var optimalAngle = Math.acos((position.getX() - speakerLoc.getX()) / distance);
+
+    var x = position.getX() - speakerLoc.getX();
+    var y = position.getY() - speakerLoc.getY();
+    var optimalAngle = Math.atan2(y, x);
+    // if (position.getY() < speakerLoc.getY()) {
+    //   optimalAngle *= -1;
+    // }
     Logger.recordOutput("OTF/Speaker Loc", new Pose3d(speakerLoc, new Rotation3d()));
     Logger.recordOutput(
         "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
