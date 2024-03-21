@@ -30,18 +30,17 @@ public class RotateScore extends SequentialCommandGroup {
   }
 
   public static void updateAmpLoc() {
-    ampLoc =
-        RedHawkUtil.Reflections.reflectIfRed(
-            new Translation3d(0.695 - Units.inchesToMeters(18), 1.8, 7.67));
+    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2.5, 7.5, 0));
   }
 
   public static Rotation2d getOptimalAmpAngle(Pose2d position) {
     var x = position.getX() - ampLoc.getX();
     var y = position.getY() - ampLoc.getY();
     var optimalAngle = Math.atan2(y, x);
-    Logger.recordOutput("OTF/Speaker Loc", new Pose3d(ampLoc, new Rotation3d()));
+    Logger.recordOutput("OTF/Amp Loc", new Pose3d(ampLoc, new Rotation3d()));
     Logger.recordOutput(
-        "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
+        "OTF/Optimal Amp Angle",
+        new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
     return new Rotation2d(optimalAngle);
   }
 

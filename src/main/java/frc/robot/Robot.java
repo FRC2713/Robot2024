@@ -156,6 +156,7 @@ public class Robot extends LoggedRobot {
               seedGyroBasedOnAlliance();
               buildAutoChooser();
               RotateScore.updateSpeakerLoc();
+              RotateScore.updateAmpLoc();
             });
 
     autoChangeDetector =
@@ -220,8 +221,9 @@ public class Robot extends LoggedRobot {
                     })));
     driver
         .leftTrigger(0.3)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
+                Cmds.setState(MotionMode.HEADING_CONTROLLER),
                 new InstantCommand(
                     () ->
                         SwerveHeadingController.getInstance()
@@ -237,6 +239,7 @@ public class Robot extends LoggedRobot {
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
+                // Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
