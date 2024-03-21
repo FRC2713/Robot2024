@@ -35,6 +35,7 @@ public class OTFAmp {
 
   public Timer timer = new Timer();
   public double ttl = 3;
+  private Pose2d ampPose = new Pose2d(1.8, 7.67, Rotation2d.fromRadians(Math.PI / 2));
 
   @Getter
   public ErrorTracker tracker =
@@ -73,7 +74,8 @@ public class OTFAmp {
     List<Translation2d> bezierPoints =
         PathPlannerPath.bezierFromPoses(
             Robot.swerveDrive.getUsablePose(),
-            new Pose2d(1.89, 7.67, Rotation2d.fromRadians(1.58)));
+            new Pose2d(1.8, 7.25, Rotation2d.fromRadians(Math.PI / 2)),
+            ampPose);
 
     // Create the path using the bezier points created above
     PathPlannerPath path =

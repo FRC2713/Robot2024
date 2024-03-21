@@ -29,7 +29,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Elevator Angle Degrees", 20);
   private static final LoggedTunableNumber feederShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Feeder Shot Angle Degrees", 0);
+      new LoggedTunableNumber("ShooterPivot/Feeder Shot Angle Degrees", 10);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);

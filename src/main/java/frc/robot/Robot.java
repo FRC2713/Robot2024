@@ -194,7 +194,7 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver
-        .leftTrigger(0.3)
+        .a()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
@@ -218,24 +218,24 @@ public class Robot extends LoggedRobot {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
                       VehicleState.getInstance().resetClosestGP();
                     })));
-    // driver
-    //     .leftTrigger(0.3)
-    //     .onTrue(
-    //         Commands.sequence(
-    //             Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-    //             Cmds.setState(Shooter.State.FEEDER_SHOT),
-    //             new WaitUntilCommand(() -> shooter.isAtTarget()),
-    //             Cmds.setState(Intake.State.INTAKE_GP),
-    //             RedHawkUtil.logShot()))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             Cmds.setState(Intake.State.OFF),
-    //             Commands.either(
-    //                 Cmds.setState(Shooter.State.HOLDING_GP),
-    //                 Cmds.setState(Shooter.State.OFF),
-    //                 () -> shooter.hasGamePiece()),
-    //             new WaitCommand(0.05),
-    //             Cmds.setState(ShooterPivot.State.INTAKING)));
+    driver
+        .leftTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+                Cmds.setState(Shooter.State.FEEDER_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Cmds.setState(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Commands.either(
+                    Cmds.setState(Shooter.State.HOLDING_GP),
+                    Cmds.setState(Shooter.State.OFF),
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                Cmds.setState(ShooterPivot.State.INTAKING)));
 
     driver
         .rightBumper()
@@ -263,7 +263,7 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 Cmds.setState(ShooterPivot.State.POSE_AIM),
-                Cmds.setState(Shooter.State.FENDER_SHOT),
+                Cmds.setState(Shooter.State.PODIUM_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
@@ -278,7 +278,7 @@ public class Robot extends LoggedRobot {
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
