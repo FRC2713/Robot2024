@@ -37,7 +37,8 @@ public class OTFAmp {
   public Timer timer = new Timer();
   public double ttl = 3;
   private Pose2d ampPose = new Pose2d(1.8, 7.67, Rotation2d.fromRadians(Math.PI / 2));
-  private Transform2d preAmpPoseOffset = new Transform2d(new Translation2d(0, -0.25), new Rotation2d());
+  private Transform2d preAmpPoseOffset =
+      new Transform2d(new Translation2d(0, -0.25), new Rotation2d());
   private Pose2d preAmpPose = ampPose.plus(preAmpPoseOffset);
 
   @Getter
@@ -75,10 +76,7 @@ public class OTFAmp {
             OTF.OTFOptions.AMP_STATIC.maxAngularAccelerationRpsSq);
 
     List<Translation2d> bezierPoints =
-        PathPlannerPath.bezierFromPoses(
-            Robot.swerveDrive.getUsablePose(),
-            preAmpPose,
-            ampPose);
+        PathPlannerPath.bezierFromPoses(Robot.swerveDrive.getUsablePose(), preAmpPose, ampPose);
 
     // Create the path using the bezier points created above
     PathPlannerPath path =

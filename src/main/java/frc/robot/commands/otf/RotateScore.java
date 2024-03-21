@@ -16,9 +16,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
   private static Translation3d speakerLoc;
+  private static Translation3d ampLoc;
 
   static {
     updateSpeakerLoc();
+    updateAmpLoc();
   }
 
   public static void updateSpeakerLoc() {
@@ -27,17 +29,26 @@ public class RotateScore extends SequentialCommandGroup {
             new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
   }
 
+  public static void updateAmpLoc() {
+    ampLoc =
+        RedHawkUtil.Reflections.reflectIfRed(
+            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+  }
+
+  public static Rotation2d getOptimalAmpAngle(Pose2d position) {
+    var x = position.getX() - ampLoc.getX();
+    var y = position.getY() - ampLoc.getY();
+    var optimalAngle = Math.atan2(y, x);
+    Logger.recordOutput("OTF/Speaker Loc", new Pose3d(ampLoc, new Rotation3d()));
+    Logger.recordOutput(
+        "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
+    return new Rotation2d(optimalAngle);
+  }
+
   public static Rotation2d getOptimalAngle(Pose2d position) {
-    // var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-
-    // var optimalAngle = Math.acos((position.getX() - speakerLoc.getX()) / distance);
-
     var x = position.getX() - speakerLoc.getX();
     var y = position.getY() - speakerLoc.getY();
     var optimalAngle = Math.atan2(y, x);
-    // if (position.getY() < speakerLoc.getY()) {
-    //   optimalAngle *= -1;
-    // }
     Logger.recordOutput("OTF/Speaker Loc", new Pose3d(speakerLoc, new Rotation3d()));
     Logger.recordOutput(
         "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
