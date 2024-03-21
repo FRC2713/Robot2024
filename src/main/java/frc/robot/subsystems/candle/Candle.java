@@ -47,9 +47,7 @@ public class Candle extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    
-  }
+  public void periodic() {}
 
   public void changeAnimation(AnimationTypes led_animation) {
     switch (led_animation) {
@@ -87,9 +85,9 @@ public class Candle extends SubsystemBase {
         m_candle.setLEDs(this.r, this.g, this.b);
         break;
     }
-    if (m_animation != null) 
-    { m_candle.animate(m_animation);}
-   
+    if (m_animation != null) {
+      m_candle.animate(m_animation);
+    }
   }
 
   public void setRGBValue(int r, int g, int b) {

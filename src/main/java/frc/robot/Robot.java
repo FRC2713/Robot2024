@@ -24,7 +24,8 @@ import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.BottomTwo;
-import frc.robot.commands.fullRoutines.GPTest;
+import frc.robot.commands.fullRoutines.FourPieceCentre;
+import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTFAmp;
 import frc.robot.commands.otf.RotateScore;
@@ -681,9 +682,10 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
-    autoChooser.addDefaultOption("TestGP", new GPTest());
+    autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
     autoChooser.addOption("BottomTwo", new BottomTwo());
-    autoChooser.addOption("NonAmpSide", new NonAmpSide());
+    autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
+    autoChooser.addOption("FourPieceL", new FourPieceL());
   }
 
   public void updatePreMatchDashboardValues() {
