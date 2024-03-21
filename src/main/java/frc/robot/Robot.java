@@ -222,9 +222,17 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
+                new InstantCommand(
+                    () ->
+                        SwerveHeadingController.getInstance()
+                            .setSetpoint(
+                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(Shooter.State.FEEDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                new WaitUntilCommand(
+                    () ->
+                        shooter.isAtTarget()
+                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(

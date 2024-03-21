@@ -32,7 +32,7 @@ public class RotateScore extends SequentialCommandGroup {
   public static void updateAmpLoc() {
     ampLoc =
         RedHawkUtil.Reflections.reflectIfRed(
-            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+            new Translation3d(0.695 - Units.inchesToMeters(18), 1.8, 7.67));
   }
 
   public static Rotation2d getOptimalAmpAngle(Pose2d position) {
