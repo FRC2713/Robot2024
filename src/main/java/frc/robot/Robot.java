@@ -157,6 +157,7 @@ public class Robot extends LoggedRobot {
               seedGyroBasedOnAlliance();
               buildAutoChooser();
               RotateScore.updateSpeakerLoc();
+              RotateScore.updateAmpLoc();
             });
 
     autoChangeDetector =
@@ -221,15 +222,25 @@ public class Robot extends LoggedRobot {
                     })));
     driver
         .leftTrigger(0.3)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
+                Cmds.setState(MotionMode.HEADING_CONTROLLER),
+                new InstantCommand(
+                    () ->
+                        SwerveHeadingController.getInstance()
+                            .setSetpoint(
+                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(Shooter.State.FEEDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                new WaitUntilCommand(
+                    () ->
+                        shooter.isAtTarget()
+                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
+                // Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
