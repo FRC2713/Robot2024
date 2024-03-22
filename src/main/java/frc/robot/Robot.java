@@ -220,6 +220,7 @@ public class Robot extends LoggedRobot {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
                       VehicleState.getInstance().resetClosestGP();
                     })));
+
     driver
         .leftTrigger(0.3)
         .whileTrue(
