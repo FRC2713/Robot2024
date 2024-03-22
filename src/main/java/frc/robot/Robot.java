@@ -114,7 +114,7 @@ public class Robot extends LoggedRobot {
 
     candle = new Candle(isSimulation());
 
-    candle.setRGBValue(0, 0, 255);
+    candle.setRGBValue(255, 0, 0);
 
     swerveDrive =
         isSimulation()
