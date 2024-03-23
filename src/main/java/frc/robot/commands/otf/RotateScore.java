@@ -94,15 +94,15 @@ public class RotateScore extends SequentialCommandGroup {
       new InterpolatingTreeMap<>() {
         {
           // Dist (metres), Angle (Degrees)
-          put(1.08, 48.-10);
-          put(1.31, 44.-10);
-          put(1.62, 41.-10);
-          put(1.955, 36.-10);
-          put(4., 20.-10);
-          put(2.27, 32.-10);
-          put(2.5, 30.-10);
-          put(2.53, 30.-10);
-          put(3.1, 27.-10);
+          put(1.08, 48. - 8);
+          put(1.31, 44. - 8);
+          put(1.62, 41. - 8);
+          put(1.955, 36. - 8);
+          put(4., 20. - 8);
+          put(2.27, 32. - 8);
+          put(2.5, 30. - 8);
+          put(2.53, 30. - 8);
+          put(3.1, 27. - 8);
         }
       };
 }
