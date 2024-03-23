@@ -52,7 +52,6 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
 import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
@@ -383,7 +382,15 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(Shooter.State.OFF),
                 () -> shooter.getState() == Shooter.State.FENDER_SHOT));
 
-    driver.b().onTrue(Commands.sequence(Cmds.setState(Intake.State.INTAKE_GP), Cmds.setState(ShooterPivot.State.INTAKING), Cmds.setState(Shooter.State.INTAKING_NO_LS))).onFalse(Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.OFF)));
+    driver
+        .b()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Intake.State.INTAKE_GP),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(Shooter.State.INTAKING_NO_LS)))
+        .onFalse(
+            Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.OFF)));
   }
 
   public void createOperatorBindings() {
@@ -598,18 +605,19 @@ public class Robot extends LoggedRobot {
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
             Commands.sequence(
-                NewCandle.Commands.setLEDColor(LightCode.HAS_NOTE),
-                new InstantCommand(
-                    () -> {
-                      visionRight.setLEDMode(LEDMode.FORCE_BLINK);
-                      visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
-                    }),
-                new WaitCommand(2),
-                new InstantCommand(
-                    () -> {
-                      visionRight.setLEDMode(LEDMode.PIPELINE);
-                      visionLeft.setLEDMode(LEDMode.PIPELINE);
-                    })))
+                NewCandle.Commands.setLEDColor(LightCode.HAS_NOTE)
+                // new InstantCommand(
+                //     () -> {
+                //       visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+                //       visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
+                //     }),
+                // new WaitCommand(2),
+                // new InstantCommand(
+                //     () -> {
+                //       visionRight.setLEDMode(LEDMode.PIPELINE);
+                //       visionLeft.setLEDMode(LEDMode.PIPELINE);
+                //     }))
+                ))
         .onFalse(NewCandle.Commands.setLEDColor(LightCode.OFF));
 
     new Trigger(
