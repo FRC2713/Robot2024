@@ -199,7 +199,7 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver
-        .leftTrigger(0.3)
+        .a()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
@@ -225,7 +225,7 @@ public class Robot extends LoggedRobot {
                     })));
 
     driver
-        .a()
+        .leftTrigger(0.3)
         .whileTrue(
             Commands.sequence(
                 Cmds.setState(MotionMode.HEADING_CONTROLLER),
