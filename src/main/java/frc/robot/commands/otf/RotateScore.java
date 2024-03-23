@@ -54,12 +54,20 @@ public class RotateScore extends SequentialCommandGroup {
     return new Rotation2d(optimalAngle);
   }
 
-  public static Double getOptimalShooterAngle(Pose2d position) {
+  public static double getOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
     return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
+
+    public static double getElevatorOptimalShooterAngle(Pose2d position) {
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    Logger.recordOutput("OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Optimal Pivot Angle", elevatorAngle.get(distance));
+    return MathUtil.clamp(elevatorAngle.get(distance), 0, 54);
+  }
+
 
   private static InterpolatingTreeMap<Double, Double> Angle =
       new InterpolatingTreeMap<>() {
@@ -72,6 +80,23 @@ public class RotateScore extends SequentialCommandGroup {
           put(4., 20.);
           put(2.27, 32.);
           put(2.5, 30.);
+          put(2.53, 30.);
+          put(3.1, 27.);
+        }
+      };
+
+        private static InterpolatingTreeMap<Double, Double> elevatorAngle =
+      new InterpolatingTreeMap<>() {
+        {
+          // Dist (metres), Angle (Degrees)
+          put(1.08, 48.);
+          put(1.31, 44.);
+          put(1.62, 41.);
+          put(1.955, 36.);
+          put(4., 20.);
+          put(2.27, 32.);
+          put(2.5, 30.);
+          put(2.53, 30.);
           put(3.1, 27.);
         }
       };

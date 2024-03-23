@@ -512,7 +512,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.ELEVATORSHOT),
-                Cmds.setState(ShooterPivot.State.ELEVATOR_SHOT),
+                Cmds.setState(ShooterPivot.State.POSE_AIM_ELEVATOR_SHOT),
                 Cmds.setState(Shooter.State.ELEVATOR_SHOT)))
         .onFalse(
             Commands.sequence(
