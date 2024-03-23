@@ -87,7 +87,6 @@ public class RotateScore extends SequentialCommandGroup {
           put(5.5, 12.73);
           put(6.0, 10.98);
           put(6.5, 19.47);
-
         }
       };
 

@@ -86,7 +86,7 @@ public class Shooter extends SubsystemBase {
         () -> 0,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
-        PODIUM_SHOT_NO_FEEDER(
+    PODIUM_SHOT_NO_FEEDER(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
         shooterDifferentialRpm,

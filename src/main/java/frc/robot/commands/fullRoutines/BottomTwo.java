@@ -31,15 +31,13 @@ public class BottomTwo extends RHRFullRoutine {
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
-        ShootingCommands.runShooterAndPivot(
-            Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
+        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
-        ShootingCommands.runShooterAndPivot(
-            Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
+        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 

@@ -156,7 +156,13 @@ public class Robot extends LoggedRobot {
     createAutomaticTriggers();
 
     allianceChangeDetector =
-        new ChangeDetector<>((a) -> updateAllianceData(a));
+        new ChangeDetector<>(
+            (c) -> {
+            buildAutoChooser();
+              seedGyroBasedOnAlliance();
+              RotateScore.updateSpeakerLoc();
+              RotateScore.updateAmpLoc();
+            });
 
     autoChangeDetector =
         new ChangeDetector<>(
@@ -164,17 +170,6 @@ public class Robot extends LoggedRobot {
               gyroInitial = auto.traj1.getInitialPose().getRotation();
               seedGyroBasedOnAlliance();
             });
-  }
-
-  public void updateAllianceData(Optional<Alliance> c) {
-                                  buildAutoChooser();
-
-    if (autoChooser.get() != null) {
-              gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
-                              }
-              seedGyroBasedOnAlliance();
-              RotateScore.updateSpeakerLoc();
-              RotateScore.updateAmpLoc();
   }
 
   public void createDriverBindings() {
@@ -778,7 +773,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void driverStationConnected() {
 
-    updateAllianceData(DriverStation.getAlliance());
+    buildAutoChooser();
+    seedGyroBasedOnAlliance();
     RedHawkUtil.logShotFirst();
     // visionFront.setPriorityId(
     // switch (DriverStation.getAlliance().get()) {
