@@ -295,7 +295,7 @@ public final class Constants {
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
         // PIDFFGains.builder().name("Heading
         // Controller").kP(8).kD(0).kS(2).build().buildTunables();
-        PIDFFGains.builder().name("Heading Controller").kP(2).kD(0).kS(8).build().buildTunables();
+        PIDFFGains.builder().name("Heading Controller").kP(4).kD(0).kS(8).build().buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()
