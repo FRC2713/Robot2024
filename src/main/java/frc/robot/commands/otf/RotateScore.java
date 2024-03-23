@@ -61,13 +61,12 @@ public class RotateScore extends SequentialCommandGroup {
     return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
-    public static double getElevatorOptimalShooterAngle(Pose2d position) {
+  public static double getElevatorOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Optimal Pivot Angle", elevatorAngle.get(distance));
     return MathUtil.clamp(elevatorAngle.get(distance), 0, 54);
   }
-
 
   private static InterpolatingTreeMap<Double, Double> Angle =
       new InterpolatingTreeMap<>() {
@@ -85,7 +84,7 @@ public class RotateScore extends SequentialCommandGroup {
         }
       };
 
-        private static InterpolatingTreeMap<Double, Double> elevatorAngle =
+  private static InterpolatingTreeMap<Double, Double> elevatorAngle =
       new InterpolatingTreeMap<>() {
         {
           // Dist (metres), Angle (Degrees)
