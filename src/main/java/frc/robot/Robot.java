@@ -159,6 +159,9 @@ public class Robot extends LoggedRobot {
         new ChangeDetector<>(
             (c) -> {
               buildAutoChooser();
+              if (autoChooser.get() != null) {
+                gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+              }
               seedGyroBasedOnAlliance();
               RotateScore.updateSpeakerLoc();
               RotateScore.updateAmpLoc();
@@ -757,17 +760,17 @@ public class Robot extends LoggedRobot {
     Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
     var startingAngle = gyroInitial;
 
+    swerveDrive.resetGyro(startingAngle);
+
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(startingAngle);
       SwerveSubsystem.allianceFlipper = 1;
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
     }
   }
@@ -776,6 +779,9 @@ public class Robot extends LoggedRobot {
   public void driverStationConnected() {
 
     buildAutoChooser();
+    if (autoChooser.get() != null) {
+                gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+    }
     seedGyroBasedOnAlliance();
     RedHawkUtil.logShotFirst();
     // visionFront.setPriorityId(
