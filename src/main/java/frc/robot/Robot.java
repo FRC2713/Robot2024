@@ -29,7 +29,8 @@ import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.otf.OTFAmp;
 import frc.robot.commands.otf.RotateScore;
-import frc.robot.subsystems.candle.Candle;
+import frc.robot.subsystems.candle.NewCandle;
+import frc.robot.subsystems.candle.NewCandle.LightCode;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
@@ -50,6 +51,7 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
 import frc.robot.subsystems.visionIO.LimelightGP;
 import frc.robot.subsystems.visionIO.Vision;
+import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
 import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
@@ -74,7 +76,8 @@ public class Robot extends LoggedRobot {
   public static Elevator elevator;
   public static Shooter shooter;
   public static Intake intake;
-  public static Candle candle;
+  //   public static Candle candle;
+  public static NewCandle candle;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -112,9 +115,9 @@ public class Robot extends LoggedRobot {
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
-    candle = new Candle(isSimulation());
+    candle = new NewCandle(isSimulation());
 
-    candle.setRGBValue(255, 0, 0);
+    candle.setLEDColor(LightCode.RESTING_RED);
 
     swerveDrive =
         isSimulation()
@@ -196,7 +199,7 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver
-        .a()
+        .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
@@ -222,7 +225,7 @@ public class Robot extends LoggedRobot {
                     })));
 
     driver
-        .leftTrigger(0.3)
+        .a()
         .whileTrue(
             Commands.sequence(
                 Cmds.setState(MotionMode.HEADING_CONTROLLER),
@@ -567,33 +570,31 @@ public class Robot extends LoggedRobot {
   public void createAutomaticTriggers() {
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
-            Candle.Commands.hasGamePieceAnimation(true)
-            // Commands.sequence(
-            //     new InstantCommand(
-            //         () -> {
-            //           visionRight.setLEDMode(LEDMode.FORCE_BLINK);
-            //           visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
-            //         }),
-            //     new WaitCommand(2),
-            //     new InstantCommand(
-            //         () -> {
-            //           visionRight.setLEDMode(LEDMode.PIPELINE);
-            //           visionLeft.setLEDMode(LEDMode.PIPELINE);
-            //         })))
-            )
-        .onFalse(Candle.Commands.hasGamePieceAnimation(false));
+            Commands.sequence(
+                NewCandle.Commands.setLEDColor(LightCode.HAS_NOTE),
+                new InstantCommand(
+                    () -> {
+                      visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+                      visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
+                    }),
+                new WaitCommand(2),
+                new InstantCommand(
+                    () -> {
+                      visionRight.setLEDMode(LEDMode.PIPELINE);
+                      visionLeft.setLEDMode(LEDMode.PIPELINE);
+                    })))
+        .onFalse(NewCandle.Commands.setLEDColor(LightCode.OFF));
 
     new Trigger(
             () ->
                 visionGP.detections.length > 0
                     && !shooter.hasGamePiece()
                     && !VehicleState.getInstance().hasGPLock)
-        .onTrue(Candle.Commands.gamePieceDetected())
-        .onFalse(Candle.Commands.LEDsOff());
+        .onTrue(NewCandle.Commands.setLEDColor(LightCode.SEES_NOTE))
+        .onFalse(NewCandle.Commands.setLEDColor(LightCode.OFF));
 
     new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
-        .onTrue(Candle.Commands.gamePieceLockedOn())
-        .onFalse(Candle.Commands.LEDsOff());
+        .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
   }
 
   @Override
