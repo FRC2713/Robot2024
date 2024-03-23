@@ -158,7 +158,7 @@ public class Robot extends LoggedRobot {
     allianceChangeDetector =
         new ChangeDetector<>(
             (c) -> {
-            buildAutoChooser();
+              buildAutoChooser();
               seedGyroBasedOnAlliance();
               RotateScore.updateSpeakerLoc();
               RotateScore.updateAmpLoc();
@@ -481,8 +481,9 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(Shooter.State.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    operator.leftTrigger(0.3)
-    .whileTrue(
+    operator
+        .leftTrigger(0.3)
+        .whileTrue(
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
@@ -698,10 +699,11 @@ public class Robot extends LoggedRobot {
     swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
 
     Commands.sequence(
-        Cmds.setState(Shooter.State.OFF),
-    Cmds.setState(Intake.State.OFF),
-    Cmds.setState(Elevator.State.MIN_HEIGHT),
-    Cmds.setState(ShooterPivot.State.INTAKING)).schedule();
+            Cmds.setState(Shooter.State.OFF),
+            Cmds.setState(Intake.State.OFF),
+            Cmds.setState(Elevator.State.MIN_HEIGHT),
+            Cmds.setState(ShooterPivot.State.INTAKING))
+        .schedule();
   }
 
   @Override
