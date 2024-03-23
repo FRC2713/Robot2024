@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Pre-spin RPM", fenderShotShooterRpm.get() * 0.75);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
+      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 210);
 
   private static final LoggedTunableNumber feederShotRPM =
       new LoggedTunableNumber("Shooter/Feeder Shot RPM", 4000);
@@ -85,6 +85,12 @@ public class Shooter extends SubsystemBase {
         fenderShotShooterRpm,
         () -> 0,
         fenderShotFeederVolts,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
+        PODIUM_SHOT_NO_FEEDER(
+        podiumShotShooterRpm,
+        podiumShotShooterRpm,
+        shooterDifferentialRpm,
+        () -> 0,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     PODIUM_SHOT(
         podiumShotShooterRpm,

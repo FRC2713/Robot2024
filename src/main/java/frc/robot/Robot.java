@@ -156,13 +156,7 @@ public class Robot extends LoggedRobot {
     createAutomaticTriggers();
 
     allianceChangeDetector =
-        new ChangeDetector<>(
-            (c) -> {
-              seedGyroBasedOnAlliance();
-              buildAutoChooser();
-              RotateScore.updateSpeakerLoc();
-              RotateScore.updateAmpLoc();
-            });
+        new ChangeDetector<>((a) -> updateAllianceData(a));
 
     autoChangeDetector =
         new ChangeDetector<>(
@@ -170,6 +164,17 @@ public class Robot extends LoggedRobot {
               gyroInitial = auto.traj1.getInitialPose().getRotation();
               seedGyroBasedOnAlliance();
             });
+  }
+
+  public void updateAllianceData(Optional<Alliance> c) {
+                                  buildAutoChooser();
+
+    if (autoChooser.get() != null) {
+              gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+                              }
+              seedGyroBasedOnAlliance();
+              RotateScore.updateSpeakerLoc();
+              RotateScore.updateAmpLoc();
   }
 
   public void createDriverBindings() {
@@ -466,20 +471,40 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
-    operator
-        .leftTrigger(0.3)
-        .onTrue(
+    // operator
+    //     .leftTrigger(0.3)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.INTAKING),
+    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
+    //             Cmds.setState(Shooter.State.OUTTAKE_FORWARD),
+    //             Cmds.setState(Intake.State.INTAKE_GP)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Commands.either(
+    //                 Cmds.setState(Shooter.State.HOLDING_GP),
+    //                 Cmds.setState(Shooter.State.OFF),
+    //                 () -> shooter.hasGamePiece())));
+
+    operator.leftTrigger(0.3)
+    .whileTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.INTAKING),
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                Cmds.setState(Shooter.State.OUTTAKE_FORWARD),
-                Cmds.setState(Intake.State.INTAKE_GP)))
+                new InstantCommand(
+                    () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
+                // Cmds.setState(ShooterPivot.State.POSE_AIM),
+                Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER),
+                Cmds.setState(MotionMode.ALIGN_TO_TAG),
+                new WaitUntilCommand(
+                    () ->
+                        shooter.isAtTarget()
+                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+                Cmds.setState(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece())));
+                Cmds.setState(MotionMode.FULL_DRIVE),
+                Cmds.setState(Intake.State.OFF),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.POSE_AIM)));
 
     operator
         .rightTrigger(0.3)
@@ -676,6 +701,12 @@ public class Robot extends LoggedRobot {
       autoCommand.cancel();
     }
     swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+
+    Commands.sequence(
+        Cmds.setState(Shooter.State.OFF),
+    Cmds.setState(Intake.State.OFF),
+    Cmds.setState(Elevator.State.MIN_HEIGHT),
+    Cmds.setState(ShooterPivot.State.INTAKING)).schedule();
   }
 
   @Override
@@ -747,8 +778,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void driverStationConnected() {
 
-    seedGyroBasedOnAlliance();
-    buildAutoChooser();
+    updateAllianceData(DriverStation.getAlliance());
     RedHawkUtil.logShotFirst();
     // visionFront.setPriorityId(
     // switch (DriverStation.getAlliance().get()) {

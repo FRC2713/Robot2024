@@ -64,7 +64,7 @@ public class RotateScore extends SequentialCommandGroup {
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     Logger.recordOutput("OTF/Speaker Distance", distance);
-    Logger.recordOutput("OTF/Optimal Pivot Angle", elevatorAngle.get(distance));
+    Logger.recordOutput("OTF/Elevator Optimal Pivot Angle", elevatorAngle.get(distance));
     return MathUtil.clamp(elevatorAngle.get(distance), 0, 54);
   }
 
@@ -76,11 +76,18 @@ public class RotateScore extends SequentialCommandGroup {
           put(1.31, 44.);
           put(1.62, 41.);
           put(1.955, 36.);
-          put(4., 20.);
           put(2.27, 32.);
           put(2.5, 30.);
           put(2.53, 30.);
           put(3.1, 27.);
+          put(4., 20.);
+          // Extrapolating with exponential regression
+          put(4.5, 17.11);
+          put(5.0, 14.76);
+          put(5.5, 12.73);
+          put(6.0, 10.98);
+          put(6.5, 19.47);
+
         }
       };
 
