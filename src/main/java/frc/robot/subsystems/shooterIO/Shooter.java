@@ -118,6 +118,13 @@ public class Shooter extends SubsystemBase {
         intakingFeederVolts,
         () -> true,
         () -> true),
+    INTAKING_NO_LS(
+        intakingShooterRpm,
+        intakingShooterRpm,
+        () -> 0,
+        intakingFeederVolts,
+        () -> true,
+        () -> false),
     OUTTAKE_FORWARD(
         outtakingShooterRpm, shooterDifferentialRpm, () -> 0, outtakingFeederVolts, () -> true),
     FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, () -> 0, fullOutFeederVolts, () -> true),

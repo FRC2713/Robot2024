@@ -382,6 +382,8 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(Shooter.State.HOLDING_GP),
                 Cmds.setState(Shooter.State.OFF),
                 () -> shooter.getState() == Shooter.State.FENDER_SHOT));
+
+    driver.b().onTrue(Commands.sequence(Cmds.setState(Intake.State.INTAKE_GP), Cmds.setState(ShooterPivot.State.INTAKING), Cmds.setState(Shooter.State.INTAKING_NO_LS))).onFalse(Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.OFF)));
   }
 
   public void createOperatorBindings() {
