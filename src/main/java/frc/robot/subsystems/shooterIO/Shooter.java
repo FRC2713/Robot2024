@@ -57,9 +57,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Full-Out Feeder Volts", -12);
 
   private static final LoggedTunableNumber ampShotShooterRPM =
-      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", 3000);
+      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
-      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", 5);
+      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
 
   private static final LoggedTunableNumber elevatorShotShooterRPM =
       new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
