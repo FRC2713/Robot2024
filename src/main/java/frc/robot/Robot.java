@@ -780,7 +780,7 @@ public class Robot extends LoggedRobot {
 
     buildAutoChooser();
     if (autoChooser.get() != null) {
-                gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+      gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
     }
     seedGyroBasedOnAlliance();
     RedHawkUtil.logShotFirst();
