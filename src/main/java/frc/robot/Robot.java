@@ -495,24 +495,16 @@ public class Robot extends LoggedRobot {
 
     operator
         .leftTrigger(0.3)
-        .whileTrue(
+        .onTrue(
             Commands.sequence(
-                new InstantCommand(
-                    () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
-                // Cmds.setState(ShooterPivot.State.POSE_AIM),
-                Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER),
-                Cmds.setState(MotionMode.ALIGN_TO_TAG),
-                new WaitUntilCommand(
-                    () ->
-                        shooter.isAtTarget()
-                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
-        .onFalse(
-            Commands.sequence(
-                Cmds.setState(MotionMode.FULL_DRIVE),
-                Cmds.setState(Intake.State.OFF),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.POSE_AIM)));
+                Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER)
+                // Cmds.setState(MotionMode.ALIGN_TO_TAG),
+                ))
+                .onFalse(Commands.sequence(
+                Commands.either(
+                    Cmds.setState(Shooter.State.HOLDING_GP),
+                    Cmds.setState(Shooter.State.OFF),
+                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT_NO_FEEDER)));
 
     operator
         .rightTrigger(0.3)
