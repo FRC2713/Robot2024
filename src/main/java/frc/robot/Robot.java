@@ -500,7 +500,8 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER)
                 // Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 ))
-                .onFalse(Commands.sequence(
+        .onFalse(
+            Commands.sequence(
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),

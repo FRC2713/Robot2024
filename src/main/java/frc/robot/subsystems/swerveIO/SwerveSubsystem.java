@@ -314,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
             .getDistance(visionInputs.botPoseBlue.getTranslation());
 
     if (visionInputs.hasTarget) {
-      if (visionInputs.averageTagDistanceFromCamera >= 4.5) {
+      if (visionInputs.averageTagDistanceFromCamera >= 4.3) {
         return;
       }
 
@@ -326,7 +326,7 @@ public class SwerveSubsystem extends SubsystemBase {
         degStds = 6;
       }
       // 1 target with large area and close to estimated pose
-      else if (visionInputs.averageTagArea > 0.8 && poseDifference < 0.5) {
+      else if (visionInputs.averageTagArea > 0.9 && poseDifference < 0.3) {
         xyStds = 1.0;
         degStds = 12;
       }
