@@ -2149,8 +2149,8 @@
                     "controlIntervalCount": 37
                 },
                 {
-                    "x": 9.483637809753418,
-                    "y": 0.7214497923851013,
+                    "x": 8.195077896118164,
+                    "y": 0.6239959001541138,
                     "heading": 0,
                     "isInitialGuess": false,
                     "translationConstrained": true,
