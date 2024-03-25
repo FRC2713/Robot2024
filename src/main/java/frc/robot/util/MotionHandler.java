@@ -9,8 +9,11 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
 import frc.robot.VehicleState;
+import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
+import org.littletonrobotics.junction.Logger;
 
 public class MotionHandler {
 
@@ -85,17 +88,64 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveAlignToTag() {
-    if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
+    // if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
 
-      var error = VehicleState.getInstance().getCenterTagError();
-      if (error.isPresent()) {
-        SwerveHeadingController.getInstance()
-            .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+    // var error = VehicleState.getInstance().getCenterTagError();
 
-        VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+    // if (error.isPresent()) {
+    //   SwerveHeadingController.getInstance()
+    //       .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
+
+    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+    // }
+    // }
+
+    SwerveHeadingController.getInstance()
+        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose()));
+
+    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
+    // }
+
+    return driveHeadingController();
+  }
+
+  public static ChassisSpeeds driveTowardsGP() {
+    Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
+
+    if (Robot.shooter.hasGamePiece()) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Has GP");
+      return driveFullControl();
+    }
+
+    if (VehicleState.getInstance().hasGPLock) {
+      return VehicleState.getInstance().goClosestGP();
+    }
+
+    var results = getObjectDetectionResults();
+
+    for (var result : results) {
+      if (result.goodness() > VehicleState.getInstance().closestResult.goodness()) {
+        VehicleState.getInstance().closestResult = result;
       }
     }
 
-    return driveHeadingController();
+    Logger.recordOutput(
+        "OTF/DrivingToGP/Goodness", VehicleState.getInstance().closestResult.goodness());
+
+    if (VehicleState.getInstance().closestResult.goodness() < 0.0000000000001) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low");
+      return driveFullControl();
+    }
+
+    VehicleState.getInstance().hasGPLock = true;
+    VehicleState.getInstance().GPyaw = Robot.swerveDrive.getYaw();
+
+    return VehicleState.getInstance().goClosestGP();
+  }
+
+  private static LimelightTarget_Detector[] getObjectDetectionResults() {
+    return Robot.visionGP.detections;
   }
 }

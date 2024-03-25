@@ -82,22 +82,6 @@ public class OTF {
 
     timer.reset();
     timer.start();
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Pose2d currentPose = Robot.swerveDrive.getUsablePose();
-          var error =
-              new Pose2d(
-                  new Translation2d(
-                      targetPose.getX() - currentPose.getX(),
-                      targetPose.getY() - currentPose.getY()),
-                  Rotation2d.fromRadians(
-                      targetPose.getRotation().getRadians()
-                          - currentPose.getRotation().getRadians()));
-
-          tracker.addObservation(error);
-          Logger.recordOutput("PathPlanner/Target Pose", targetPose);
-          Logger.recordOutput("PathPlanner/Pose Error", error);
-        });
 
     PathPlannerPath path;
     PathConstraints constraints =

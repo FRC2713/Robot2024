@@ -1,6 +1,7 @@
 package frc.robot.subsystems.visionIO;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -122,19 +123,27 @@ public class VisionIOLimelight implements VisionIO {
   public void updateInputs(VisionInputs inputs) {
     var lvfData = table.getEntry("botpose_wpiblue").getDoubleArray(new double[] {});
 
-    if (lvfData.length > 0) {
+    if (lvfData.length > 10) {
       var lvf = this.getLimelightVisionFrame(lvfData);
       inputs.hasTarget = lvf.tagCount > 0;
       inputs.tagCount = lvf.tagCount;
-      inputs.botPoseBlue = lvf.getPose();
-      inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
-      inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
-      inputs.tagId = table.getEntry("tid").getDouble(0);
+      inputs.botPoseBlue = lvf.getPose().toPose2d();
+      // inputs.horizontalOffsetFromTarget = table.getEntry("tx").getDouble(0);
+      // inputs.verticalOffsetFromTarget = table.getEntry("ty").getDouble(0);
+      // inputs.tagId = table.getEntry("tid").getDouble(0);
+      inputs.totalLatencyMs = lvf.totalLatency;
+      inputs.botPoseBlueTimestamp =
+          Timer.getFPGATimestamp() - Units.millisecondsToSeconds(lvf.totalLatency);
     } else {
       inputs.hasTarget = false;
       inputs.tagCount = 0;
-      inputs.horizontalOffsetFromTarget = 0;
-      inputs.verticalOffsetFromTarget = 0;
+      // inputs.horizontalOffsetFromTarget = 0;
+      // inputs.verticalOffsetFromTarget = 0;
+      inputs.totalLatencyMs = 0;
+      inputs.botPoseBlue = new Pose2d();
+      inputs.botPoseBlueTimestamp = 0;
+      inputs.totalLatencyMs = 0;
+      // inputs.tagId = 0;
     }
 
     // var lvf = getLimelightVisionFrame(botPoseWpiBlue.get());

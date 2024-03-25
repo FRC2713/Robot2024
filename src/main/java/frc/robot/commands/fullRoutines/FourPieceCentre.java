@@ -2,6 +2,7 @@ package frc.robot.commands.fullRoutines;
 
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.ShootingCommands;
@@ -11,13 +12,15 @@ import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
-public class BottomTwo extends RHRFullRoutine {
-  private ChoreoTrajectory traj2, traj3;
+public class FourPieceCentre extends RHRFullRoutine {
 
-  public BottomTwo() {
-    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.1"));
-    traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.2"));
-    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.3"));
+  private ChoreoTrajectory traj2, traj3, traj4;
+
+  public FourPieceCentre() {
+    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Four Piece Centre.1"));
+    traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Four Piece Centre.2"));
+    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Four Piece Centre.3"));
+    traj4 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Four Piece Centre.4"));
 
     RedHawkUtil.maybeFlipLog(traj1);
 
@@ -31,13 +34,25 @@ public class BottomTwo extends RHRFullRoutine {
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
-        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
+        new WaitCommand(0.7),
+        ShootingCommands.runShooterAndPivot(
+            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Second Piece
         ShootingCommands.runPathAndIntake(traj2),
-        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
+        new WaitCommand(0.7),
+        ShootingCommands.runShooterAndPivot(
+            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+        RedHawkUtil.logShot(),
+        Cmds.setState(ShooterPivot.State.INTAKING),
+
+        // Third Piece
+        ShootingCommands.runPathAndIntake(traj3),
+        new WaitCommand(0.7),
+        ShootingCommands.runShooterAndPivot(
+            Shooter.State.FENDER_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -46,7 +61,7 @@ public class BottomTwo extends RHRFullRoutine {
         Cmds.setState(Intake.State.OFF),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
-        // Clear out
-        ShootingCommands.runPath(traj3));
+        // Go for 4
+        ShootingCommands.runPathAndIntake(traj4));
   }
 }

@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -66,6 +67,11 @@ public final class RedHawkUtil {
     return new Translation2d(trans.getX(), trans.getY());
   }
 
+  public static Pose2d Pose3dTo2d(Pose3d pose) {
+    return new Pose2d(
+        new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
+  }
+
   /**
    * Checkes if given pose if past the mid point of the field form their community (exclusive).
    * Flips {@code pose} if on red alliance
@@ -93,6 +99,7 @@ public final class RedHawkUtil {
     var alliance = DriverStation.getAlliance();
     if (alliance.isEmpty()) {
       Logger.recordOutput("SHOULD_BE_FLIPPING", false);
+      return;
     }
 
     if (alliance.get() == Alliance.Blue) {

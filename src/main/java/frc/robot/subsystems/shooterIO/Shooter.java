@@ -4,8 +4,6 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.util.SupplierHelpers;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -41,7 +39,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber intakingShooterRpm =
       new LoggedTunableNumber("Shooter/Intaking Feeder RPM", 0);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 6);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 8.5);
 
   private static final LoggedTunableNumber outtakingShooterRpm =
       new LoggedTunableNumber("Shooter/Outtaking Shooter RPM", 4000);
@@ -61,7 +59,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
   private static final LoggedTunableNumber ampShotFeederVolts =
-      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -5);
+      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
 
   private static final LoggedTunableNumber elevatorShotShooterRPM =
       new LoggedTunableNumber("Shooter/Elevator Shooter RPM", 4000);
@@ -72,7 +70,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Pre-spin RPM", fenderShotShooterRpm.get() * 0.75);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 200);
+      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 210);
 
   private static final LoggedTunableNumber feederShotRPM =
       new LoggedTunableNumber("Shooter/Feeder Shot RPM", 4000);
@@ -88,6 +86,12 @@ public class Shooter extends SubsystemBase {
         () -> 0,
         fenderShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
+    PODIUM_SHOT_NO_FEEDER(
+        podiumShotShooterRpm,
+        podiumShotShooterRpm,
+        shooterDifferentialRpm,
+        () -> 0,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
     PODIUM_SHOT(
         podiumShotShooterRpm,
         podiumShotShooterRpm,
@@ -101,18 +105,31 @@ public class Shooter extends SubsystemBase {
         elevatorShotFeederVolts,
         () -> Robot.shooterPivot.isAtTargetAngle()),
     HOLDING_GP(
-        holdingGpShooterRpm, holdingGpShooterRpm,
-        () -> 0, holdingFeederVolts, () -> true, () -> true),
-    INTAKING(intakingShooterRpm, intakingShooterRpm,
-        () -> 0, intakingFeederVolts, () -> true, () -> true),
-    OUTTAKE_FORWARD(outtakingShooterRpm,
-        shooterDifferentialRpm, () -> 0, outtakingFeederVolts, () -> true),
-    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM,
-        () -> 0, fullOutFeederVolts, () -> true),
-    FULL_IN(fullInShooterRPM, fullInShooterRPM,
-        () -> 0, fullInFeederVolts, () -> true),
-    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM,
-        () -> 0, ampShotFeederVolts, () -> true),
+        holdingGpShooterRpm,
+        holdingGpShooterRpm,
+        () -> 0,
+        holdingFeederVolts,
+        () -> true,
+        () -> true),
+    INTAKING(
+        intakingShooterRpm,
+        intakingShooterRpm,
+        () -> 0,
+        intakingFeederVolts,
+        () -> true,
+        () -> true),
+    INTAKING_NO_LS(
+        intakingShooterRpm,
+        intakingShooterRpm,
+        () -> 0,
+        intakingFeederVolts,
+        () -> true,
+        () -> false),
+    OUTTAKE_FORWARD(
+        outtakingShooterRpm, shooterDifferentialRpm, () -> 0, outtakingFeederVolts, () -> true),
+    FULL_OUT(fullOutShooterRPM, fullOutShooterRPM, () -> 0, fullOutFeederVolts, () -> true),
+    FULL_IN(fullInShooterRPM, fullInShooterRPM, () -> 0, fullInFeederVolts, () -> true),
+    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0, ampShotFeederVolts, () -> true),
     AUTO_SHOT_NonAmpSide_1(
         fenderShotShooterRpm,
         fenderShotShooterRpm,
@@ -131,10 +148,9 @@ public class Shooter extends SubsystemBase {
         shooterDifferentialRpm,
         () -> Robot.operator.getLeftY() * 12, // [-1, 1] * 12V
         () -> true),
-    PRE_SPIN(preSpinRPM, preSpinRPM,
-        () -> 0, () -> 0, () -> true),
-    OFF(() -> 0, () -> 0, ()-> 0, () -> 0, () -> true),
-    OUTTAKE_BACKWARDS(() -> -4000, () -> -4000, () -> 0,  () -> -5, () -> true),
+    PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0, () -> 0, () -> true),
+    OFF(() -> 0, () -> 0, () -> 0, () -> 0, () -> true),
+    OUTTAKE_BACKWARDS(() -> -1000, () -> -1000, () -> 0, () -> -3, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 0, () -> 1, () -> true),
     FEEDER_SHOT(
         feederShotRPM,
@@ -213,21 +229,23 @@ public class Shooter extends SubsystemBase {
     if (state == State.OFF) {
       IO.setShooterVolts(0, 0);
     } else {
-    this.setShooterRpms(state.leftRpm.getAsDouble(), state.rightRpm.getAsDouble(), state.differentialRpm.getAsDouble());
+      this.setShooterRpms(
+          state.leftRpm.getAsDouble(),
+          state.rightRpm.getAsDouble(),
+          state.differentialRpm.getAsDouble());
     }
     Logger.processInputs("Shooter", inputs);
   }
 
   /**
-   * 
    * @param leftRPM
    * @param rightRPM
    * @param differentialRpm
    */
-  private void setShooterRpms(double leftRPM, double rightRPM, double differentialRpm){
-      IO.setMotorSetPoint(
-          state.leftRpm.getAsDouble() + differentialRpm, state.rightRpm.getAsDouble() - differentialRpm);
-
+  private void setShooterRpms(double leftRPM, double rightRPM, double differentialRpm) {
+    IO.setMotorSetPoint(
+        state.leftRpm.getAsDouble() + differentialRpm,
+        state.rightRpm.getAsDouble() - differentialRpm);
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")
@@ -244,16 +262,20 @@ public class Shooter extends SubsystemBase {
     // return inputs.leftSpeedRPM > leftTarget && inputs.rightSpeedRPM >
     // rightTarget;
 
-    double differential = shooterDifferentialRpm.getAsDouble();
+    double differential = state.differentialRpm.getAsDouble();
 
     // if (state == State.FEEDING) {
     // differential = 0;
     // }
 
-    return Math.abs(state.leftRpm.getAsDouble() + differential - inputs.leftSpeedRPM)
-            < atGoalThresholdRPM.get()
-        && Math.abs(state.rightRpm.getAsDouble() - differential - inputs.rightSpeedRPM)
-            < atGoalThresholdRPM.get();
+    double leftError = (inputs.leftSpeedRPM) - (state.leftRpm.getAsDouble() + differential);
+    double rightError = (inputs.rightSpeedRPM) - (state.rightRpm.getAsDouble() - differential);
+
+    Logger.recordOutput("Shooter/Left error", leftError);
+    Logger.recordOutput("Shooter/Right error", rightError);
+
+    return Math.abs(leftError) < atGoalThresholdRPM.get()
+        && Math.abs(rightError) < atGoalThresholdRPM.get();
   }
 
   @AutoLogOutput(key = "Shooter/hasGamePiece")

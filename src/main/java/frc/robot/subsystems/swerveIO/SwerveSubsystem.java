@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,7 +50,8 @@ public class SwerveSubsystem extends SubsystemBase {
     HEADING_CONTROLLER,
     TRAJECTORY,
     LOCKDOWN,
-    ALIGN_TO_TAG
+    ALIGN_TO_TAG,
+    DRIVE_TOWARDS_GP
   }
 
   SwerveIO io;
@@ -127,6 +129,16 @@ public class SwerveSubsystem extends SubsystemBase {
                 LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.translationalStDev(),
                 LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.translationalStDev(),
                 LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.rotationalStDev()));
+
+    poseEstimator.updateWithTime(
+        Timer.getFPGATimestamp(),
+        Rotation2d.fromDegrees(inputs.gyroYawPosition),
+        new SwerveModulePosition[] {
+          this.frontLeft.getPosition(),
+          this.frontRight.getPosition(),
+          this.backLeft.getPosition(),
+          this.backRight.getPosition()
+        });
 
     AutoBuilder.configureHolonomic(
         this::getUsablePose,
@@ -255,6 +267,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getWheelPose() {
+    return getRegularPose();
+  }
+
   public Pose2d getUsablePose() {
     if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
       return getEstimatedPose();
@@ -282,15 +298,70 @@ public class SwerveSubsystem extends SubsystemBase {
         + backRight.getTotalCurrentDraw();
   }
 
+  public void updatePoseEstimatorWithVisionBotPose(
+      VisionInfo visionInfo, VisionInputs visionInputs) {
+    // PoseLatency visionBotPose = m_visionSystem.getPoseLatency();
+    // invalid LL data
+    if (visionInputs.botPoseBlue.getX() == 0.0) {
+      return;
+    }
+
+    // distance from current pose to vision estimated pose
+    double poseDifference =
+        poseEstimator
+            .getEstimatedPosition()
+            .getTranslation()
+            .getDistance(visionInputs.botPoseBlue.getTranslation());
+
+    if (visionInputs.hasTarget) {
+      if (visionInputs.averageTagDistanceFromCamera >= 4.3) {
+        return;
+      }
+
+      double xyStds;
+      double degStds;
+      // multiple targets detected
+      if (visionInputs.tagCount >= 2) {
+        xyStds = 0.5;
+        degStds = 6;
+      }
+      // 1 target with large area and close to estimated pose
+      else if (visionInputs.averageTagArea > 0.9 && poseDifference < 0.3) {
+        xyStds = 1.0;
+        degStds = 12;
+      }
+      // 1 target farther away and estimated pose is close
+      else if (visionInputs.averageTagArea > 0.1 && poseDifference < 0.3) {
+        xyStds = 2.0;
+        degStds = 30;
+      } else if (DriverStation.isDisabled()) {
+        xyStds = 2.0;
+        degStds = 30;
+      }
+      // conditions don't match to add a vision measurement
+      else {
+        return;
+      }
+
+      Logger.recordOutput("Pose estimator input pose", visionInputs.botPoseBlue);
+      Logger.recordOutput("Pose estimator timestamp", visionInputs.botPoseBlueTimestamp);
+      Logger.recordOutput("Pose esimator xy stdev", xyStds);
+      Logger.recordOutput("Pose esimator r stdev", degStds);
+
+      poseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+      poseEstimator.addVisionMeasurement(
+          visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp);
+    }
+  }
+
   public void updateOdometryFromVision(VisionInfo visionInfo, VisionInputs visionInputs) {
     if (!visionInputs.hasTarget) {
       return;
     }
 
     double jumpDistance =
-        getUsablePose()
-            .getTranslation()
-            .getDistance(visionInputs.botPoseBlue.toPose2d().getTranslation());
+        getUsablePose().getTranslation().getDistance(visionInputs.botPoseBlue.getTranslation());
 
     Logger.recordOutput("Vision/" + visionInfo.getNtTableName() + "/Jump Distance", jumpDistance);
 
@@ -306,10 +377,13 @@ public class SwerveSubsystem extends SubsystemBase {
               ? LimeLightConstants.POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS
               : LimeLightConstants.POSE_ESTIMATOR_VISION_SINGLE_TAG_STDEVS.multiplyByRange(1);
 
+      Logger.recordOutput("Pose estimator input pose", visionInputs.botPoseBlue);
+      Logger.recordOutput("Pose estimator timestamp", visionInputs.botPoseBlueTimestamp);
+      Logger.recordOutput("Pose esimator xy stdev", stdevs.translationalStDev());
+      Logger.recordOutput("Pose esimator r stdev", stdevs.rotationalStDev());
+
       poseEstimator.addVisionMeasurement(
-          visionInputs.botPoseBlue.toPose2d(),
-          visionInputs.botPoseBlueTimestamp,
-          stdevs.toMatrix());
+          visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp, stdevs.toMatrix());
     }
   }
 
@@ -378,15 +452,16 @@ public class SwerveSubsystem extends SubsystemBase {
           backRight.getPosition()
         });
 
-    poseEstimator.updateWithTime(
-        Timer.getFPGATimestamp(),
-        Rotation2d.fromDegrees(inputs.gyroYawPosition),
-        new SwerveModulePosition[] {
-          frontLeft.getPosition(),
-          frontRight.getPosition(),
-          backLeft.getPosition(),
-          backRight.getPosition()
-        });
+    if (DriverStation.isEnabled()) {
+      poseEstimator.update(
+          Rotation2d.fromDegrees(inputs.gyroYawPosition),
+          new SwerveModulePosition[] {
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+          });
+    }
   }
 
   public void setMotionMode(MotionMode motionMode) {
@@ -422,6 +497,9 @@ public class SwerveSubsystem extends SubsystemBase {
         break;
       case ALIGN_TO_TAG:
         setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
+        break;
+      case DRIVE_TOWARDS_GP:
+        setDesiredChassisSpeeds(MotionHandler.driveTowardsGP());
         break;
       default:
         break;
@@ -535,7 +613,7 @@ public class SwerveSubsystem extends SubsystemBase {
               modifiedChoreoSwerveController(
                   new PIDController(10, 0.0, 0.0),
                   new PIDController(10, 0.0, 0.0),
-                  new PIDController(3, 0.0, 0.0)),
+                  new PIDController(3.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },

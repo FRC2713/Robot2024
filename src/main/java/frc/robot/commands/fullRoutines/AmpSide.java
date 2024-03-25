@@ -1,7 +1,6 @@
 package frc.robot.commands.fullRoutines;
 
 import com.choreo.lib.Choreo;
-import com.choreo.lib.ChoreoTrajectory;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.ShootingCommands;
@@ -11,13 +10,9 @@ import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
-public class BottomTwo extends RHRFullRoutine {
-  private ChoreoTrajectory traj2, traj3;
-
-  public BottomTwo() {
-    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.1"));
-    traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.2"));
-    traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Bottom Two.3"));
+public class AmpSide extends RHRFullRoutine {
+  public AmpSide() {
+    traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Amp Side.1"));
 
     RedHawkUtil.maybeFlipLog(traj1);
 
@@ -31,22 +26,13 @@ public class BottomTwo extends RHRFullRoutine {
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
-        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
-        RedHawkUtil.logShot(),
-        Cmds.setState(ShooterPivot.State.INTAKING),
-
-        // Second Piece
-        ShootingCommands.runPathAndIntake(traj2),
-        ShootingCommands.runShooterAndPivot(Shooter.State.PODIUM_SHOT, ShooterPivot.State.POSE_AIM),
+        ShootingCommands.runShooterAndPivot(Shooter.State.FENDER_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Reset everything for teleop
         Cmds.setState(Shooter.State.OFF),
         Cmds.setState(Intake.State.OFF),
-        Cmds.setState(ShooterPivot.State.INTAKING),
-
-        // Clear out
-        ShootingCommands.runPath(traj3));
+        Cmds.setState(ShooterPivot.State.INTAKING));
   }
 }

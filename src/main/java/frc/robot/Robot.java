@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -22,10 +23,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
+import frc.robot.commands.fullRoutines.AmpSide;
 import frc.robot.commands.fullRoutines.BottomTwo;
+import frc.robot.commands.fullRoutines.FourPieceCentre;
+import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
-import frc.robot.commands.otf.OTF;
+import frc.robot.commands.otf.OTFAmp;
 import frc.robot.commands.otf.RotateScore;
+import frc.robot.subsystems.candle.NewCandle;
+import frc.robot.subsystems.candle.NewCandle.LightCode;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSim;
 import frc.robot.subsystems.elevatorIO.ElevatorIOSparks;
@@ -44,9 +50,9 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOKrakenNeo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIOSim;
+import frc.robot.subsystems.visionIO.LimelightGP;
 import frc.robot.subsystems.visionIO.Vision;
-import frc.robot.subsystems.visionIO.VisionIO.LEDMode;
-import frc.robot.subsystems.visionIO.VisionIOLimelight;
+import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
@@ -63,13 +69,15 @@ import org.littletonrobotics.urcl.URCL;
 
 public class Robot extends LoggedRobot {
   private static MechanismManager mechManager;
-  private OTF otf = new OTF();
-  public static Vision visionFront, visionRear;
+  public static LimelightGP visionGP;
+  public static Vision visionLeft, visionRight;
   public static SwerveSubsystem swerveDrive;
   public static ShooterPivot shooterPivot;
   public static Elevator elevator;
   public static Shooter shooter;
   public static Intake intake;
+  //   public static Candle candle;
+  public static NewCandle candle;
 
   private LinearFilter canUtilizationFilter = LinearFilter.singlePoleIIR(0.25, 0.02);
 
@@ -107,6 +115,10 @@ public class Robot extends LoggedRobot {
         new ShooterPivot(isSimulation() ? new ShooterPivotIOSim() : new ShooterPivotIOSparks());
     intake = new Intake(isSimulation() ? new IntakeIOSim() : new IntakeIOSparks());
 
+    candle = new NewCandle(isSimulation());
+
+    candle.setLEDColor(LightCode.RESTING_RED);
+
     swerveDrive =
         isSimulation()
             ? new SwerveSubsystem(
@@ -122,17 +134,19 @@ public class Robot extends LoggedRobot {
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_LEFT),
                 new SwerveModuleIOKrakenNeo(Constants.DriveConstants.BACK_RIGHT));
 
-    visionFront =
+    visionLeft =
         new Vision(
             isSimulation()
-                ? new VisionIOSim(LimeLightConstants.FRONT_LIMELIGHT_INFO)
-                : new VisionIOLimelight(LimeLightConstants.FRONT_LIMELIGHT_INFO));
+                ? new VisionIOSim(LimeLightConstants.LEFT_LIMELIGHT_INFO)
+                : new VisionIOLimelightLib(LimeLightConstants.LEFT_LIMELIGHT_INFO));
 
-    // visionRear =
-    // new Vision(
-    // isSimulation()
-    // ? new VisionIOSim(LimeLightConstants.REAR_LIMELIGHT_INFO)
-    // : new VisionIOLimelight(LimeLightConstants.REAR_LIMELIGHT_INFO));
+    visionRight =
+        new Vision(
+            isSimulation()
+                ? new VisionIOSim(LimeLightConstants.RIGHT_LIMELIGHT_INFO)
+                : new VisionIOLimelightLib(LimeLightConstants.RIGHT_LIMELIGHT_INFO));
+
+    visionGP = new LimelightGP(Constants.LimeLightConstants.GP_LIMELIGHT_INFO, isSimulation());
 
     mechManager = new MechanismManager();
 
@@ -143,8 +157,13 @@ public class Robot extends LoggedRobot {
     allianceChangeDetector =
         new ChangeDetector<>(
             (c) -> {
-              seedGyroBasedOnAlliance();
               buildAutoChooser();
+              if (autoChooser.get() != null) {
+                gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+              }
+              seedGyroBasedOnAlliance();
+              RotateScore.updateSpeakerLoc();
+              RotateScore.updateAmpLoc();
             });
 
     autoChangeDetector =
@@ -158,29 +177,24 @@ public class Robot extends LoggedRobot {
   public void createDriverBindings() {
     driver
         .leftBumper()
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new WaitUntilCommand(elevator::atTargetHeight),
-                Commands.sequence(
-                        Cmds.setState(Intake.State.INTAKE_GP),
-                        Cmds.setState(Shooter.State.INTAKING),
-                        Cmds.setState(ShooterPivot.State.INTAKING))
-                    .repeatedly()
-                    .until(() -> shooter.hasGamePiece() || intake.state == Intake.State.OFF)
-                    .andThen(
-                        Commands.sequence(
-                            Commands.either(
-                                RumbleManager.driverBigOneSec(),
-                                new InstantCommand(() -> {}),
-                                shooter::hasGamePiece),
-                            Cmds.setState(Intake.State.OFF),
-                            Commands.either(
-                                Cmds.setState(Shooter.State.OFF),
-                                new InstantCommand(),
-                                () -> shooter.getState() == Shooter.State.INTAKING)))))
+                Commands.parallel(
+                    Cmds.setState(ShooterPivot.State.INTAKING),
+                    Cmds.setState(Elevator.State.MIN_HEIGHT)),
+                new WaitUntilCommand(
+                    () -> elevator.atTargetHeight() && shooterPivot.isAtTargetAngle()),
+                Commands.parallel(
+                    Cmds.setState(Intake.State.INTAKE_GP),
+                    Cmds.setState(Shooter.State.INTAKING),
+                    Cmds.setState(ShooterPivot.State.INTAKING)),
+                Commands.waitUntil(() -> shooter.hasGamePiece()),
+                Commands.parallel(
+                    new ScheduleCommand(RumbleManager.driverBigOneSec()),
+                    Commands.sequence(
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.HOLDING_GP)))))
         .onFalse(
-            Commands.sequence(
+            Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.OFF),
@@ -188,16 +202,52 @@ public class Robot extends LoggedRobot {
                     () -> shooter.getState() == Shooter.State.INTAKING)));
 
     driver
-        .leftTrigger(0.3)
+        .a()
         .onTrue(
             Commands.sequence(
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Cmds.setState(Intake.State.INTAKE_GP),
+                Cmds.setState(Shooter.State.INTAKING),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                new InstantCommand(
+                    () -> {
+                      Robot.swerveDrive.setMotionMode(MotionMode.DRIVE_TOWARDS_GP);
+                      VehicleState.getInstance().resetClosestGP();
+                    })))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Commands.either(
+                    Cmds.setState(Shooter.State.OFF),
+                    new InstantCommand(),
+                    () -> shooter.getState() == Shooter.State.INTAKING),
+                new InstantCommand(
+                    () -> {
+                      Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+                      VehicleState.getInstance().resetClosestGP();
+                    })));
+
+    driver
+        .leftTrigger(0.3)
+        .whileTrue(
+            Commands.sequence(
+                Cmds.setState(MotionMode.HEADING_CONTROLLER),
+                new InstantCommand(
+                    () ->
+                        SwerveHeadingController.getInstance()
+                            .setSetpoint(
+                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(Shooter.State.FEEDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                new WaitUntilCommand(
+                    () ->
+                        shooter.isAtTarget()
+                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
+                // Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
@@ -227,12 +277,12 @@ public class Robot extends LoggedRobot {
 
     driver
         .rightTrigger(0.3)
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
-                Cmds.setState(ShooterPivot.State.DYNAMIC_AIM),
-                Cmds.setState(Shooter.State.FENDER_SHOT),
+                Cmds.setState(ShooterPivot.State.POSE_AIM),
+                Cmds.setState(Shooter.State.PODIUM_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
@@ -247,7 +297,7 @@ public class Robot extends LoggedRobot {
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
+                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
@@ -309,6 +359,38 @@ public class Robot extends LoggedRobot {
                         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
                             ? 180
                             : 0))));
+
+    driver
+        .x()
+        .whileTrue(
+            Commands.sequence(
+                new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
+                Commands.parallel(
+                    OTFAmp.getInstance().run(),
+                    Cmds.setState(Elevator.State.AMP),
+                    Cmds.setState(ShooterPivot.State.AMP_SHOT),
+                    new WaitUntilCommand(elevator::atTargetHeight),
+                    new WaitUntilCommand(shooterPivot::isAtTargetAngle))))
+        .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
+
+    driver
+        .y()
+        .onTrue(Cmds.setState(Shooter.State.AMP_SHOT))
+        .onFalse(
+            Commands.either(
+                Cmds.setState(Shooter.State.HOLDING_GP),
+                Cmds.setState(Shooter.State.OFF),
+                () -> shooter.getState() == Shooter.State.FENDER_SHOT));
+
+    driver
+        .b()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Intake.State.INTAKE_GP),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(Shooter.State.INTAKING_NO_LS)))
+        .onFalse(
+            Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.OFF)));
   }
 
   public void createOperatorBindings() {
@@ -396,20 +478,34 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    // operator
+    //     .leftTrigger(0.3)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.INTAKING),
+    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
+    //             Cmds.setState(Shooter.State.OUTTAKE_FORWARD),
+    //             Cmds.setState(Intake.State.INTAKE_GP)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Commands.either(
+    //                 Cmds.setState(Shooter.State.HOLDING_GP),
+    //                 Cmds.setState(Shooter.State.OFF),
+    //                 () -> shooter.hasGamePiece())));
+
     operator
         .leftTrigger(0.3)
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.INTAKING),
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                Cmds.setState(Shooter.State.OUTTAKE_FORWARD),
-                Cmds.setState(Intake.State.INTAKE_GP)))
+                Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER)
+                // Cmds.setState(MotionMode.ALIGN_TO_TAG),
+                ))
         .onFalse(
             Commands.sequence(
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece())));
+                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT_NO_FEEDER)));
 
     operator
         .rightTrigger(0.3)
@@ -443,7 +539,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.ELEVATORSHOT),
-                Cmds.setState(ShooterPivot.State.ELEVATOR_SHOT),
+                Cmds.setState(ShooterPivot.State.POSE_AIM_ELEVATOR_SHOT),
                 Cmds.setState(Shooter.State.ELEVATOR_SHOT)))
         .onFalse(
             Commands.sequence(
@@ -484,6 +580,11 @@ public class Robot extends LoggedRobot {
         .onTrue(Cmds.setState(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Cmds.setState(Intake.State.OFF));
 
+    operator
+        .back()
+        .onTrue(Cmds.setState(Intake.State.OUTAKE_GP))
+        .onFalse(Cmds.setState(Intake.State.OFF));
+
     // operator
     //     .back()
     //     .onTrue(
@@ -494,19 +595,34 @@ public class Robot extends LoggedRobot {
   }
 
   public void createAutomaticTriggers() {
-
     new Trigger(() -> shooter.hasGamePiece())
         .onTrue(
             Commands.sequence(
-                new InstantCommand(
-                    () -> {
-                      visionFront.setLEDMode(LEDMode.FORCE_BLINK);
-                    }),
-                new WaitCommand(2),
-                new InstantCommand(
-                    () -> {
-                      visionFront.setLEDMode(LEDMode.PIPELINE);
-                    })));
+                NewCandle.Commands.setLEDColor(LightCode.HAS_NOTE)
+                // new InstantCommand(
+                //     () -> {
+                //       visionRight.setLEDMode(LEDMode.FORCE_BLINK);
+                //       visionLeft.setLEDMode(LEDMode.FORCE_BLINK);
+                //     }),
+                // new WaitCommand(2),
+                // new InstantCommand(
+                //     () -> {
+                //       visionRight.setLEDMode(LEDMode.PIPELINE);
+                //       visionLeft.setLEDMode(LEDMode.PIPELINE);
+                //     }))
+                ))
+        .onFalse(NewCandle.Commands.setLEDColor(LightCode.OFF));
+
+    new Trigger(
+            () ->
+                visionGP.detections.length > 0
+                    && !shooter.hasGamePiece()
+                    && !VehicleState.getInstance().hasGPLock)
+        .onTrue(NewCandle.Commands.setLEDColor(LightCode.SEES_NOTE))
+        .onFalse(NewCandle.Commands.setLEDColor(LightCode.OFF));
+
+    new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
+        .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
   }
 
   @Override
@@ -516,7 +632,8 @@ public class Robot extends LoggedRobot {
     mechManager.periodic();
     updatePreMatchDashboardValues();
 
-    if (Math.abs(driver.getRightX()) > 0.25) {
+    if (Math.abs(driver.getRightX()) > 0.25
+        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
@@ -527,6 +644,8 @@ public class Robot extends LoggedRobot {
 
     // swerveDrive.seed();
 
+    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose());
+
     Logger.recordOutput(
         "Filtered CAN Utilization",
         canUtilizationFilter.calculate(RobotController.getCANStatus().percentBusUtilization));
@@ -535,10 +654,12 @@ public class Robot extends LoggedRobot {
         (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024.0 / 1024.0);
 
     VehicleState.getInstance()
-        .updateDynamicPivotAngle(visionFront.getInputs().verticalOffsetFromTarget);
-    VehicleState.getInstance().updateCenterTagError(visionFront.getInputs());
-    // swerveDrive.updateOdometryFromVision(visionFront.getInfo(),
-    // visionFront.getInputs());
+        .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
+    swerveDrive.updatePoseEstimatorWithVisionBotPose(
+        visionRight.getInfo(), visionRight.getInputs());
   }
 
   @Override
@@ -582,12 +703,17 @@ public class Robot extends LoggedRobot {
       autoCommand.cancel();
     }
     swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
+
+    Commands.sequence(
+            Cmds.setState(Shooter.State.OFF),
+            Cmds.setState(Intake.State.OFF),
+            Cmds.setState(Elevator.State.MIN_HEIGHT),
+            Cmds.setState(ShooterPivot.State.INTAKING))
+        .schedule();
   }
 
   @Override
-  public void teleopPeriodic() {
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {}
@@ -604,8 +730,11 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   public void buildAutoChooser() {
+    autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
     autoChooser.addOption("BottomTwo", new BottomTwo());
-    autoChooser.addOption("NonAmpSide", new NonAmpSide());
+    autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
+    autoChooser.addOption("FourPieceL", new FourPieceL());
+    autoChooser.addOption("AmpSide", new AmpSide());
   }
 
   public void updatePreMatchDashboardValues() {
@@ -634,17 +763,17 @@ public class Robot extends LoggedRobot {
     Optional<Alliance> checkedAlliance = DriverStation.getAlliance();
     var startingAngle = gyroInitial;
 
+    swerveDrive.resetGyro(startingAngle);
+
     // if we are on blue, we are probably facing towards the blue DS, which is -x.
     // that corresponds to a 180 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Blue) {
-      swerveDrive.resetGyro(startingAngle);
       SwerveSubsystem.allianceFlipper = 1;
     }
 
     // if we are on red, we are probably facing towards the red DS, which is +x.
     // that corresponds to a 0 deg heading.
     if (checkedAlliance.isPresent() && checkedAlliance.get() == Alliance.Red) {
-      swerveDrive.resetGyro(RedHawkUtil.Reflections.reflect(startingAngle));
       SwerveSubsystem.allianceFlipper = -1;
     }
   }
@@ -652,8 +781,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void driverStationConnected() {
 
-    seedGyroBasedOnAlliance();
     buildAutoChooser();
+    if (autoChooser.get() != null) {
+      gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
+    }
+    seedGyroBasedOnAlliance();
     RedHawkUtil.logShotFirst();
     // visionFront.setPriorityId(
     // switch (DriverStation.getAlliance().get()) {

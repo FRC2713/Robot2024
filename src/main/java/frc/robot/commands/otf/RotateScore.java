@@ -2,82 +2,107 @@ package frc.robot.commands.otf;
 
 import static frc.robot.util.RedHawkUtil.Translation3dTo2d;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.RedHawkUtil;
-import frc.robot.util.SwerveHeadingController;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
-  private static Translation3d speakerLoc =
-      RedHawkUtil.Reflections.reflectIfRed(new Translation3d(0.695, 5.552, 2.11));
+  private static Translation3d speakerLoc;
+  private static Translation3d ampLoc;
+
+  static {
+    updateSpeakerLoc();
+    updateAmpLoc();
+  }
+
+  public static void updateSpeakerLoc() {
+    speakerLoc =
+        RedHawkUtil.Reflections.reflectIfRed(
+            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+  }
+
+  public static void updateAmpLoc() {
+    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2.5, 7.5, 0));
+  }
+
+  public static Rotation2d getOptimalAmpAngle(Pose2d position) {
+    var x = position.getX() - ampLoc.getX();
+    var y = position.getY() - ampLoc.getY();
+    var optimalAngle = Math.atan2(y, x);
+    Logger.recordOutput("OTF/Amp Loc", new Pose3d(ampLoc, new Rotation3d()));
+    Logger.recordOutput(
+        "OTF/Optimal Amp Angle",
+        new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
+    return new Rotation2d(optimalAngle);
+  }
 
   public static Rotation2d getOptimalAngle(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-
-    var optimalAngle = Math.acos((position.getX() - speakerLoc.getX()) / distance);
-    if (position.getY() < speakerLoc.getY()) {
-      optimalAngle *= -1;
-    }
+    var x = position.getX() - speakerLoc.getX();
+    var y = position.getY() - speakerLoc.getY();
+    var optimalAngle = Math.atan2(y, x);
+    Logger.recordOutput("OTF/Speaker Loc", new Pose3d(speakerLoc, new Rotation3d()));
     Logger.recordOutput(
         "OTF/Optimal Angle", new Pose2d(position.getTranslation(), new Rotation2d(optimalAngle)));
-    return RedHawkUtil.Reflections.reflectIfRed(new Rotation2d(optimalAngle));
+    return new Rotation2d(optimalAngle);
   }
 
-  public static Command optimalShoot() {
-    return new InstantCommand(
-        () -> {
-          var optimalHeight = getOptimalElevatorHeightMetres(Robot.swerveDrive.getUsablePose());
-          Logger.recordOutput("OTF/Optimal Height", optimalHeight);
-          // Elevator.Commands.setToHeightAndWait(optimalHeight).schedule();
-          var optimalShooterAngle =
-              getOptimalShooterAngle(Robot.swerveDrive.getUsablePose(), optimalHeight);
-          Logger.recordOutput("OTF/Optimal Shooter Angle", optimalShooterAngle.getDegrees() + 90);
-          // Robot.shooterPivot.setTargetAngle(optimalShooterAngle.getDegrees());
-          Rotation2d optimalRotation =
-              RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
-          SwerveHeadingController.getInstance().setSetpoint(optimalRotation);
-        });
-  }
-
-  public static Rotation2d getOptimalShooterAngle(Pose2d position, double elevatorHeight) {
+  public static double getOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-    Logger.recordOutput(
-        "OTF/Offset Speaker Height",
-        speakerLoc.getZ()
-            - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
-            - Units.inchesToMeters(elevatorHeight));
-    Logger.recordOutput("OTF/DIST", distance);
-    return new Rotation2d(
-        Math.atan(
-            (speakerLoc.getZ()
-                    - Constants.ElevatorConstants.FLOOR_TO_ELEVATOR_BASE_METRES
-                    - elevatorHeight)
-                / distance));
+    Logger.recordOutput("OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
+    return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
-  private static InterpolatingTreeMap<Double, Double> heights =
+  public static double getElevatorOptimalShooterAngle(Pose2d position) {
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    Logger.recordOutput("OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Elevator Optimal Pivot Angle", elevatorAngle.get(distance));
+    return MathUtil.clamp(elevatorAngle.get(distance), 0, 54);
+  }
+
+  private static InterpolatingTreeMap<Double, Double> Angle =
       new InterpolatingTreeMap<>() {
         {
-          // Dist (metres), Height (in)
-          put(0., 0.);
-          put(1., 5.);
-          put(2., 10.);
-          put(3., 15.);
+          // Dist (metres), Angle (Degrees)
+          put(1.08, 48.);
+          put(1.31, 44.);
+          put(1.62, 41.);
+          put(1.955, 36.);
+          put(2.27, 32.);
+          put(2.5, 30.);
+          put(2.53, 30.);
+          put(3.1, 27.);
           put(4., 20.);
+          // Extrapolating with exponential regression
+          put(4.5, 20.);
+          put(5.0, 14.76);
+          put(5.5, 12.73);
+          put(6.0, 10.98);
+          put(6.5, 19.47);
         }
       };
 
-  public static double getOptimalElevatorHeightMetres(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
-    return heights.get(distance);
-  }
+  private static InterpolatingTreeMap<Double, Double> elevatorAngle =
+      new InterpolatingTreeMap<>() {
+        {
+          // Dist (metres), Angle (Degrees)
+          put(1.08, 48. - 9);
+          put(1.31, 44. - 9);
+          put(1.62, 41. - 9);
+          put(1.955, 36. - 9);
+          put(4., 20. - 9);
+          put(2.27, 32. - 9);
+          put(2.5, 30. - 9);
+          put(2.53, 30. - 9);
+          put(3.1, 27. - 9);
+        }
+      };
 }

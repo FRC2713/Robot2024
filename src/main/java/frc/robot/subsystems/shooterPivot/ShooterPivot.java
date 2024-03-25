@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.VehicleState;
 import frc.robot.commands.Cmds;
+import frc.robot.commands.otf.RotateScore;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Elevator Angle Degrees", 20);
   private static final LoggedTunableNumber feederShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Feeder Shot Angle Degrees", 0);
+      new LoggedTunableNumber("ShooterPivot/Feeder Shot Angle Degrees", 10);
 
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
@@ -42,7 +43,10 @@ public class ShooterPivot extends SubsystemBase {
     FENDER_SHOT(fenderShotAngleDegrees),
     PODIUM_SHOT(podiumShotAngleDegrees),
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
+    POSE_AIM_ELEVATOR_SHOT(
+        () -> RotateScore.getElevatorOptimalShooterAngle(Robot.swerveDrive.getUsablePose())),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
+    POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose())),
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
