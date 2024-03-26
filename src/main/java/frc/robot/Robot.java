@@ -24,6 +24,7 @@ import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.AmpSide;
+import frc.robot.commands.fullRoutines.AmpSideLong;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.FourPieceCentre;
 import frc.robot.commands.fullRoutines.FourPieceL;
@@ -735,6 +736,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
     autoChooser.addOption("FourPieceL", new FourPieceL());
     autoChooser.addOption("AmpSide", new AmpSide());
+    autoChooser.addOption("AmpSideLong", new AmpSideLong());
   }
 
   public void updatePreMatchDashboardValues() {
