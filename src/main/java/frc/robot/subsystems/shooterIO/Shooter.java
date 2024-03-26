@@ -152,6 +152,12 @@ public class Shooter extends SubsystemBase {
     OFF(() -> 0, () -> 0, () -> 0, () -> 0, () -> true),
     OUTTAKE_BACKWARDS(() -> -1000, () -> -1000, () -> 0, () -> -3, () -> true),
     CLEANING(() -> 10, () -> 10, () -> 0, () -> 1, () -> true),
+    FEEDER_SHOT_NO_FEEDER(
+        feederShotRPM,
+        feederShotRPM,
+        shooterDifferentialRpm,
+        () -> 0,
+        () -> Robot.shooterPivot.isAtTargetAngle()),
     FEEDER_SHOT(
         feederShotRPM,
         feederShotRPM,

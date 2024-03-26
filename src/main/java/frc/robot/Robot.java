@@ -418,20 +418,15 @@ public class Robot extends LoggedRobot {
         .a()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.PODIUM_SHOT),
-                Cmds.setState(Shooter.State.PODIUM_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
+                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+                Cmds.setState(Shooter.State.FEEDER_SHOT_NO_FEEDER)))
         .onFalse(
             Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
-                new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+                    () -> shooter.getState() == Shooter.State.FEEDER_SHOT_NO_FEEDER)));
 
     operator
         .povUp()
