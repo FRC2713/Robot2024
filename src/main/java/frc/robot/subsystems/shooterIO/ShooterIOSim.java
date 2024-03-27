@@ -35,7 +35,10 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs,
+      Shooter.ShooterState shooterState,
+      Shooter.FeederState feederState) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
     feeder.update(0.02);
@@ -71,7 +74,7 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.LSTripped = false;
 
-    if (state == Shooter.State.INTAKING) {
+    if (feederState == Shooter.FeederState.INTAKE) {
       fakeGamepieceTimer.start();
 
       // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
@@ -81,13 +84,13 @@ public class ShooterIOSim implements ShooterIO {
       // }
     }
 
-    if (state == Shooter.State.HOLDING_GP) {
+    if (feederState == Shooter.FeederState.HOLDING_GP) {
       fakeGamepieceTimer.stop();
       fakeGamepieceTimer.reset();
       // inputs.sensorVoltage = 4.5;
     }
 
-    if (state == Shooter.State.FENDER_SHOT) {
+    if (shooterState == Shooter.ShooterState.NO_DIFFERENTIAL_SHOT) {
       fakeGamepieceTimer.start();
 
       if (fakeGamepieceTimer.get() <= 0.5) {
