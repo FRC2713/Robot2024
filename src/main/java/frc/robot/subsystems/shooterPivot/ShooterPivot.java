@@ -34,6 +34,13 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber atGoalThresholdDegrees =
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
+  private static final LoggedTunableNumber clutchAuto1Degs =
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 25);
+  private static final LoggedTunableNumber clutchAuto2Degs =
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 25);
+  private static final LoggedTunableNumber clutchAuto3Degs =
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 25);
+
   private static final LoggedTunableNumber prepClimbAngle =
       new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 25);
 
@@ -44,15 +51,18 @@ public class ShooterPivot extends SubsystemBase {
     PODIUM_SHOT(podiumShotAngleDegrees),
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
     POSE_AIM_ELEVATOR_SHOT(
-        () -> RotateScore.getElevatorOptimalShooterAngle(Robot.swerveDrive.getUsablePose())),
+        () -> RotateScore.getElevatorOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
-    POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose())),
+    POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     AMP_SHOT(ampShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     PREP_FOR_CLIMB(prepClimbAngle),
     FEEDER_SHOT(feederShotAngleDegrees),
     CLEANING(() -> 0),
+    CLUTCH_AUTO_1(clutchAuto1Degs),
+    CLUTCH_AUTO_2(clutchAuto2Degs),
+    CLUTCH_AUTO_3(clutchAuto3Degs),
     OFF(() -> 0);
 
     private final DoubleSupplier pivotAngleDegrees;

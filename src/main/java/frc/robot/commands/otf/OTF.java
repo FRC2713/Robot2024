@@ -65,7 +65,7 @@ public class OTF {
   public Command followPath(OTFOptions type) {
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
-          Pose2d currentPose = Robot.swerveDrive.getUsablePose();
+          Pose2d currentPose = Robot.swerveDrive.getEstimatedPose();
           var error =
               new Pose2d(
                   new Translation2d(
@@ -92,12 +92,12 @@ public class OTF {
             type.maxAngularAccelerationRpsSq);
     switch (type) {
       case SPEAKER_MOTION:
-        path = getSpeakerMotionPath(Robot.swerveDrive.getUsablePose());
+        path = getSpeakerMotionPath(Robot.swerveDrive.getEstimatedPose());
         break;
       case AMP_STATIC:
         List<Translation2d> bezierPoints =
             PathPlannerPath.bezierFromPoses(
-                Robot.swerveDrive.getUsablePose(),
+                Robot.swerveDrive.getEstimatedPose(),
                 new Pose2d(1.89, 7.67, Rotation2d.fromRadians(1.58)));
 
         // Create the path using the bezier points created above
@@ -119,7 +119,7 @@ public class OTF {
         return new InstantCommand();
     }
 
-    var x = Robot.swerveDrive.getUsablePose().getX();
+    var x = Robot.swerveDrive.getEstimatedPose().getX();
     var alliance =
         DriverStation.getAlliance().isPresent()
             ? DriverStation.getAlliance().get()

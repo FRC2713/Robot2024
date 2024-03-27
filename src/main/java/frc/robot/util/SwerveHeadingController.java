@@ -21,7 +21,7 @@ public class SwerveHeadingController {
     controller = DriveConstants.K_HEADING_CONTROLLER_GAINS.createRHRController();
     controller.enableContinuousInput(0, 360);
 
-    setpoint = Robot.swerveDrive.getUsablePose().getRotation();
+    setpoint = Robot.swerveDrive.getRegularPose().getRotation();
     tunableSetpoint = new LoggedTunableNumber("Heading Controller/Setpoint", setpoint.getDegrees());
   }
 

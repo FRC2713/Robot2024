@@ -54,7 +54,7 @@ public class VisionIOSim implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    visionSim.update(Robot.swerveDrive.getWheelPose());
+    visionSim.update(Robot.swerveDrive.getRegularPose());
 
     var res = cameraHw.getLatestResult();
 

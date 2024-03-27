@@ -40,7 +40,7 @@ public class RHRPathPlannerAuto extends PathPlannerAuto {
 
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
-          Pose2d currentPose = Robot.swerveDrive.getUsablePose();
+          Pose2d currentPose = Robot.swerveDrive.getRegularPose();
           var error =
               new Pose2d(
                   new Translation2d(
