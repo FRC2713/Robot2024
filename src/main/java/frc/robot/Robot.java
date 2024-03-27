@@ -186,20 +186,21 @@ public class Robot extends LoggedRobot {
                     () -> elevator.atTargetHeight() && shooterPivot.isAtTargetAngle()),
                 Commands.parallel(
                     Cmds.setState(Intake.State.INTAKE_GP),
-                    Cmds.setState(Shooter.State.INTAKING),
+                    Cmds.setState(Shooter.FeederState.INTAKE),
                     Cmds.setState(ShooterPivot.State.INTAKING)),
                 Commands.waitUntil(() -> shooter.hasGamePiece()),
                 Commands.parallel(
                     new ScheduleCommand(RumbleManager.driverBigOneSec()),
                     Commands.sequence(
-                        Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.HOLDING_GP)))))
+                        Cmds.setState(Intake.State.OFF),
+                        Cmds.setState(Shooter.FeederState.HOLDING_GP)))))
         .onFalse(
             Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(Shooter.FeederState.OFF),
                     new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING)));
+                    () -> shooter.getFeederState() == Shooter.FeederState.INTAKE)));
 
     driver
         .a()
@@ -207,7 +208,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(Intake.State.INTAKE_GP),
-                Cmds.setState(Shooter.State.INTAKING),
+                Cmds.setState(Shooter.FeederState.INTAKE),
                 Cmds.setState(ShooterPivot.State.INTAKING),
                 new InstantCommand(
                     () -> {
@@ -218,9 +219,9 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(Shooter.FeederState.OFF),
                     new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING),
+                    () -> shooter.getFeederState() == Shooter.FeederState.INTAKE),
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
@@ -238,7 +239,8 @@ public class Robot extends LoggedRobot {
                             .setSetpoint(
                                 RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(Shooter.State.FEEDER_SHOT),
+                Cmds.setState(Shooter.ShooterState.DIFFERENTIAL_SHOT),
+                Cmds.setState(Shooter.FeederState.FEED_SHOT),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
@@ -250,8 +252,8 @@ public class Robot extends LoggedRobot {
                 // Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(Shooter.FeederState.HOLDING_GP),
+                    Cmds.setState(Shooter.FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
@@ -261,7 +263,8 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.FENDER_SHOT),
-                Cmds.setState(Shooter.State.FENDER_SHOT),
+                Cmds.setState(Shooter.FeederState.FEED_SHOT),
+                Cmds.setState(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
@@ -269,7 +272,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
+                    Cmds.setState(Shooter.FeederState.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),

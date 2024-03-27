@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakeIO.Intake;
-import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 
@@ -25,7 +26,7 @@ public class ShootingCommands {
 
   public static Command runPathAndShoot(
       ChoreoTrajectory choreoPath,
-      Shooter.State shooterState,
+      ShooterState shooterState,
       ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -35,7 +36,7 @@ public class ShootingCommands {
   }
 
   public static Command runShooterAndPivot(
-      Shooter.State shooterState, ShooterPivot.State shooterPivotState) {
+      ShooterState shooterState, ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         ShootingCommands.runShooterPivot(shooterPivotState),
         ShootingCommands.runShooter(shooterState));
@@ -44,17 +45,18 @@ public class ShootingCommands {
   public static Command runIntake() {
     return Commands.sequence(
         Cmds.setState(Intake.State.INTAKE_GP),
-        Cmds.setState(Shooter.State.INTAKING),
+        Cmds.setState(FeederState.INTAKE),
         Cmds.setState(ShooterPivot.State.INTAKING));
   }
 
-  public static Command runShooter(Shooter.State shooterState) {
+  public static Command runShooter(ShooterState shooterState) {
     return new SequentialCommandGroup(
         Cmds.setState(shooterState),
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
         Cmds.setState(Intake.State.INTAKE_GP),
+        Cmds.setState(FeederState.FEED_SHOT),
         new WaitCommand(0.25),
-        Cmds.setState(Shooter.State.OFF));
+        Cmds.setState(ShooterState.OFF));
   }
 
   public static Command runShooterPivot(ShooterPivot.State shooterPivotState) {

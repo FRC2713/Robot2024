@@ -104,12 +104,11 @@ public class Shooter extends SubsystemBase {
 
     IO.setDisableOnLimitSwitch(feederState.limitSwitchEnabled.getAsBoolean());
 
-    // if ((shouldSpinFeeder && state.additionalFeederCondition.getAsBoolean())
-    //     || this.state == Shooter.State.FORCE_MANUAL_CONTROL) {
-    //   IO.setFeederVolts(state.feederVolts.getAsDouble());
-    // } else {
-    //   IO.setFeederVolts(0.0);
-    // }
+    if (shouldSpinFeeder) {
+      IO.setFeederVolts(feederState.feederVolts.getAsDouble());
+    } else {
+      IO.setFeederVolts(0.0);
+    }
 
     IO.setFeederVolts(0.0);
 
