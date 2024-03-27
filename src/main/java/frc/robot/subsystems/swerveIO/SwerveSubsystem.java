@@ -145,7 +145,8 @@ public class SwerveSubsystem extends SubsystemBase {
         this::resetOdometry,
         this::getRobotRelativeSpeeds,
         (cs) -> {
-          // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs, getYaw()));
+          // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs,
+          // getYaw()));
           this.setDesiredChassisSpeeds(cs);
         },
         new HolonomicPathFollowerConfig(
@@ -268,11 +269,11 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   // public Pose2d getUsablePose() {
-  //   if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
-  //     return getEstimatedPose();
-  //   } else {
-  //     return getRegularPose();
-  //   }
+  // if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
+  // return getEstimatedPose();
+  // } else {
+  // return getRegularPose();
+  // }
   // }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -362,8 +363,8 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/" + visionInfo.getNtTableName() + "/Jump Distance", jumpDistance);
 
     // Use the pose if
-    //  - We are disabled, OR
-    //  - We are within the jump distance
+    // - We are disabled, OR
+    // - We are within the jump distance
     boolean shouldUpdatePose =
         !DriverStation.isEnabled() || jumpDistance < LimeLightConstants.MAX_POSE_JUMP_METERS;
     Logger.recordOutput("Vision/Should update pose", shouldUpdatePose);
