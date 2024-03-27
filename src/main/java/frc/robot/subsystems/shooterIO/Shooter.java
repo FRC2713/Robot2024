@@ -5,6 +5,8 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -69,10 +71,16 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  @Setter
+  @Getter
   @AutoLogOutput(key = "Shooter/ShooterState")
-  FeederState feederState;
+  ShooterState shooterState = ShooterState.OFF;
 
-  ShooterState shooterState;
+  @Setter
+  @Getter
+  @AutoLogOutput(key = "Shooter/FeederState")
+  FeederState feederState = FeederState.OFF;
+
   private final ShooterIO IO;
   public final ShooterInputsAutoLogged inputs;
 

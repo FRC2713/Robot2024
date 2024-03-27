@@ -22,8 +22,12 @@ public class Cmds {
     return Commands.runOnce(() -> Robot.intake.setState(state));
   }
 
-  public static Command setState(Shooter.State state) {
-    return Commands.runOnce(() -> Robot.shooter.setState(state));
+  public static Command setState(Shooter.ShooterState state) {
+    return Commands.runOnce(() -> Robot.shooter.setShooterState(state));
+  }
+
+  public static Command setState(Shooter.FeederState state) {
+    return Commands.runOnce(() -> Robot.shooter.setFeederState(state));
   }
 
   public static Command setState(ShooterPivot.State state) {
