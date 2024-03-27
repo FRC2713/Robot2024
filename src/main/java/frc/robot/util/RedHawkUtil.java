@@ -303,7 +303,7 @@ public final class RedHawkUtil {
   public static Command logShot() {
     return new InstantCommand(
         () -> {
-          var pos = RedHawkUtil.Reflections.reflectIfBlue(Robot.swerveDrive.getUsablePose());
+          var pos = RedHawkUtil.Reflections.reflectIfBlue(Robot.swerveDrive.getEstimatedPose());
           var deg = pos.getRotation().getDegrees();
           deg = Math.signum(deg) == -1 ? deg + 360 : deg;
           Logger.recordOutput(

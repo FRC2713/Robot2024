@@ -141,7 +141,7 @@ public class SwerveSubsystem extends SubsystemBase {
         });
 
     AutoBuilder.configureHolonomic(
-        this::getUsablePose,
+        this::getRegularPose,
         this::resetOdometry,
         this::getRobotRelativeSpeeds,
         (cs) -> {
@@ -263,21 +263,17 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return The position of the robot on the field.
    */
-  private Pose2d getEstimatedPose() {
+  public Pose2d getEstimatedPose() {
     return poseEstimator.getEstimatedPosition();
   }
 
-  public Pose2d getWheelPose() {
-    return getRegularPose();
-  }
-
-  public Pose2d getUsablePose() {
-    if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
-      return getEstimatedPose();
-    } else {
-      return getRegularPose();
-    }
-  }
+  // public Pose2d getUsablePose() {
+  //   if (Constants.ENABLE_VISION_POSE_ESTIMATION) {
+  //     return getEstimatedPose();
+  //   } else {
+  //     return getRegularPose();
+  //   }
+  // }
 
   public ChassisSpeeds getChassisSpeeds() {
     return ChassisSpeeds.fromRobotRelativeSpeeds(this.getRobotRelativeSpeeds(), this.getYaw());
@@ -287,7 +283,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(inputs.gyroYawPosition);
   }
 
-  private Pose2d getRegularPose() {
+  public Pose2d getRegularPose() {
     return odometry.getPoseMeters();
   }
 
@@ -361,7 +357,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     double jumpDistance =
-        getUsablePose().getTranslation().getDistance(visionInputs.botPoseBlue.getTranslation());
+        getEstimatedPose().getTranslation().getDistance(visionInputs.botPoseBlue.getTranslation());
 
     Logger.recordOutput("Vision/" + visionInfo.getNtTableName() + "/Jump Distance", jumpDistance);
 
@@ -518,7 +514,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Swerve/Odometry/Wheel-Based", getRegularPose());
     Logger.recordOutput("Swerve/Odometry/KF-Based", getEstimatedPose());
-    Logger.recordOutput("Swerve/Odometry/Useable", getUsablePose());
     Logger.recordOutput("Swerve/Desired speeds/x-mps", desiredSpeeds.vxMetersPerSecond);
     Logger.recordOutput("Swerve/Desired speeds/y-mps", desiredSpeeds.vxMetersPerSecond);
     Logger.recordOutput("Swerve/Desired speeds/r-radps", desiredSpeeds.omegaRadiansPerSecond);
@@ -609,7 +604,7 @@ public class SwerveSubsystem extends SubsystemBase {
       return new SequentialCommandGroup(
           Choreo.choreoSwerveCommand(
               traj,
-              Robot.swerveDrive::getUsablePose,
+              Robot.swerveDrive::getRegularPose,
               modifiedChoreoSwerveController(
                   new PIDController(10, 0.0, 0.0),
                   new PIDController(10, 0.0, 0.0),

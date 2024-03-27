@@ -53,7 +53,7 @@ public class OTFAmp {
   public Command run() {
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
-          Pose2d currentPose = Robot.swerveDrive.getUsablePose();
+          Pose2d currentPose = Robot.swerveDrive.getEstimatedPose();
           var error =
               new Pose2d(
                   new Translation2d(
@@ -76,7 +76,7 @@ public class OTFAmp {
             OTF.OTFOptions.AMP_STATIC.maxAngularAccelerationRpsSq);
 
     List<Translation2d> bezierPoints =
-        PathPlannerPath.bezierFromPoses(Robot.swerveDrive.getUsablePose(), preAmpPose, ampPose);
+        PathPlannerPath.bezierFromPoses(Robot.swerveDrive.getEstimatedPose(), preAmpPose, ampPose);
 
     // Create the path using the bezier points created above
     PathPlannerPath path =

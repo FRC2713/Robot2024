@@ -237,7 +237,8 @@ public class Robot extends LoggedRobot {
                     () ->
                         SwerveHeadingController.getInstance()
                             .setSetpoint(
-                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
+                                RotateScore.getOptimalAmpAngle(
+                                    Robot.swerveDrive.getEstimatedPose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(Shooter.State.FEEDER_SHOT),
                 new WaitUntilCommand(
@@ -640,7 +641,7 @@ public class Robot extends LoggedRobot {
 
     // swerveDrive.seed();
 
-    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose());
+    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose());
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
@@ -651,7 +652,7 @@ public class Robot extends LoggedRobot {
 
     VehicleState.getInstance()
         .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose());
 
     swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
     swerveDrive.updatePoseEstimatorWithVisionBotPose(
