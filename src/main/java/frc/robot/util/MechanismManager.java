@@ -15,19 +15,17 @@ public class MechanismManager {
   private final MechanismLigament2d elevator;
   private final MechanismRoot2d shooterPivot;
   private final MechanismLigament2d shooter;
-  // private Vector elevatorPosition;
+
   public MechanismManager() {
-    // shooterPivot = null;
     mech = new Mechanism2d(10, 10);
-    // elevatorPosition = new Vector(5, 5);
-    root = mech.getRoot("ElevatorBase", 5, 5);
+    root = mech.getRoot("ElevatorBase", 5, 5 - ((double) 1 / 3));
 
     elevator =
         root.append(
             new MechanismLigament2d(
                 "Elevator",
                 Constants.ElevatorConstants.MAX_HEIGHT_METERS
-                    - Constants.ElevatorConstants.MIN_HEIGHT_METERS,
+                    - (Constants.ElevatorConstants.MIN_HEIGHT_METERS - ((double) 1 / 3)),
                 90,
                 20,
                 new Color8Bit(255, 0, 0)));
@@ -44,12 +42,11 @@ public class MechanismManager {
                 Robot.shooterPivot.getCurrentAngle(),
                 20,
                 new Color8Bit(0, 0, 255)));
-
     SmartDashboard.putData("Mech2d", mech);
   }
 
   public void periodic() {
     shooterPivot.setPosition(5, 5 + Units.inchesToMeters(Robot.elevator.getCurrentHeight()));
-    shooter.setAngle(Robot.shooterPivot.getCurrentAngle());
+    shooter.setAngle(Robot.shooterPivot.getCurrentAngle() + 180);
   }
 }
