@@ -276,12 +276,13 @@ public class Robot extends LoggedRobot {
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(ShooterState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
-                Cmds.setState(ShooterPivot.State.OFF)));
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
     driver
         .rightTrigger(0.3)
@@ -424,6 +425,7 @@ public class Robot extends LoggedRobot {
     //             new WaitCommand(0.05),
     //             ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
+    // Prep for feeder shot
     operator
         .a()
         .onTrue(
@@ -439,52 +441,57 @@ public class Robot extends LoggedRobot {
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
+    // Elevator up
     operator
         .povUp()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MAX_HEIGHT),
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
+
+    // Elevator down
     operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.MIN_HEIGHT)));
 
-    operator
-        .povLeft()
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                Cmds.setState(FeederState.FEED_SHOT),
-                RedHawkUtil.logShot()))
-        .onFalse(
-            Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
-                Commands.either(
-                    Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(FeederState.OFF),
-                    () -> shooter.hasGamePiece()),
-                new WaitCommand(0.05),
-                Cmds.setState(ShooterPivot.State.INTAKING)));
-
     // operator
-    //     .rightBumper()
+    //     .povLeft()
     //     .onTrue(
     //         Commands.sequence(
-    //             Cmds.setState(Elevator.State.AMP),
-    //             Cmds.setState(ShooterPivot.State.AMP_SHOT),
-    //             new WaitUntilCommand(elevator::atTargetHeight),
-    //             new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-    //             Cmds.setState(ShooterState.AMP_SHOT)))
+    //             Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+    //             Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+    //             new WaitUntilCommand(() -> shooter.isAtTarget()),
+    //             Cmds.setState(Intake.State.INTAKE_GP),
+    //             Cmds.setState(FeederState.FEED_SHOT),
+    //             RedHawkUtil.logShot()))
     //     .onFalse(
     //         Commands.sequence(
     //             Cmds.setState(Intake.State.OFF),
-    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
     //             Commands.either(
-    //                 Cmds.setState(ShooterState.HOLDING_GP),
-    //                 Cmds.setState(ShooterState.OFF),
+    //                 Cmds.setState(FeederState.HOLDING_GP),
+    //                 Cmds.setState(FeederState.OFF),
     //                 () -> shooter.hasGamePiece()),
+    //             new WaitCommand(0.05),
     //             Cmds.setState(ShooterPivot.State.INTAKING)));
+
+    // Amp Shot
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.AMP),
+                Cmds.setState(ShooterPivot.State.AMP_SHOT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Cmds.setState(ShooterState.AMP_SHOT),
+                Cmds.setState(FeederState.AMP_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece()),
+                Cmds.setState(ShooterPivot.State.INTAKING)));
 
     // operator
     //     .leftTrigger(0.3)
@@ -542,20 +549,22 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    // operator
-    //     .y()
-    //     .onTrue(
-    //         Commands.sequence(
-    //             Cmds.setState(Elevator.State.ELEVATORSHOT),
-    //             Cmds.setState(ShooterPivot.State.POSE_AIM_ELEVATOR_SHOT),
-    //             Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             Cmds.setState(Elevator.State.ELEVATORSHOT),
-    //             Commands.either(
-    //                 Cmds.setState(ShooterState.HOLDING_GP),
-    //                 Cmds.setState(ShooterState.OFF),
-    //                 () -> shooter.hasGamePiece())));
+    // Elevator shot
+    operator
+        .y()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.ELEVATORSHOT),
+                Cmds.setState(ShooterPivot.State.POSE_AIM_ELEVATOR_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.ELEVATORSHOT),
+                Cmds.setState(ShooterState.OFF),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     // operator
     //     .povLeft()
@@ -583,11 +592,13 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
+    // Note in chassis
     operator
         .start()
         .onTrue(Cmds.setState(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Cmds.setState(Intake.State.OFF));
 
+    // Outake GP
     operator
         .back()
         .onTrue(Cmds.setState(Intake.State.OUTAKE_GP))

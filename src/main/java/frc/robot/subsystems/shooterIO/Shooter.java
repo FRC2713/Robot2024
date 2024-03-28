@@ -24,6 +24,11 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber offFeederVolts =
       new LoggedTunableNumber("Shooter/Resting Feeder Volts", 0);
 
+  private static final LoggedTunableNumber ampShotFeederVolts =
+      new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
+  private static final LoggedTunableNumber ampShotShooterRPM =
+      new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
+
   /**
    * Applies a differential speed to the left and right wheels. Positive values make the left wheel
    * go faster and the right wheel slower Negative values make the left wheel slower and the right
@@ -46,6 +51,7 @@ public class Shooter extends SubsystemBase {
     NO_DIFFERENTIAL_SHOT(noDifferentialShotRPM, noDifferentialShotRPM, () -> 0),
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
+    AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
     OFF(() -> 0, () -> 0, () -> 0);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;
 
@@ -62,6 +68,7 @@ public class Shooter extends SubsystemBase {
     INTAKE(intakingFeederVolts, () -> true),
     HOLDING_GP(offFeederVolts, () -> false),
     FORCE_ON(intakingFeederVolts, () -> false),
+    AMP_SHOT(ampShotFeederVolts, () -> false),
     OFF(offFeederVolts, () -> false);
     private final DoubleSupplier feederVolts;
     private final BooleanSupplier limitSwitchEnabled;

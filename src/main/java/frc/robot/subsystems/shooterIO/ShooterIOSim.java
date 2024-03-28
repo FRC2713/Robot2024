@@ -113,5 +113,8 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setShooterVolts(double lVolts, double rVolts) {}
+  public void setShooterVolts(double lVolts, double rVolts) {
+    leftController.setSetpoint(0);
+    rightController.setSetpoint(0);
+  }
 }
