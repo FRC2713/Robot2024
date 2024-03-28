@@ -3,9 +3,9 @@
     "robotConfiguration": {
         "mass": 74.08797700309194,
         "rotationalInertia": 6,
-        "motorMaxTorque": 0.4842896174863388,
-        "motorMaxVelocity": 4000,
-        "gearing": 6.12,
+        "motorMaxTorque": 1.162295081967213,
+        "motorMaxVelocity": 4800,
+        "gearing": 5.3571,
         "wheelbase": 0.5778496879611685,
         "trackWidth": 0.5778496879611685,
         "bumperLength": 0.97,
@@ -7564,7 +7564,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 15
+                    "controlIntervalCount": 12
                 },
                 {
                     "x": 2.7939507961273193,
@@ -7573,7 +7573,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 11
+                    "controlIntervalCount": 8
                 },
                 {
                     "x": 3.651547431945801,
@@ -7582,7 +7582,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 26
+                    "controlIntervalCount": 19
                 },
                 {
                     "x": 7.998003005981445,
@@ -7591,7 +7591,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 24
+                    "controlIntervalCount": 17
                 },
                 {
                     "x": 3.6710381507873535,
@@ -7600,7 +7600,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 27
+                    "controlIntervalCount": 20
                 },
                 {
                     "x": 8.017494201660156,
@@ -7609,7 +7609,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 18
+                    "controlIntervalCount": 13
                 },
                 {
                     "x": 5.815030097961426,
@@ -7618,7 +7618,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": false,
-                    "controlIntervalCount": 19
+                    "controlIntervalCount": 14
                 },
                 {
                     "x": 3.5930752754211426,
@@ -7627,7 +7627,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 19
+                    "controlIntervalCount": 14
                 },
                 {
                     "x": 5.756557941436768,
@@ -7636,7 +7636,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": false,
-                    "controlIntervalCount": 23
+                    "controlIntervalCount": 17
                 },
                 {
                     "x": 8.017494201660156,
@@ -7645,7 +7645,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 22
+                    "controlIntervalCount": 16
                 },
                 {
                     "x": 5.366741180419922,
@@ -7654,7 +7654,7 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 16
+                    "controlIntervalCount": 11
                 },
                 {
                     "x": 3.8659467697143555,
