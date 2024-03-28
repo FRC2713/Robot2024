@@ -101,7 +101,7 @@ public class MotionHandler {
     // }
 
     SwerveHeadingController.getInstance()
-        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose()));
+        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
 
     //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
     // }

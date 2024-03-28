@@ -47,14 +47,14 @@ public class ShootableZone {
   }
 
   public Command run() {
-    Pose2d pose = Robot.swerveDrive.getUsablePose();
+    Pose2d pose = Robot.swerveDrive.getEstimatedPose();
 
     boolean shouldShoot = isInShootableZone(pose);
     Logger.recordOutput("AutoFiring/ShouldShoot", shouldShoot);
     // if (shouldShoot) {
     return new InstantCommand(
         () -> {
-          double angle = getIdealRotation(Robot.swerveDrive.getUsablePose());
+          double angle = getIdealRotation(Robot.swerveDrive.getEstimatedPose());
 
           Logger.recordOutput("AutoFiring/Angle", angle);
 
@@ -62,12 +62,12 @@ public class ShootableZone {
 
           List<RHRTrajectoryState> states = new ArrayList<>();
           states.add(
-              new RHRTrajectoryState(0, Robot.swerveDrive.getUsablePose(), new ChassisSpeeds()));
+              new RHRTrajectoryState(0, Robot.swerveDrive.getEstimatedPose(), new ChassisSpeeds()));
           states.add(
               new RHRTrajectoryState(
                   2,
                   new Pose2d(
-                      Robot.swerveDrive.getUsablePose().getTranslation(),
+                      Robot.swerveDrive.getEstimatedPose().getTranslation(),
                       Rotation2d.fromRadians(angle)),
                   new ChassisSpeeds()));
           RHRTrajectoryController.getInstance().setTrajectory(new RHRTrajectory(states));
@@ -75,7 +75,7 @@ public class ShootableZone {
                   new InstantCommand(
                       () -> {
                         Robot.swerveDrive.setDesiredChassisSpeeds(
-                            MotionHandler.driveTrajectory(Robot.swerveDrive.getUsablePose()));
+                            MotionHandler.driveTrajectory(Robot.swerveDrive.getEstimatedPose()));
                       }))
               .schedule();
         });
