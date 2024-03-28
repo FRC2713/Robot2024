@@ -364,7 +364,7 @@ public final class Constants {
               .build();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.).kS(0.09).kV(0.11).build();
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.).kS(0.00).kV(0.0).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(3).build();
