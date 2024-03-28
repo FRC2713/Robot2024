@@ -61,6 +61,7 @@ public class Shooter extends SubsystemBase {
     FEED_SHOT(genericFeederVolts, () -> false),
     INTAKE(intakingFeederVolts, () -> true),
     HOLDING_GP(offFeederVolts, () -> false),
+    FORCE_ON(intakingFeederVolts, () -> false),
     OFF(offFeederVolts, () -> false);
     private final DoubleSupplier feederVolts;
     private final BooleanSupplier limitSwitchEnabled;
@@ -104,13 +105,13 @@ public class Shooter extends SubsystemBase {
 
     IO.setDisableOnLimitSwitch(feederState.limitSwitchEnabled.getAsBoolean());
 
-    if (shouldSpinFeeder) {
-      IO.setFeederVolts(feederState.feederVolts.getAsDouble());
-    } else {
-      IO.setFeederVolts(0.0);
-    }
+    // if (shouldSpinFeeder) {
+    IO.setFeederVolts(feederState.feederVolts.getAsDouble());
+    // } else {
+    //   IO.setFeederVolts(0.0);
+    // }
 
-    IO.setFeederVolts(0.0);
+    // IO.setFeederVolts(0.0);
 
     if (shooterState == ShooterState.OFF) {
       IO.setShooterVolts(0, 0);

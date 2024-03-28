@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakeIO.Intake;
+import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.subsystems.shooterIO.Shooter.FeederState;
 import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
@@ -27,7 +28,7 @@ public class ShootingCommands {
 
   public static Command runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
       ChoreoTrajectory choreoPath,
-      Shooter.State shooterState,
+      Shooter.ShooterState shooterState,
       ShooterPivot.State shooterPivotState) {
     return new ParallelDeadlineGroup(
         ShootingCommands.runPathAndIntake(choreoPath),

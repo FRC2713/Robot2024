@@ -14,6 +14,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
@@ -90,9 +92,7 @@ public class ShooterIOVortexVortex implements ShooterIO {
 
   @Override
   public void updateInputs(
-      ShooterInputsAutoLogged inputs,
-      Shooter.ShooterState shooterState,
-      Shooter.FeederState FeederState) {
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState FeederState) {
     inputs.leftOutputVoltage = RobotController.getBatteryVoltage() * leftMotor.getAppliedOutput();
     inputs.rightOutputVoltage = RobotController.getBatteryVoltage() * rightMotor.getAppliedOutput();
 

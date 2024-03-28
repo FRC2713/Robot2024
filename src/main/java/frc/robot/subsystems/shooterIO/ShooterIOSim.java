@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
 import frc.robot.rhr.RHRPIDFFController;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.util.PIDFFGains;
 
 public class ShooterIOSim implements ShooterIO {
@@ -36,9 +38,7 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void updateInputs(
-      ShooterInputsAutoLogged inputs,
-      Shooter.ShooterState shooterState,
-      Shooter.FeederState feederState) {
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState feederState) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
     feeder.update(0.02);
@@ -74,7 +74,7 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.LSTripped = false;
 
-    if (feederState == Shooter.FeederState.INTAKE) {
+    if (feederState == FeederState.INTAKE) {
       fakeGamepieceTimer.start();
 
       // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
@@ -84,7 +84,7 @@ public class ShooterIOSim implements ShooterIO {
       // }
     }
 
-    if (feederState == Shooter.FeederState.HOLDING_GP) {
+    if (feederState == FeederState.HOLDING_GP) {
       fakeGamepieceTimer.stop();
       fakeGamepieceTimer.reset();
       // inputs.sensorVoltage = 4.5;
