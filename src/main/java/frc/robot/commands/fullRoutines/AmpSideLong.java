@@ -15,12 +15,13 @@ import frc.robot.util.RedHawkUtil;
 
 public class AmpSideLong extends RHRFullRoutine {
 
-  private ChoreoTrajectory traj2, traj3;
+  private ChoreoTrajectory traj2, traj3, traj4;
 
   public AmpSideLong() {
     traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Amp Side Long.1"));
     traj2 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Amp Side Long.2"));
     traj3 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Amp Side Long.3"));
+    traj4 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("Amp Side Long.4"));
 
     addCommands(
         SwerveSubsystem.Commands.resetOdometry(traj1),
@@ -31,25 +32,31 @@ public class AmpSideLong extends RHRFullRoutine {
         RedHawkUtil.logShot(),
 
         // First Piece
+        ShootingCommands.runPathAndIntake(traj1),
+        ShootingCommands.runShooterAndPivot(
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+        RedHawkUtil.logShot(),
+
+        // Second Piece
         ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj1, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_1),
+            traj2, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_1),
         ShootingCommands.runShooterAndPivot(
             ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_1),
         RedHawkUtil.logShot(),
         new WaitCommand(0.1),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
-        // Second Piece
+        // Third Piece
         ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj2, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_2),
+            traj3, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_2),
         ShootingCommands.runShooterAndPivot(
             Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_2),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
-        // Third Piece
+        // Fourth Piece
         ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj3, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
+            traj4, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
         ShootingCommands.runShooterAndPivot(
             Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
         RedHawkUtil.logShot(),

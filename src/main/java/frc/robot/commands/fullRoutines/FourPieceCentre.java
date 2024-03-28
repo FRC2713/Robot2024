@@ -36,7 +36,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         ShootingCommands.runPathAndIntake(traj1),
         new WaitCommand(0.7),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.NO_DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -44,7 +44,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         ShootingCommands.runPathAndIntake(traj2),
         new WaitCommand(0.7),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.NO_DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -52,7 +52,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         ShootingCommands.runPathAndIntake(traj3),
         new WaitCommand(0.7),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.NO_DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 

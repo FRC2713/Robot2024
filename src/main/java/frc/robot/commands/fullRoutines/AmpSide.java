@@ -27,7 +27,7 @@ public class AmpSide extends RHRFullRoutine {
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.NO_DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 

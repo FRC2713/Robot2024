@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
-import frc.robot.commands.ShootingCommands;
 import frc.robot.commands.fullRoutines.AmpSide;
 import frc.robot.commands.fullRoutines.AmpSideLong;
 import frc.robot.commands.fullRoutines.BottomTwo;
@@ -268,7 +267,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.FENDER_SHOT),
-                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Cmds.setState(FeederState.FEED_SHOT),
                 Cmds.setState(Intake.State.INTAKE_GP),
@@ -386,12 +385,16 @@ public class Robot extends LoggedRobot {
 
     driver
         .y()
-        .onTrue(ShootingCommands.runShooter(ShooterState.NO_DIFFERENTIAL_SHOT))
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterState.AMP_SHOT), Cmds.setState(FeederState.AMP_SHOT)))
         .onFalse(
-            Commands.either(
-                Cmds.setState(FeederState.HOLDING_GP),
+            Commands.sequence(
                 Cmds.setState(ShooterState.OFF),
-                () -> shooter.hasGamePiece()));
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     driver
         .b()
@@ -431,7 +434,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT)))
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.INTAKING),
