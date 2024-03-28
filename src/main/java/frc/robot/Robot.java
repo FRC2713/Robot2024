@@ -24,6 +24,7 @@ import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.AmpSide;
+import frc.robot.commands.fullRoutines.AmpSideLong;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.FourPieceCentre;
 import frc.robot.commands.fullRoutines.FourPieceL;
@@ -237,7 +238,8 @@ public class Robot extends LoggedRobot {
                     () ->
                         SwerveHeadingController.getInstance()
                             .setSetpoint(
-                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
+                                RotateScore.getOptimalAmpAngle(
+                                    Robot.swerveDrive.getEstimatedPose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(Shooter.ShooterState.DIFFERENTIAL_SHOT),
                 Cmds.setState(Shooter.FeederState.FEED_SHOT),
@@ -420,20 +422,15 @@ public class Robot extends LoggedRobot {
         .a()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.PODIUM_SHOT),
-                Cmds.setState(Shooter.State.PODIUM_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
+                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+                Cmds.setState(Shooter.State.FEEDER_SHOT_NO_FEEDER)))
         .onFalse(
             Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
                 Commands.either(
                     Cmds.setState(Shooter.State.HOLDING_GP),
                     Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
-                new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+                    () -> shooter.getState() == Shooter.State.FEEDER_SHOT_NO_FEEDER)));
 
     operator
         .povUp()
@@ -647,7 +644,7 @@ public class Robot extends LoggedRobot {
 
     // swerveDrive.seed();
 
-    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose());
+    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose());
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
@@ -658,7 +655,7 @@ public class Robot extends LoggedRobot {
 
     VehicleState.getInstance()
         .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose());
 
     swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
     swerveDrive.updatePoseEstimatorWithVisionBotPose(
@@ -738,6 +735,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
     autoChooser.addOption("FourPieceL", new FourPieceL());
     autoChooser.addOption("AmpSide", new AmpSide());
+    autoChooser.addOption("AmpSideLong", new AmpSideLong());
   }
 
   public void updatePreMatchDashboardValues() {

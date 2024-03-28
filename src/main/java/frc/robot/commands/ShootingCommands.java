@@ -4,6 +4,7 @@ import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -22,6 +23,19 @@ public class ShootingCommands {
   public static Command runPathAndIntake(ChoreoTrajectory choreoPath) {
     return new SequentialCommandGroup(
         ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath));
+  }
+
+  public static Command runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
+      ChoreoTrajectory choreoPath,
+      Shooter.State shooterState,
+      ShooterPivot.State shooterPivotState) {
+    return new ParallelDeadlineGroup(
+        ShootingCommands.runPathAndIntake(choreoPath),
+        Commands.sequence(
+            new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
+            ShootingCommands.runShooter(shooterState),
+            new WaitCommand(0.1),
+            ShootingCommands.runShooterPivot(shooterPivotState)));
   }
 
   public static Command runPathAndShoot(
