@@ -3,7 +3,7 @@ package frc.robot.subsystems.swerveIO.module;
 import static frc.robot.util.RedHawkUtil.cOk;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -50,8 +50,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     info.getDriveGains().applyTo(config);
     config.Voltage.PeakForwardVoltage = 12;
     config.Voltage.PeakReverseVoltage = -12;
-    config.CurrentLimits.SupplyCurrentLimit = 40;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    // config.CurrentLimits.SupplyCurrentLimit = 40;
+    // config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = 60;
 
     config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
@@ -147,14 +147,15 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
   public void setDriveVelocitySetpoint(double setpointMetersPerSecond, double staticFFVolts) {
     var desiredRotationsPerSecond =
         setpointMetersPerSecond / RedHawkUtil.getDistPerPulse(info.getWheelDiameter());
-    final VelocityVoltage m_request = new VelocityVoltage(desiredRotationsPerSecond).withSlot(0);
-    double ffVolts = ff.calculate(setpointMetersPerSecond);
+    final VelocityTorqueCurrentFOC m_request =
+        new VelocityTorqueCurrentFOC(desiredRotationsPerSecond);
+    // double ffVolts = ff.calculate(setpointMetersPerSecond);
     Logger.recordOutput(
         "Swerve/" + info.getName() + "/Drive Setpoint MPS", setpointMetersPerSecond);
     Logger.recordOutput(
         "Swerve/" + info.getName() + "/Drive Setpoint RPS", desiredRotationsPerSecond);
-    Logger.recordOutput("Swerve/" + info.getName() + "/Drive kV and kS", ffVolts);
-    drive.setControl(m_request.withFeedForward(ffVolts));
+    // Logger.recordOutput("Swerve/" + info.getName() + "/Drive kV and kS", ffVolts);
+    drive.setControl(m_request);
   }
 
   @Override

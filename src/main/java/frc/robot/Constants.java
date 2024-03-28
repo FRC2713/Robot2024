@@ -256,7 +256,7 @@ public final class Constants {
     public static final double DIST_PER_PULSE =
         (1.0 / GEAR_RATIO) * Units.inchesToMeters(WHEEL_DIAMETER) * Math.PI;
     // 1;
-    public static final double MAX_SWERVE_VEL = Units.feetToMeters(18);
+    public static final double MAX_SWERVE_VEL = Units.feetToMeters(18.9);
     public static final double MAX_SWERVE_VEL_AUTO = Units.feetToMeters(12.0);
     public static final double MAX_SWERVE_AZI = Math.PI;
     public static final double MAX_SWERVE_ACCEL = Units.feetToMeters(5);
@@ -364,7 +364,7 @@ public final class Constants {
               .build();
 
       public static final PIDFFGains K_DEFAULT_DRIVING_GAINS =
-          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(0.).kS(0.09).kV(0.11).build();
+          PIDFFGains.builder().name("Swerve/Defaults/Driving").kP(10.).kS(9.00).kV(.2).build();
 
       public static final PIDFFGains K_TRAJECTORY_CONTROLLER_GAINS_X =
           PIDFFGains.builder().name("Trajectory/X").kP(3).build();
