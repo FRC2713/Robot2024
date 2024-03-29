@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
 import frc.robot.rhr.RHRPIDFFController;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.util.PIDFFGains;
 
 public class ShooterIOSim implements ShooterIO {
@@ -35,7 +37,8 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState feederState) {
     leftFlyWheel.update(0.02);
     rightFlyWheel.update(0.02);
     feeder.update(0.02);
@@ -71,7 +74,7 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.LSTripped = false;
 
-    if (state == Shooter.State.INTAKING) {
+    if (feederState == FeederState.INTAKE) {
       fakeGamepieceTimer.start();
 
       // if (fakeGamepieceTimer.get() > 1.0 || inputs.sensorVoltage != 0) {
@@ -81,13 +84,13 @@ public class ShooterIOSim implements ShooterIO {
       // }
     }
 
-    if (state == Shooter.State.HOLDING_GP) {
+    if (feederState == FeederState.HOLDING_GP) {
       fakeGamepieceTimer.stop();
       fakeGamepieceTimer.reset();
       // inputs.sensorVoltage = 4.5;
     }
 
-    if (state == Shooter.State.FENDER_SHOT) {
+    if (shooterState == Shooter.ShooterState.NO_DIFFERENTIAL_SHOT) {
       fakeGamepieceTimer.start();
 
       if (fakeGamepieceTimer.get() <= 0.5) {
@@ -110,5 +113,8 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setShooterVolts(double lVolts, double rVolts) {}
+  public void setShooterVolts(double lVolts, double rVolts) {
+    leftController.setSetpoint(0);
+    rightController.setSetpoint(0);
+  }
 }

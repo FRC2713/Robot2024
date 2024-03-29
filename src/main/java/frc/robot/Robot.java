@@ -24,6 +24,7 @@ import frc.robot.Constants.LimeLightConstants;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.AmpSide;
+import frc.robot.commands.fullRoutines.AmpSideLong;
 import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.FourPieceCentre;
 import frc.robot.commands.fullRoutines.FourPieceL;
@@ -39,6 +40,8 @@ import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.intakeIO.IntakeIOSim;
 import frc.robot.subsystems.intakeIO.IntakeIOSparks;
 import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.subsystems.shooterIO.ShooterIOSim;
 import frc.robot.subsystems.shooterIO.ShooterIOVortexVortexLS;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
@@ -186,41 +189,48 @@ public class Robot extends LoggedRobot {
                     () -> elevator.atTargetHeight() && shooterPivot.isAtTargetAngle()),
                 Commands.parallel(
                     Cmds.setState(Intake.State.INTAKE_GP),
-                    Cmds.setState(Shooter.State.INTAKING),
+                    Cmds.setState(FeederState.INTAKE),
                     Cmds.setState(ShooterPivot.State.INTAKING)),
                 Commands.waitUntil(() -> shooter.hasGamePiece()),
                 Commands.parallel(
                     new ScheduleCommand(RumbleManager.driverBigOneSec()),
                     Commands.sequence(
-                        Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.HOLDING_GP)))))
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(FeederState.HOLDING_GP)))))
         .onFalse(
             Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.OFF),
-                    new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING)));
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     driver
         .a()
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(Intake.State.INTAKE_GP),
-                Cmds.setState(Shooter.State.INTAKING),
+                Cmds.setState(ShooterState.OFF),
+                Cmds.setState(FeederState.INTAKE),
                 Cmds.setState(ShooterPivot.State.INTAKING),
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.DRIVE_TOWARDS_GP);
                       VehicleState.getInstance().resetClosestGP();
-                    })))
+                    }),
+                Commands.waitUntil(() -> shooter.hasGamePiece()),
+                Commands.parallel(
+                    new ScheduleCommand(RumbleManager.driverBigOneSec()),
+                    Commands.sequence(
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(FeederState.HOLDING_GP)))))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.OFF),
-                    new InstantCommand(),
-                    () -> shooter.getState() == Shooter.State.INTAKING),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
@@ -236,13 +246,15 @@ public class Robot extends LoggedRobot {
                     () ->
                         SwerveHeadingController.getInstance()
                             .setSetpoint(
-                                RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getUsablePose()))),
+                                RotateScore.getOptimalAmpAngle(
+                                    Robot.swerveDrive.getEstimatedPose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(Shooter.State.FEEDER_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
                             && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+                Cmds.setState(FeederState.FEED_SHOT),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
@@ -250,8 +262,8 @@ public class Robot extends LoggedRobot {
                 // Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
@@ -261,19 +273,21 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.FENDER_SHOT),
-                Cmds.setState(Shooter.State.FENDER_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Cmds.setState(FeederState.FEED_SHOT),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
-                Cmds.setState(ShooterPivot.State.INTAKING)));
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
     driver
         .rightTrigger(0.3)
@@ -282,22 +296,24 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 Cmds.setState(ShooterPivot.State.POSE_AIM),
-                Cmds.setState(Shooter.State.PODIUM_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
                             && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Cmds.setState(Intake.State.INTAKE_GP),
+                Cmds.setState(FeederState.FEED_SHOT),
                 RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
@@ -375,12 +391,16 @@ public class Robot extends LoggedRobot {
 
     driver
         .y()
-        .onTrue(Cmds.setState(Shooter.State.AMP_SHOT))
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterState.AMP_SHOT), Cmds.setState(FeederState.AMP_SHOT)))
         .onFalse(
-            Commands.either(
-                Cmds.setState(Shooter.State.HOLDING_GP),
-                Cmds.setState(Shooter.State.OFF),
-                () -> shooter.getState() == Shooter.State.FENDER_SHOT));
+            Commands.sequence(
+                Cmds.setState(ShooterState.OFF),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     driver
         .b()
@@ -388,77 +408,80 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(Intake.State.INTAKE_GP),
                 Cmds.setState(ShooterPivot.State.INTAKING),
-                Cmds.setState(Shooter.State.INTAKING_NO_LS)))
+                Cmds.setState(FeederState.FORCE_ON),
+                Cmds.setState(ShooterState.OFF)))
         .onFalse(
-            Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(Shooter.State.OFF)));
+            Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(ShooterState.OFF)));
   }
 
   public void createOperatorBindings() {
-    operator
-        .x()
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(ShooterPivot.State.FENDER_SHOT),
-                Cmds.setState(Shooter.State.FENDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
-        .onFalse(
-            Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.FENDER_SHOT),
-                new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+    // operator
+    //     .x()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.FENDER_SHOT),
+    //             Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+    //             new WaitUntilCommand(() -> shooter.isAtTarget()),
+    //             Cmds.setState(Intake.State.INTAKE_GP),
+    //             RedHawkUtil.logShot()))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Cmds.setState(Intake.State.OFF),
+    //             Commands.either(
+    //                 Cmds.setState(FeederState.HOLDING_GP),
+    //                 Cmds.setState(FeederState.OFF),
+    //                 () -> shooter.hasGamePiece()),
+    //             new WaitCommand(0.05),
+    //             ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
+    // Prep for feeder shot
     operator
         .a()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.PODIUM_SHOT),
-                Cmds.setState(Shooter.State.PODIUM_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
+                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
         .onFalse(
             Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT),
-                new WaitCommand(0.05),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece())));
 
+    // Elevator up
     operator
         .povUp()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MAX_HEIGHT),
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
+
+    // Elevator down
     operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.MIN_HEIGHT)));
 
-    operator
-        .povLeft()
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(Shooter.State.FEEDER_SHOT),
-                new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(Intake.State.INTAKE_GP),
-                RedHawkUtil.logShot()))
-        .onFalse(
-            Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece()),
-                new WaitCommand(0.05),
-                Cmds.setState(ShooterPivot.State.INTAKING)));
+    // operator
+    //     .povLeft()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+    //             Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+    //             new WaitUntilCommand(() -> shooter.isAtTarget()),
+    //             Cmds.setState(Intake.State.INTAKE_GP),
+    //             Cmds.setState(FeederState.FEED_SHOT),
+    //             RedHawkUtil.logShot()))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Cmds.setState(Intake.State.OFF),
+    //             Commands.either(
+    //                 Cmds.setState(FeederState.HOLDING_GP),
+    //                 Cmds.setState(FeederState.OFF),
+    //                 () -> shooter.hasGamePiece()),
+    //             new WaitCommand(0.05),
+    //             Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    // Amp Shot
     operator
         .rightBumper()
         .onTrue(
@@ -467,14 +490,16 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterPivot.State.AMP_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Cmds.setState(Shooter.State.AMP_SHOT)))
+                Cmds.setState(ShooterState.AMP_SHOT),
+                Cmds.setState(FeederState.AMP_SHOT)))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
@@ -484,69 +509,71 @@ public class Robot extends LoggedRobot {
     //         Commands.sequence(
     //             Cmds.setState(ShooterPivot.State.INTAKING),
     //             Cmds.setState(Elevator.State.MIN_HEIGHT),
-    //             Cmds.setState(Shooter.State.OUTTAKE_FORWARD),
+    //             Cmds.setState(ShooterState.OUTTAKE_FORWARD),
     //             Cmds.setState(Intake.State.INTAKE_GP)))
     //     .onFalse(
     //         Commands.sequence(
     //             Commands.either(
-    //                 Cmds.setState(Shooter.State.HOLDING_GP),
-    //                 Cmds.setState(Shooter.State.OFF),
+    //                 Cmds.setState(ShooterState.HOLDING_GP),
+    //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    operator
-        .leftTrigger(0.3)
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(Shooter.State.PODIUM_SHOT_NO_FEEDER)
-                // Cmds.setState(MotionMode.ALIGN_TO_TAG),
-                ))
-        .onFalse(
-            Commands.sequence(
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.getState() == Shooter.State.PODIUM_SHOT_NO_FEEDER)));
+    // operator
+    //     .leftTrigger(0.3)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)
+    //             // Cmds.setState(MotionMode.ALIGN_TO_TAG),
+    //             ))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Commands.either(
+    //                 Cmds.setState(FeederState.HOLDING_GP),
+    //                 Cmds.setState(FeederState.OFF),
+    //                 () -> shooter.hasGamePiece())));
 
-    operator
-        .rightTrigger(0.3)
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(ShooterPivot.State.INTAKING),
-                Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new WaitUntilCommand(elevator::atTargetHeight),
-                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Cmds.setState(Shooter.State.OUTTAKE_BACKWARDS),
-                Cmds.setState(Intake.State.OUTAKE_GP)))
-        .onFalse(
-            Commands.sequence(
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece())));
+    // operator
+    //     .rightTrigger(0.3)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.INTAKING),
+    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
+    //             new WaitUntilCommand(elevator::atTargetHeight),
+    //             new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+    //             Cmds.setState(ShooterState.OUTTAKE_BACKWARDS),
+    //             Cmds.setState(Intake.State.OUTAKE_GP)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Commands.either(
+    //                 Cmds.setState(ShooterState.HOLDING_GP),
+    //                 Cmds.setState(ShooterState.OFF),
+    //                 () -> shooter.hasGamePiece())));
 
-    operator
-        .b()
-        .onTrue(Commands.sequence(Cmds.setState(Shooter.State.FORCE_MANUAL_CONTROL)))
-        .onFalse(
-            Commands.sequence(
-                Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
-                    () -> shooter.hasGamePiece())));
+    // operator
+    //     .b()
+    //     .onTrue(Commands.sequence(Cmds.setState(ShooterState.FORCE_MANUAL_CONTROL)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Commands.either(
+    //                 Cmds.setState(ShooterState.HOLDING_GP),
+    //                 Cmds.setState(ShooterState.OFF),
+    //                 () -> shooter.hasGamePiece())));
 
+    // Elevator shot
     operator
         .y()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.ELEVATORSHOT),
                 Cmds.setState(ShooterPivot.State.POSE_AIM_ELEVATOR_SHOT),
-                Cmds.setState(Shooter.State.ELEVATOR_SHOT)))
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Elevator.State.ELEVATORSHOT),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
-                    Cmds.setState(Shooter.State.HOLDING_GP),
-                    Cmds.setState(Shooter.State.OFF),
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
                     () -> shooter.hasGamePiece())));
 
     // operator
@@ -554,12 +581,12 @@ public class Robot extends LoggedRobot {
     //     .onTrue(
     //         Commands.sequence(
     //             Cmds.setState(Intake.State.FULL_OUT),
-    //             Cmds.setState(Shooter.State.FULL_OUT)))
+    //             Cmds.setState(ShooterState.FULL_OUT)))
     //     .onFalse(
     //         Commands.sequence(
     //             Commands.either(
-    //                 Cmds.setState(Shooter.State.HOLDING_GP),
-    //                 Cmds.setState(Shooter.State.OFF),
+    //                 Cmds.setState(ShooterState.HOLDING_GP),
+    //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
     // operator
@@ -567,19 +594,21 @@ public class Robot extends LoggedRobot {
     //     .onTrue(
     //         Commands.sequence(
     //             Cmds.setState(Intake.State.FULL_IN),
-    //             Cmds.setState(Shooter.State.FULL_IN)))
+    //             Cmds.setState(ShooterState.FULL_IN)))
     //     .onFalse(
     //         Commands.sequence(
     //             Commands.either(
-    //                 Cmds.setState(Shooter.State.HOLDING_GP),
-    //                 Cmds.setState(Shooter.State.OFF),
+    //                 Cmds.setState(ShooterState.HOLDING_GP),
+    //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
+    // Note in chassis
     operator
         .start()
         .onTrue(Cmds.setState(Intake.State.NOTE_IN_CHASSIS))
         .onFalse(Cmds.setState(Intake.State.OFF));
 
+    // Outake GP
     operator
         .back()
         .onTrue(Cmds.setState(Intake.State.OUTAKE_GP))
@@ -591,7 +620,7 @@ public class Robot extends LoggedRobot {
     //         Commands.sequence(
     //             Cmds.setState(Intake.State.CLEANING),
     //             Cmds.setState(ShooterPivot.State.CLEANING),
-    //             Cmds.setState(Shooter.State.CLEANING)));
+    //             Cmds.setState(ShooterState.CLEANING)));
   }
 
   public void createAutomaticTriggers() {
@@ -623,6 +652,13 @@ public class Robot extends LoggedRobot {
 
     new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
         .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
+
+    // new Trigger(
+    //         () ->
+    //             shooter.hasGamePiece()
+    //                 && VehicleState.getInstance().canSeeSpeakerTag
+    //                 && shooter.getShooterState() == ShooterState.OFF)
+    //     .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
   }
 
   @Override
@@ -644,7 +680,7 @@ public class Robot extends LoggedRobot {
 
     // swerveDrive.seed();
 
-    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getUsablePose());
+    RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose());
 
     Logger.recordOutput(
         "Filtered CAN Utilization",
@@ -655,7 +691,10 @@ public class Robot extends LoggedRobot {
 
     VehicleState.getInstance()
         .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
-    RotateScore.getOptimalAngle(Robot.swerveDrive.getUsablePose());
+    VehicleState.getInstance()
+        .updateCanSeeSpeakerTag(visionLeft.getInputs(), visionRight.getInputs());
+    Logger.recordOutput("Can See Speaker Tag", VehicleState.getInstance().canSeeSpeakerTag);
+    RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose());
 
     swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
     swerveDrive.updatePoseEstimatorWithVisionBotPose(
@@ -705,7 +744,7 @@ public class Robot extends LoggedRobot {
     swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
 
     Commands.sequence(
-            Cmds.setState(Shooter.State.OFF),
+            Cmds.setState(ShooterState.OFF),
             Cmds.setState(Intake.State.OFF),
             Cmds.setState(Elevator.State.MIN_HEIGHT),
             Cmds.setState(ShooterPivot.State.INTAKING))
@@ -735,6 +774,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
     autoChooser.addOption("FourPieceL", new FourPieceL());
     autoChooser.addOption("AmpSide", new AmpSide());
+    autoChooser.addOption("AmpSideLong", new AmpSideLong());
   }
 
   public void updatePreMatchDashboardValues() {
@@ -750,7 +790,8 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
     SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
     SmartDashboard.putString("Dashboard/States/Intake", intake.getState().name());
-    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getState().name());
+    SmartDashboard.putString("Dashboard/States/Feeder", shooter.getFeederState().name());
+    SmartDashboard.putString("Dashboard/States/Shooter", shooter.getShooterState().name());
     SmartDashboard.putString("Dashboard/States/Pivot", shooterPivot.getState().name());
     SmartDashboard.putString("Dashboard/States/Swerve", swerveDrive.getMotionMode().name());
     SmartDashboard.putNumber("Dashboard/Elevator Left", elevator.getLeftPosition());

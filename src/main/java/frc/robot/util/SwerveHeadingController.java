@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,13 +17,17 @@ public class SwerveHeadingController {
   private RHRPIDFFController controller;
   private double error;
   private LoggedTunableNumber tunableSetpoint;
+  private Debouncer debouncer;
+  private boolean isWithinTarget;
+  private double acceptableError = 0.1;
 
   private SwerveHeadingController() {
     controller = DriveConstants.K_HEADING_CONTROLLER_GAINS.createRHRController();
     controller.enableContinuousInput(0, 360);
 
-    setpoint = Robot.swerveDrive.getUsablePose().getRotation();
+    setpoint = Robot.swerveDrive.getRegularPose().getRotation();
     tunableSetpoint = new LoggedTunableNumber("Heading Controller/Setpoint", setpoint.getDegrees());
+    debouncer = new Debouncer(0.5);
   }
 
   /**
@@ -62,10 +67,20 @@ public class SwerveHeadingController {
   }
 
   public boolean atSetpoint() {
-    return this.error < 0.1;
+    if (this.acceptableError != 0.1) {
+      this.acceptableError = 0.1;
+      return false;
+    }
+    return isWithinTarget;
   }
 
   public boolean atSetpoint(double acceptableError) {
+    // if (this.acceptableError != acceptableError) {
+    //   this.acceptableError = acceptableError;
+    //   return false;
+    // }
+    // return isWithinTarget;
+
     return this.error < acceptableError;
   }
   /**
@@ -104,6 +119,9 @@ public class SwerveHeadingController {
     // }
 
     Logger.recordOutput("Heading Controller/update", output);
+
+    isWithinTarget = debouncer.calculate(this.error < this.acceptableError);
+
     return output;
   }
 }

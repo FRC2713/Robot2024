@@ -21,6 +21,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
@@ -101,7 +103,8 @@ public class ShooterIOVortexKraken implements ShooterIO {
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState feederState) {
     BaseStatusSignal.refreshAll(
         feederMotorVoltage, feederSupplyCurrent, feederStatorCurrent, feederVelocity);
 

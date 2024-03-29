@@ -10,6 +10,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.util.RedHawkUtil;
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
@@ -48,7 +50,7 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
 
     feederMotor.setIdleMode(IdleMode.kBrake);
 
-    feederMotor.setSmartCurrentLimit(30);
+    feederMotor.setSmartCurrentLimit(20);
     feederMotor.enableVoltageCompensation(12.0);
 
     feederMotor.getEncoder().setMeasurementPeriod(10);
@@ -77,7 +79,8 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
   }
 
   @Override
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state) {
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState feederState) {
     inputs.leftOutputVoltage = RobotController.getBatteryVoltage() * leftMotor.getAppliedOutput();
     inputs.rightOutputVoltage = RobotController.getBatteryVoltage() * rightMotor.getAppliedOutput();
 

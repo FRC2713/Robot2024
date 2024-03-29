@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooterIO;
 
+import frc.robot.subsystems.shooterIO.Shooter.FeederState;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -28,7 +30,8 @@ public interface ShooterIO {
     public boolean LSTripped = false;
   }
 
-  public void updateInputs(ShooterInputsAutoLogged inputs, Shooter.State state);
+  public void updateInputs(
+      ShooterInputsAutoLogged inputs, ShooterState shooterState, FeederState feederState);
 
   public void setMotorSetPoint(double leftRPM, double rightRPM);
 
