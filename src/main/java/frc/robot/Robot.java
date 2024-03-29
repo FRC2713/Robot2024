@@ -207,22 +207,28 @@ public class Robot extends LoggedRobot {
 
     driver
         .a()
-        .onTrue(
+        .whileTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(Intake.State.INTAKE_GP),
+                Cmds.setState(ShooterState.OFF),
                 Cmds.setState(FeederState.INTAKE),
                 Cmds.setState(ShooterPivot.State.INTAKING),
                 new InstantCommand(
                     () -> {
                       Robot.swerveDrive.setMotionMode(MotionMode.DRIVE_TOWARDS_GP);
                       VehicleState.getInstance().resetClosestGP();
-                    })))
+                    }),
+                Commands.waitUntil(() -> shooter.hasGamePiece()),
+                Commands.parallel(
+                    new ScheduleCommand(RumbleManager.driverBigOneSec()),
+                    Commands.sequence(
+                        Cmds.setState(Intake.State.OFF), Cmds.setState(FeederState.HOLDING_GP)))))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Commands.either(
-                    new InstantCommand(),
+                    Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new InstantCommand(
@@ -244,11 +250,11 @@ public class Robot extends LoggedRobot {
                                     Robot.swerveDrive.getEstimatedPose()))),
                 Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
                 Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
-                Cmds.setState(FeederState.FEED_SHOT),
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
                             && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+                Cmds.setState(FeederState.FEED_SHOT),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 RedHawkUtil.logShot()))
         .onFalse(
@@ -278,7 +284,7 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(ShooterState.OFF),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
@@ -306,7 +312,7 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(ShooterState.OFF),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
@@ -490,9 +496,10 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(ShooterState.OFF),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
@@ -645,6 +652,13 @@ public class Robot extends LoggedRobot {
 
     new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
         .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
+
+    // new Trigger(
+    //         () ->
+    //             shooter.hasGamePiece()
+    //                 && VehicleState.getInstance().canSeeSpeakerTag
+    //                 && shooter.getShooterState() == ShooterState.OFF)
+    //     .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
   }
 
   @Override
@@ -677,6 +691,9 @@ public class Robot extends LoggedRobot {
 
     VehicleState.getInstance()
         .updateDynamicPivotAngle(visionLeft.getInputs(), visionRight.getInputs());
+    VehicleState.getInstance()
+        .updateCanSeeSpeakerTag(visionLeft.getInputs(), visionRight.getInputs());
+    Logger.recordOutput("Can See Speaker Tag", VehicleState.getInstance().canSeeSpeakerTag);
     RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose());
 
     swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());

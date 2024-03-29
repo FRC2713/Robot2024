@@ -45,6 +45,8 @@ public class VehicleState {
   @Getter Rotation2d dynamicPivotAngle = Rotation2d.fromDegrees(45);
   @Getter Optional<Rotation2d> centerTagError = Optional.empty();
 
+  @Getter public boolean canSeeSpeakerTag = false;
+
   private VehicleState() {}
 
   public static VehicleState getInstance() {
@@ -153,5 +155,17 @@ public class VehicleState {
         0,
         Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
         Rotation2d.fromDegrees(0));
+  }
+
+  public void updateCanSeeSpeakerTag(VisionInputs left, VisionInputs right) {
+    canSeeSpeakerTag =
+        left.getByTagId(7).isPresent()
+            || right.getByTagId(7).isPresent()
+            || left.getByTagId(3).isPresent()
+            || right.getByTagId(3).isPresent()
+            || left.getByTagId(8).isPresent()
+            || right.getByTagId(8).isPresent()
+            || left.getByTagId(4).isPresent()
+            || right.getByTagId(4).isPresent();
   }
 }

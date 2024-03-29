@@ -252,7 +252,7 @@ public final class Constants {
 
     public static final double K_JOYSTICK_TURN_DEADZONE = 0.04;
     public static final double WHEEL_DIAMETER = 3.9; // 4.02267; // 3.85;
-    public static final double GEAR_RATIO = 6.12;
+    public static final double GEAR_RATIO = 5.3571;
     public static final double DIST_PER_PULSE =
         (1.0 / GEAR_RATIO) * Units.inchesToMeters(WHEEL_DIAMETER) * Math.PI;
     // 1;
@@ -295,7 +295,7 @@ public final class Constants {
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
         // PIDFFGains.builder().name("Heading
         // Controller").kP(8).kD(0).kS(2).build().buildTunables();
-        PIDFFGains.builder().name("Heading Controller").kP(8).kD(0.1).kS(8).build().buildTunables();
+        PIDFFGains.builder().name("Heading Controller").kP(7).kD(0.1).kS(8).build().buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()
