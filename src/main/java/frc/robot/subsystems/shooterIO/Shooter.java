@@ -20,7 +20,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber genericFeederVolts =
       new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 8.5);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 10);
   private static final LoggedTunableNumber offFeederVolts =
       new LoggedTunableNumber("Shooter/Resting Feeder Volts", 0);
 

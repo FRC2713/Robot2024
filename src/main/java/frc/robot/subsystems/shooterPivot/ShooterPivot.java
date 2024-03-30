@@ -42,7 +42,7 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 25);
 
   private static final LoggedTunableNumber prepClimbAngle =
-      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 25);
+      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", -20);
 
   @RequiredArgsConstructor
   public enum State {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -33,9 +34,9 @@ public class ShootingCommands {
     return new ParallelDeadlineGroup(
         ShootingCommands.runPathAndIntake(choreoPath),
         Commands.sequence(
+            new WaitCommand(0.05),
             new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
-            ShootingCommands.runShooter(shooterState),
-            new WaitCommand(0.1),
+            Cmds.setState(shooterState),
             ShootingCommands.runShooterPivot(shooterPivotState)));
   }
 
@@ -70,7 +71,11 @@ public class ShootingCommands {
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
         Cmds.setState(Intake.State.INTAKE_GP),
         Cmds.setState(FeederState.FEED_SHOT),
-        new WaitCommand(0.25),
+        new ParallelRaceGroup(
+            new WaitCommand(0.25),
+            Commands.sequence(
+                new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()), new WaitCommand(0.1))),
+        Cmds.setState(FeederState.OFF),
         Cmds.setState(ShooterState.OFF));
   }
 

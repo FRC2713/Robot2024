@@ -455,11 +455,11 @@ public class Robot extends LoggedRobot {
         .povUp()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.MAX_HEIGHT),
+                Cmds.setState(Elevator.State.CHAIN_APPROACH_HEIGHT),
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
 
     // Elevator down
-    operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.MIN_HEIGHT)));
+    operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT)));
 
     // operator
     //     .povLeft()
@@ -653,12 +653,12 @@ public class Robot extends LoggedRobot {
     new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
         .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
 
-    // new Trigger(
-    //         () ->
-    //             shooter.hasGamePiece()
-    //                 && VehicleState.getInstance().canSeeSpeakerTag
-    //                 && shooter.getShooterState() == ShooterState.OFF)
-    //     .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
+    new Trigger(
+            () ->
+                shooter.hasGamePiece()
+                    && VehicleState.getInstance().canSeeSpeakerTag
+                    && shooter.getShooterState() == ShooterState.OFF)
+        .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
   }
 
   @Override
