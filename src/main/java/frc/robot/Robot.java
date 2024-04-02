@@ -199,7 +199,6 @@ public class Robot extends LoggedRobot {
         .onFalse(
             Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
-                Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(FeederState.OFF),
@@ -450,6 +449,23 @@ public class Robot extends LoggedRobot {
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
+    // Lob shot
+    operator
+        .b()
+        .whileTrue(
+            Commands.sequence(
+                new WaitUntilCommand(() -> intake.state == Intake.State.OFF),
+                Cmds.setState(ShooterState.LOB_SHOT),
+                Cmds.setState(ShooterPivot.State.LOB_SHOT)))
+        .whileFalse(
+            Commands.sequence(
+                Cmds.setState(FeederState.FEED_SHOT),
+                new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
+                new WaitCommand(0.1),
+                Cmds.setState(FeederState.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(ShooterState.OFF)));
+
     // Elevator up
     operator
         .povUp()
@@ -459,7 +475,12 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
 
     // Elevator down
-    operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT)));
+    operator
+        .povDown()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT),
+                Cmds.setState(ShooterPivot.State.ON_CHAIN_ANGLE)));
 
     // operator
     //     .povLeft()

@@ -8,6 +8,7 @@ import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.ShootingCommands;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
+import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
@@ -30,6 +31,7 @@ public class NonAmpSide extends RHRFullRoutine {
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
+        Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),

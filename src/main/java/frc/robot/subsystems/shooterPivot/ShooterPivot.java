@@ -35,14 +35,20 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
   private static final LoggedTunableNumber clutchAuto1Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21);
   private static final LoggedTunableNumber clutchAuto2Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 20);
   private static final LoggedTunableNumber clutchAuto3Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 20);
+
+  private static final LoggedTunableNumber lobShotDegs =
+      new LoggedTunableNumber("ShooterPivot/Lob Shot Degs", intakingAngleDegrees.get());
 
   private static final LoggedTunableNumber prepClimbAngle =
-      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", -20);
+      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 0);
+
+  private static final LoggedTunableNumber onChainAngle =
+      new LoggedTunableNumber("ShooterPivot/On Chain Degrees", 10);
 
   @RequiredArgsConstructor
   public enum State {
@@ -63,7 +69,9 @@ public class ShooterPivot extends SubsystemBase {
     CLUTCH_AUTO_1(clutchAuto1Degs),
     CLUTCH_AUTO_2(clutchAuto2Degs),
     CLUTCH_AUTO_3(clutchAuto3Degs),
-    OFF(() -> 0);
+    OFF(() -> 0),
+    LOB_SHOT(lobShotDegs),
+    ON_CHAIN_ANGLE(onChainAngle);
 
     private final DoubleSupplier pivotAngleDegrees;
   }

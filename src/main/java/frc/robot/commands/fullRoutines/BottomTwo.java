@@ -29,6 +29,7 @@ public class BottomTwo extends RHRFullRoutine {
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
+        Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
