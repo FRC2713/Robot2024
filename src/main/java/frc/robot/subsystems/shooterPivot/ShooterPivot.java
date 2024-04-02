@@ -25,7 +25,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
   private static final LoggedTunableNumber directAmpShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -20);
+      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -30);
   private static final LoggedTunableNumber autoShotOneAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =

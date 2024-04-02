@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevatorIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,7 +37,7 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/Amp height", 15);
 
   private static final LoggedTunableNumber directAmpHeight =
-      new LoggedTunableNumber("Elevator/Direct Amp height", 10);
+      new LoggedTunableNumber("Elevator/Direct Amp height", 12);
 
   private static final LoggedTunableNumber elevatorShotHeight =
       new LoggedTunableNumber("Elevator/Amp height", 15);
@@ -52,7 +53,12 @@ public class Elevator extends SubsystemBase {
     DIRECT_AMP_HEIGHT(directAmpHeight),
     OFF(() -> 0),
     HOLD_IN_PLACE(() -> Robot.elevator.getCurrentHeight()),
-    MANUAL_CONTROL(() -> Robot.elevator.getCurrentHeight() + (Robot.operator.getLeftX() * 0.08));
+    MANUAL_CONTROL(
+        () ->
+            MathUtil.clamp(
+                Robot.elevator.getCurrentHeight() + ((-1 * Robot.operator.getLeftY()) * 0.75),
+                0,
+                maxHeight.get()));
 
     private final DoubleSupplier height;
   }

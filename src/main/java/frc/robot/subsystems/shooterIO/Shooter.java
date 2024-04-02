@@ -32,6 +32,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
 
+  private static final LoggedTunableNumber directAmpShot =
+      new LoggedTunableNumber("Shooter/Direct Amp Shot Shooter RPM", 1500);
+
   /**
    * Applies a differential speed to the left and right wheels. Positive values make the left wheel
    * go faster and the right wheel slower Negative values make the left wheel slower and the right
@@ -55,6 +58,7 @@ public class Shooter extends SubsystemBase {
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
+    DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
     OFF(() -> 0, () -> 0, () -> 0),
     LOB_SHOT(lobShotRPM, lobShotRPM, () -> 0);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;

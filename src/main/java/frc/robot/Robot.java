@@ -482,8 +482,9 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT),
                 Cmds.setState(ShooterPivot.State.ON_CHAIN_ANGLE)));
 
+    // Elevator manual control
     operator
-        .b()
+        .x()
         .onTrue(Cmds.setState(Elevator.State.MANUAL_CONTROL))
         .onFalse(Cmds.setState(Elevator.State.HOLD_IN_PLACE));
 
