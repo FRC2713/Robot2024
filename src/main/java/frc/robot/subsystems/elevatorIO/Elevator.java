@@ -34,6 +34,9 @@ public class Elevator extends SubsystemBase {
   private static final LoggedTunableNumber ampHeight =
       new LoggedTunableNumber("Elevator/Amp height", 15);
 
+  private static final LoggedTunableNumber directAmpHeight =
+      new LoggedTunableNumber("Elevator/Direct Amp height", 10);
+
   private static final LoggedTunableNumber elevatorShotHeight =
       new LoggedTunableNumber("Elevator/Amp height", 15);
 
@@ -45,6 +48,7 @@ public class Elevator extends SubsystemBase {
     ON_CHAIN_HEIGHT(onChainHeight),
     AMP(ampHeight),
     ELEVATORSHOT(elevatorShotHeight),
+    DIRECT_AMP_HEIGHT(directAmpHeight),
     OFF(() -> 0);
 
     private final DoubleSupplier height;

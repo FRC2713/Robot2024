@@ -528,11 +528,12 @@ public class Robot extends LoggedRobot {
         .leftBumper()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.AMP),
+                Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
                 Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
                 Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
             Commands.sequence(
