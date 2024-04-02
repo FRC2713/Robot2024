@@ -461,6 +461,11 @@ public class Robot extends LoggedRobot {
     // Elevator down
     operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.MIN_HEIGHT)));
 
+    operator
+        .b()
+        .onTrue(Cmds.setState(Elevator.State.MANUAL_CONTROL))
+        .onFalse(Cmds.setState(Elevator.State.HOLD_IN_PLACE));
+
     // operator
     //     .povLeft()
     //     .onTrue(

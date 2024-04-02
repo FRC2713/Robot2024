@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -45,7 +46,9 @@ public class Elevator extends SubsystemBase {
     ON_CHAIN_HEIGHT(onChainHeight),
     AMP(ampHeight),
     ELEVATORSHOT(elevatorShotHeight),
-    OFF(() -> 0);
+    OFF(() -> 0),
+    HOLD_IN_PLACE(() -> Robot.elevator.getCurrentHeight()),
+    MANUAL_CONTROL(() -> Robot.elevator.getCurrentHeight() + (Robot.operator.getLeftX() * 0.08));
 
     private final DoubleSupplier height;
   }
