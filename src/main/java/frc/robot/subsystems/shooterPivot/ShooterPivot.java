@@ -24,6 +24,8 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
+  private static final LoggedTunableNumber directAmpShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -20);
   private static final LoggedTunableNumber autoShotOneAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
@@ -61,6 +63,7 @@ public class ShooterPivot extends SubsystemBase {
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     AMP_SHOT(ampShotAngleDegrees),
+    DIRECT_AMP_SHOT(directAmpShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     PREP_FOR_CLIMB(prepClimbAngle),
