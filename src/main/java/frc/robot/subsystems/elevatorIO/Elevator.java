@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
     MANUAL_CONTROL(
         () ->
             MathUtil.clamp(
-                Robot.elevator.getCurrentHeight() + ((-1 * Robot.operator.getLeftY()) * 0.75),
+                Robot.elevator.getCurrentHeight() + ((-1 * Robot.operator.getLeftY()) * 0.8),
                 0,
                 maxHeight.get()));
 

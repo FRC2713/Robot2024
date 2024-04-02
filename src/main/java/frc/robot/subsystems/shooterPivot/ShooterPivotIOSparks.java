@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
-  CANSparkFlex left, right;
+  public CANSparkFlex left, right;
   SparkAbsoluteEncoder throughBore;
 
   public ShooterPivotIOSparks() {

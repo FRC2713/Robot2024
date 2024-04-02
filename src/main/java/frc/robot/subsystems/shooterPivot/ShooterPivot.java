@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterPivot;
 
+import com.revrobotics.CANSparkFlex;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -50,7 +51,7 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 0);
 
   private static final LoggedTunableNumber onChainAngle =
-      new LoggedTunableNumber("ShooterPivot/On Chain Degrees", 10);
+      new LoggedTunableNumber("ShooterPivot/On Chain Degrees", 20);
 
   @RequiredArgsConstructor
   public enum State {
@@ -129,5 +130,17 @@ public class ShooterPivot extends SubsystemBase {
       return Cmds.setState(mode)
           .andThen(new WaitUntilCommand(() -> (Robot.shooterPivot.isAtTargetAngle())));
     }
+  }
+
+  public CANSparkFlex getLeftMotor() {
+    assert !Robot.isSimulation();
+
+    return ((ShooterPivotIOSparks) IO).left;
+  }
+
+  public CANSparkFlex getRightMotor() {
+    assert !Robot.isSimulation();
+
+    return ((ShooterPivotIOSparks) IO).right;
   }
 }

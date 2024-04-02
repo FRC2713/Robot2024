@@ -480,6 +480,17 @@ public class Robot extends LoggedRobot {
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT),
+                new InstantCommand(
+                    () -> {
+                      if (!isSimulation()) {
+                        shooterPivot.getLeftMotor().setSmartCurrentLimit(50);
+                        shooterPivot.getRightMotor().setSmartCurrentLimit(50);
+
+                        shooterPivot.getLeftMotor().setSecondaryCurrentLimit(50);
+                        shooterPivot.getRightMotor().setSecondaryCurrentLimit(50);
+                      }
+                    }),
+                new WaitUntilCommand(() -> elevator.atTargetHeight()),
                 Cmds.setState(ShooterPivot.State.ON_CHAIN_ANGLE)));
 
     // Elevator manual control
