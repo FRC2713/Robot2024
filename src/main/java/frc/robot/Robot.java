@@ -503,6 +503,26 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    operator
+        .leftBumper()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.AMP),
+                Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                Cmds.setState(FeederState.FEED_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Cmds.setState(ShooterState.OFF),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
+                Cmds.setState(ShooterPivot.State.INTAKING)));
     // operator
     //     .leftTrigger(0.3)
     //     .onTrue(
