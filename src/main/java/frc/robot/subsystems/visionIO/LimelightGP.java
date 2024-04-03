@@ -1,5 +1,7 @@
 package frc.robot.subsystems.visionIO;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
@@ -19,6 +21,7 @@ public class LimelightGP extends SubsystemBase {
     if (!isSimulation) {
       var table = LimelightHelpers.getLatestResults(info.getNtTableName());
       detections = table.targetingResults.targets_Detector;
+      Logger.recordOutput("LimelightGP/Num Detection", detections.length);
     } else {
       var detection = new LimelightTarget_Detector();
       detection.tx = 30;
