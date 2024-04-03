@@ -382,8 +382,9 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
                 Commands.parallel(
                     OTFAmp.getInstance().run(),
-                    Cmds.setState(Elevator.State.AMP),
-                    Cmds.setState(ShooterPivot.State.AMP_SHOT),
+                    Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
+                    Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
+                    Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
                     new WaitUntilCommand(elevator::atTargetHeight),
                     new WaitUntilCommand(shooterPivot::isAtTargetAngle))))
         .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
@@ -392,7 +393,7 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterState.AMP_SHOT), Cmds.setState(FeederState.AMP_SHOT)))
+                Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(ShooterState.OFF),
@@ -523,7 +524,7 @@ public class Robot extends LoggedRobot {
 
     // Amp Shot
     operator
-        .rightBumper()
+        .leftBumper()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.AMP),
@@ -543,15 +544,16 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+
     operator
-        .leftBumper()
+        .rightBumper()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
                 Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
+                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
                 Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
