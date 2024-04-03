@@ -109,6 +109,13 @@ public class MotionHandler {
     return driveHeadingController();
   }
 
+  public static ChassisSpeeds driveLobShotAlign() {
+    SwerveHeadingController.getInstance()
+        .setSetpoint(RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getEstimatedPose()));
+
+    return driveHeadingController();
+  }
+
   public static ChassisSpeeds driveTowardsGP() {
     Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
 

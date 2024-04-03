@@ -454,11 +454,13 @@ public class Robot extends LoggedRobot {
         .b()
         .whileTrue(
             Commands.sequence(
+                Cmds.setState(MotionMode.LOB_SHOT_ALIGN),
                 new WaitUntilCommand(() -> intake.state == Intake.State.OFF),
                 Cmds.setState(ShooterState.LOB_SHOT),
                 Cmds.setState(ShooterPivot.State.LOB_SHOT)))
         .whileFalse(
             Commands.sequence(
+                Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(FeederState.FEED_SHOT),
                 new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
                 new WaitCommand(0.1),
@@ -728,7 +730,8 @@ public class Robot extends LoggedRobot {
     updatePreMatchDashboardValues();
 
     if (Math.abs(driver.getRightX()) > 0.25
-        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP) {
+        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP
+        && swerveDrive.getMotionMode() != MotionMode.LOB_SHOT_ALIGN) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 

@@ -51,7 +51,8 @@ public class SwerveSubsystem extends SubsystemBase {
     TRAJECTORY,
     LOCKDOWN,
     ALIGN_TO_TAG,
-    DRIVE_TOWARDS_GP
+    DRIVE_TOWARDS_GP,
+    LOB_SHOT_ALIGN
   }
 
   SwerveIO io;
@@ -494,6 +495,9 @@ public class SwerveSubsystem extends SubsystemBase {
         break;
       case ALIGN_TO_TAG:
         setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
+        break;
+      case LOB_SHOT_ALIGN:
+        setDesiredChassisSpeeds(MotionHandler.driveLobShotAlign());
         break;
       case DRIVE_TOWARDS_GP:
         setDesiredChassisSpeeds(MotionHandler.driveTowardsGP());
