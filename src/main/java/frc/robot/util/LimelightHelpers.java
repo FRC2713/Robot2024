@@ -258,7 +258,7 @@ public class LimelightHelpers {
     public LimelightTarget_Detector() {}
 
     public double goodness() {
-      return 1;
+      return this.ta;
     }
   }
 

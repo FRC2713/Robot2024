@@ -1,10 +1,9 @@
 package frc.robot.subsystems.visionIO;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
+import org.littletonrobotics.junction.Logger;
 
 public class LimelightGP extends SubsystemBase {
   private VisionInfo info;
