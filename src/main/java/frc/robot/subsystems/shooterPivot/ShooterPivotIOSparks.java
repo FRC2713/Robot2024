@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class ShooterPivotIOSparks implements ShooterPivotIO {
 
-  CANSparkFlex left, right;
+  public CANSparkFlex left, right;
   SparkAbsoluteEncoder throughBore;
 
   public ShooterPivotIOSparks() {
@@ -28,8 +28,8 @@ public class ShooterPivotIOSparks implements ShooterPivotIO {
 
     throughBore = left.getAbsoluteEncoder();
 
-    right.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
-    left.getEncoder().setPositionConversionFactor(1.0 / 150.0 * 360.0);
+    right.getEncoder().setPositionConversionFactor(1.0 / 225.0 * 360.0);
+    left.getEncoder().setPositionConversionFactor(1.0 / 225.0 * 360.0);
 
     if (Math.abs(left.getEncoder().getPosition()) < 0.1) {
       left.getEncoder().setPosition(54.255);

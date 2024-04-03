@@ -17,10 +17,13 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber differentialShotRPM =
       new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
 
+  private static final LoggedTunableNumber lobShotRPM =
+      new LoggedTunableNumber("Shooter/Lob Shot RPM", 3000);
+
   private static final LoggedTunableNumber genericFeederVolts =
       new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
   private static final LoggedTunableNumber intakingFeederVolts =
-      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 8.5);
+      new LoggedTunableNumber("Shooter/Intaking Feeder Volts", 10);
   private static final LoggedTunableNumber offFeederVolts =
       new LoggedTunableNumber("Shooter/Resting Feeder Volts", 0);
 
@@ -28,6 +31,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
+
+  private static final LoggedTunableNumber directAmpShot =
+      new LoggedTunableNumber("Shooter/Direct Amp Shot Shooter RPM", 1500);
 
   /**
    * Applies a differential speed to the left and right wheels. Positive values make the left wheel
@@ -52,7 +58,9 @@ public class Shooter extends SubsystemBase {
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
-    OFF(() -> 0, () -> 0, () -> 0);
+    DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
+    OFF(() -> 0, () -> 0, () -> 0),
+    LOB_SHOT(lobShotRPM, lobShotRPM, () -> 0);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;
 
     private ShooterState(

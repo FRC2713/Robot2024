@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -32,11 +34,14 @@ public class ShootingCommands {
       ShooterPivot.State shooterPivotState) {
     return new ParallelDeadlineGroup(
         ShootingCommands.runPathAndIntake(choreoPath),
-        Commands.sequence(
-            new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
-            ShootingCommands.runShooter(shooterState),
-            new WaitCommand(0.1),
-            ShootingCommands.runShooterPivot(shooterPivotState)));
+        Commands.either(
+            new PrintCommand("Already have GP"),
+            Commands.sequence(
+                new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(shooterState),
+                ShootingCommands.runShooterPivot(shooterPivotState)),
+            () -> Robot.shooter.hasGamePiece()));
   }
 
   public static Command runPathAndShoot(
@@ -54,6 +59,7 @@ public class ShootingCommands {
       ShooterState shooterState, ShooterPivot.State shooterPivotState) {
     return new SequentialCommandGroup(
         ShootingCommands.runShooterPivot(shooterPivotState),
+        new WaitUntilCommand(() -> Robot.shooterPivot.isAtTargetAngle()),
         ShootingCommands.runShooter(shooterState));
   }
 
@@ -70,8 +76,14 @@ public class ShootingCommands {
         new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
         Cmds.setState(Intake.State.INTAKE_GP),
         Cmds.setState(FeederState.FEED_SHOT),
-        new WaitCommand(0.25),
-        Cmds.setState(ShooterState.OFF));
+        new ParallelRaceGroup(
+            Commands.sequence(
+                new WaitCommand(1.5), new PrintCommand("Ending shot because static time passed")),
+            Commands.sequence(
+                new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
+                new WaitCommand(0.15),
+                new PrintCommand("Ending shot because dynamic time passed"))),
+        Cmds.setState(FeederState.OFF));
   }
 
   public static Command runShooterPivot(ShooterPivot.State shooterPivotState) {

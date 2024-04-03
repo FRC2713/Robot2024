@@ -50,7 +50,7 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
 
     feederMotor.setIdleMode(IdleMode.kBrake);
 
-    feederMotor.setSmartCurrentLimit(20);
+    feederMotor.setSmartCurrentLimit(30);
     feederMotor.enableVoltageCompensation(12.0);
 
     feederMotor.getEncoder().setMeasurementPeriod(10);

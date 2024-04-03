@@ -1,9 +1,11 @@
 package frc.robot.subsystems.elevatorIO;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.util.AccelerationCalc;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -26,13 +28,16 @@ public class Elevator extends SubsystemBase {
           Units.metersToInches(Constants.ElevatorConstants.MAX_HEIGHT_METERS));
 
   private static final LoggedTunableNumber chainApproachHeight =
-      new LoggedTunableNumber("Elevator/Chain Approach Height", 10);
+      new LoggedTunableNumber("Elevator/Chain Approach Height", 9.5);
 
   private static final LoggedTunableNumber onChainHeight =
-      new LoggedTunableNumber("Elevator/On chain height", 5);
+      new LoggedTunableNumber("Elevator/On chain height", 0.);
 
   private static final LoggedTunableNumber ampHeight =
       new LoggedTunableNumber("Elevator/Amp height", 15);
+
+  private static final LoggedTunableNumber directAmpHeight =
+      new LoggedTunableNumber("Elevator/Direct Amp height", 12);
 
   private static final LoggedTunableNumber elevatorShotHeight =
       new LoggedTunableNumber("Elevator/Amp height", 15);
@@ -45,7 +50,15 @@ public class Elevator extends SubsystemBase {
     ON_CHAIN_HEIGHT(onChainHeight),
     AMP(ampHeight),
     ELEVATORSHOT(elevatorShotHeight),
-    OFF(() -> 0);
+    DIRECT_AMP_HEIGHT(directAmpHeight),
+    OFF(() -> 0),
+    HOLD_IN_PLACE(() -> Robot.elevator.getCurrentHeight()),
+    MANUAL_CONTROL(
+        () ->
+            MathUtil.clamp(
+                Robot.elevator.getCurrentHeight() + ((-1 * Robot.operator.getLeftY()) * 0.8),
+                0,
+                maxHeight.get()));
 
     private final DoubleSupplier height;
   }

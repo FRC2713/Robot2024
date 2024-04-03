@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.util.ErrorTracker;
 import java.util.List;
@@ -75,7 +76,7 @@ public class OTFAmp {
             OTF.OTFOptions.AMP_STATIC.maxAngularAccelerationRpsSq);
 
     List<Translation2d> bezierPoints =
-        PathPlannerPath.bezierFromPoses(Robot.swerveDrive.getEstimatedPose(), preAmpPose, ampPose);
+        PathPlannerPath.bezierFromPoses(Robot.swerveDrive.getEstimatedPose(), ampPose);
 
     // Create the path using the bezier points created above
     PathPlannerPath path =
@@ -92,7 +93,10 @@ public class OTFAmp {
             // effect.
             );
 
-    runningCommand = AutoBuilder.followPath(path);
+    runningCommand =
+        Commands.sequence(
+            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(270)),
+            AutoBuilder.followPath(path));
     return runningCommand;
   }
 

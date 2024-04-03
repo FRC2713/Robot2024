@@ -39,6 +39,13 @@ public class MotionHandler {
         Robot.swerveDrive.getYaw());
   }
 
+  public static ChassisSpeeds driveTrajectoryHeadingController(ChassisSpeeds cs) {
+    return new ChassisSpeeds(
+        cs.vxMetersPerSecond,
+        cs.vyMetersPerSecond,
+        Units.degreesToRadians(SwerveHeadingController.getInstance().update()));
+  }
+
   /**
    * Calculates SwerveModuleState objects using pure driver control.
    *
@@ -105,6 +112,13 @@ public class MotionHandler {
 
     //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
     // }
+
+    return driveHeadingController();
+  }
+
+  public static ChassisSpeeds driveLobShotAlign() {
+    SwerveHeadingController.getInstance()
+        .setSetpoint(RotateScore.getOptimalAmpAngle(Robot.swerveDrive.getEstimatedPose()));
 
     return driveHeadingController();
   }

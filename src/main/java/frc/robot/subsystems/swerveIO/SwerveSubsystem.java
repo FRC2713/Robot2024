@@ -51,7 +51,8 @@ public class SwerveSubsystem extends SubsystemBase {
     TRAJECTORY,
     LOCKDOWN,
     ALIGN_TO_TAG,
-    DRIVE_TOWARDS_GP
+    DRIVE_TOWARDS_GP,
+    LOB_SHOT_ALIGN
   }
 
   SwerveIO io;
@@ -147,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
         (cs) -> {
           // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs,
           // getYaw()));
-          this.setDesiredChassisSpeeds(cs);
+          this.setDesiredChassisSpeeds(MotionHandler.driveTrajectoryHeadingController(cs));
         },
         new HolonomicPathFollowerConfig(
             Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X.toPathplannerGains(),
@@ -495,6 +496,9 @@ public class SwerveSubsystem extends SubsystemBase {
       case ALIGN_TO_TAG:
         setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
         break;
+      case LOB_SHOT_ALIGN:
+        setDesiredChassisSpeeds(MotionHandler.driveLobShotAlign());
+        break;
       case DRIVE_TOWARDS_GP:
         setDesiredChassisSpeeds(MotionHandler.driveTowardsGP());
         break;
@@ -609,7 +613,7 @@ public class SwerveSubsystem extends SubsystemBase {
               modifiedChoreoSwerveController(
                   new PIDController(10, 0.0, 0.0),
                   new PIDController(10, 0.0, 0.0),
-                  new PIDController(3.5, 0.0, 0.0)),
+                  new PIDController(4, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },

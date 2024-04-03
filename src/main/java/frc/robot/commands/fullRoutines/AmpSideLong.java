@@ -31,6 +31,9 @@ public class AmpSideLong extends RHRFullRoutine {
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
 
+        // Set shooter on always
+        Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
+
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooterPivot;
 
+import com.revrobotics.CANSparkFlex;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -24,6 +25,8 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Podium Shot Angle Degrees", 27.13);
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
+  private static final LoggedTunableNumber directAmpShotAngleDegrees =
+      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -30);
   private static final LoggedTunableNumber autoShotOneAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
@@ -35,14 +38,20 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
   private static final LoggedTunableNumber clutchAuto1Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21);
   private static final LoggedTunableNumber clutchAuto2Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 20);
   private static final LoggedTunableNumber clutchAuto3Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 25);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 20);
+
+  private static final LoggedTunableNumber lobShotDegs =
+      new LoggedTunableNumber("ShooterPivot/Lob Shot Degs", intakingAngleDegrees.get());
 
   private static final LoggedTunableNumber prepClimbAngle =
-      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 25);
+      new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 0);
+
+  private static final LoggedTunableNumber onChainAngle =
+      new LoggedTunableNumber("ShooterPivot/On Chain Degrees", 20);
 
   @RequiredArgsConstructor
   public enum State {
@@ -55,6 +64,7 @@ public class ShooterPivot extends SubsystemBase {
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     AMP_SHOT(ampShotAngleDegrees),
+    DIRECT_AMP_SHOT(directAmpShotAngleDegrees),
     AUTO_SHOT_NonAmpSide_1(autoShotOneAngleDegrees),
     AUTO_SHOT_NonAmpSide_2(fenderShotAngleDegrees),
     PREP_FOR_CLIMB(prepClimbAngle),
@@ -63,7 +73,9 @@ public class ShooterPivot extends SubsystemBase {
     CLUTCH_AUTO_1(clutchAuto1Degs),
     CLUTCH_AUTO_2(clutchAuto2Degs),
     CLUTCH_AUTO_3(clutchAuto3Degs),
-    OFF(() -> 0);
+    OFF(() -> 0),
+    LOB_SHOT(lobShotDegs),
+    ON_CHAIN_ANGLE(onChainAngle);
 
     private final DoubleSupplier pivotAngleDegrees;
   }
@@ -118,5 +130,17 @@ public class ShooterPivot extends SubsystemBase {
       return Cmds.setState(mode)
           .andThen(new WaitUntilCommand(() -> (Robot.shooterPivot.isAtTargetAngle())));
     }
+  }
+
+  public CANSparkFlex getLeftMotor() {
+    assert !Robot.isSimulation();
+
+    return ((ShooterPivotIOSparks) IO).left;
+  }
+
+  public CANSparkFlex getRightMotor() {
+    assert !Robot.isSimulation();
+
+    return ((ShooterPivotIOSparks) IO).right;
   }
 }

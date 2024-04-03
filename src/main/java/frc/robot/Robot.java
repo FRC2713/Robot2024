@@ -199,7 +199,6 @@ public class Robot extends LoggedRobot {
         .onFalse(
             Commands.parallel(
                 Cmds.setState(Intake.State.OFF),
-                Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(FeederState.OFF),
@@ -450,16 +449,57 @@ public class Robot extends LoggedRobot {
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
+    // Lob shot
+    operator
+        .b()
+        .whileTrue(
+            Commands.sequence(
+                Cmds.setState(MotionMode.LOB_SHOT_ALIGN),
+                new WaitUntilCommand(() -> intake.state == Intake.State.OFF),
+                Cmds.setState(ShooterState.LOB_SHOT),
+                Cmds.setState(ShooterPivot.State.LOB_SHOT)))
+        .whileFalse(
+            Commands.sequence(
+                Cmds.setState(MotionMode.FULL_DRIVE),
+                Cmds.setState(FeederState.FEED_SHOT),
+                new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
+                new WaitCommand(0.1),
+                Cmds.setState(FeederState.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(ShooterState.OFF)));
+
     // Elevator up
     operator
         .povUp()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.MAX_HEIGHT),
+                Cmds.setState(Elevator.State.CHAIN_APPROACH_HEIGHT),
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
 
     // Elevator down
-    operator.povDown().onTrue(Commands.sequence(Cmds.setState(Elevator.State.MIN_HEIGHT)));
+    operator
+        .povDown()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.ON_CHAIN_HEIGHT),
+                new InstantCommand(
+                    () -> {
+                      if (!isSimulation()) {
+                        shooterPivot.getLeftMotor().setSmartCurrentLimit(50);
+                        shooterPivot.getRightMotor().setSmartCurrentLimit(50);
+
+                        shooterPivot.getLeftMotor().setSecondaryCurrentLimit(50);
+                        shooterPivot.getRightMotor().setSecondaryCurrentLimit(50);
+                      }
+                    }),
+                new WaitUntilCommand(() -> elevator.atTargetHeight()),
+                Cmds.setState(ShooterPivot.State.ON_CHAIN_ANGLE)));
+
+    // Elevator manual control
+    operator
+        .x()
+        .onTrue(Cmds.setState(Elevator.State.MANUAL_CONTROL))
+        .onFalse(Cmds.setState(Elevator.State.HOLD_IN_PLACE));
 
     // operator
     //     .povLeft()
@@ -503,6 +543,27 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    operator
+        .leftBumper()
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
+                Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Cmds.setState(FeederState.FEED_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                Cmds.setState(ShooterState.OFF),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
+                Cmds.setState(ShooterPivot.State.INTAKING)));
     // operator
     //     .leftTrigger(0.3)
     //     .onTrue(
@@ -653,12 +714,12 @@ public class Robot extends LoggedRobot {
     new Trigger(() -> !shooter.hasGamePiece() && VehicleState.getInstance().hasGPLock)
         .onTrue(NewCandle.Commands.setLEDColor(LightCode.LOCKED_ON_NOTE));
 
-    // new Trigger(
-    //         () ->
-    //             shooter.hasGamePiece()
-    //                 && VehicleState.getInstance().canSeeSpeakerTag
-    //                 && shooter.getShooterState() == ShooterState.OFF)
-    //     .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
+    new Trigger(
+            () ->
+                shooter.hasGamePiece()
+                    && VehicleState.getInstance().canSeeSpeakerTag
+                    && shooter.getShooterState() == ShooterState.OFF)
+        .onTrue(Cmds.setState(ShooterState.PRE_SPIN));
   }
 
   @Override
@@ -669,7 +730,8 @@ public class Robot extends LoggedRobot {
     updatePreMatchDashboardValues();
 
     if (Math.abs(driver.getRightX()) > 0.25
-        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP) {
+        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP
+        && swerveDrive.getMotionMode() != MotionMode.LOB_SHOT_ALIGN) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
