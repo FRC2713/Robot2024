@@ -148,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
         (cs) -> {
           // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs,
           // getYaw()));
-          this.setDesiredChassisSpeeds(cs);
+          this.setDesiredChassisSpeeds(MotionHandler.driveTrajectoryHeadingController(cs));
         },
         new HolonomicPathFollowerConfig(
             Constants.DriveConstants.Gains.K_TRAJECTORY_CONTROLLER_GAINS_X.toPathplannerGains(),

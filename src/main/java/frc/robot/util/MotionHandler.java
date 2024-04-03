@@ -39,6 +39,13 @@ public class MotionHandler {
         Robot.swerveDrive.getYaw());
   }
 
+  public static ChassisSpeeds driveTrajectoryHeadingController(ChassisSpeeds cs) {
+    return new ChassisSpeeds(
+        cs.vxMetersPerSecond,
+        cs.vyMetersPerSecond,
+        Units.degreesToRadians(SwerveHeadingController.getInstance().update()));
+  }
+
   /**
    * Calculates SwerveModuleState objects using pure driver control.
    *
