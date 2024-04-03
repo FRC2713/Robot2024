@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -99,21 +100,26 @@ public class OTFAmp {
   public Command runAndRegenerate() {
     return Commands.sequence(
         new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
-        new InstantCommand(
-            () -> {
-              timer.reset();
-              timer.start();
-            }),
-        Commands.parallel(run(), new RepeatCommand(maybeRegenerateTraj())));
+        new RepeatCommand(new ParallelCommandGroup(timerManagement(), regenerateTraj())));
   }
 
-  public Command maybeRegenerateTraj() {
-    Logger.recordOutput("OTF/TimerSeconds", timer.get());
-    Logger.recordOutput("OTF/TimeToRegeneration", ttl - timer.get());
-    if (timer.hasElapsed(ttl)) {
-      return run();
-    }
-    return new InstantCommand();
+  public Command regenerateTraj() {
+    return new InstantCommand(
+        () -> {
+          if (timer.hasElapsed(ttl)) {
+            run();
+          }
+        });
+  }
+
+  public Command timerManagement() {
+    return new InstantCommand(
+        () -> {
+          if (timer.hasElapsed(ttl)) {
+            timer.reset();
+            timer.start();
+          }
+        });
   }
 
   public void cancelCommand() {

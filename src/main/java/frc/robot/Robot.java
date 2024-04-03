@@ -381,7 +381,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
                 Commands.parallel(
-                    OTFAmp.getInstance().run(),
+                    OTFAmp.getInstance().runAndRegenerate(),
                     Cmds.setState(Elevator.State.AMP),
                     Cmds.setState(ShooterPivot.State.AMP_SHOT),
                     new WaitUntilCommand(elevator::atTargetHeight),
