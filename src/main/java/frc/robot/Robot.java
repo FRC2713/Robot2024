@@ -391,9 +391,7 @@ public class Robot extends LoggedRobot {
 
     driver
         .y()
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(FeederState.FEED_SHOT)))
+        .onTrue(Commands.sequence(Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(ShooterState.OFF),
@@ -543,7 +541,6 @@ public class Robot extends LoggedRobot {
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
-
 
     operator
         .rightBumper()

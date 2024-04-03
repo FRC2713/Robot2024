@@ -142,7 +142,7 @@ public class SwerveSubsystem extends SubsystemBase {
         });
 
     AutoBuilder.configureHolonomic(
-        this::getRegularPose,
+        this::getEstimatedPose,
         this::resetOdometry,
         this::getRobotRelativeSpeeds,
         (cs) -> {
