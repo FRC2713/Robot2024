@@ -8,6 +8,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +20,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 import frc.robot.util.ErrorTracker;
+import frc.robot.util.MotionHandler;
 import java.util.List;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -95,8 +97,14 @@ public class OTFAmp {
 
     runningCommand =
         Commands.sequence(
-            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90)),
-            AutoBuilder.followPath(path));
+            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(-90)),
+            AutoBuilder.followPath(path),
+            new InstantCommand(
+                    () ->
+                        Robot.swerveDrive.setDesiredChassisSpeeds(
+                            MotionHandler.driveTrajectoryHeadingController(new ChassisSpeeds())))
+                .repeatedly()
+                .until(() -> Robot.swerveDrive.getMotionMode() != MotionMode.TRAJECTORY));
     return runningCommand;
   }
 
