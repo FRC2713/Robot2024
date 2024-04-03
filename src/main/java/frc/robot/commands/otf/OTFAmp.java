@@ -95,7 +95,7 @@ public class OTFAmp {
 
     runningCommand =
         Commands.sequence(
-            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90)),
+            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(-90)),
             AutoBuilder.followPath(path));
     return runningCommand;
   }
