@@ -533,7 +533,7 @@ public class Robot extends LoggedRobot {
 
     // Amp Shot
     operator
-        .leftBumper()
+        .rightBumper()
         .onTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.AMP),
@@ -554,8 +554,8 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
     operator
-        .rightBumper()
-        .onTrue(
+        .leftBumper()
+        .whileTrue(
             Commands.sequence(
                 Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
                 Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
@@ -566,14 +566,14 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
             Commands.sequence(
+                Cmds.setState(ShooterPivot.State.INTAKING),
                 Cmds.setState(Intake.State.OFF),
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(FeederState.OFF),
-                    () -> shooter.hasGamePiece()),
-                Cmds.setState(ShooterPivot.State.INTAKING)));
+                    () -> shooter.hasGamePiece())));
     // operator
     //     .leftTrigger(0.3)
     //     .onTrue(
