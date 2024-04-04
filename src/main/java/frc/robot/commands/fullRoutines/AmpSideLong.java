@@ -58,8 +58,7 @@ public class AmpSideLong extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Fourth Piece
-        ShootingCommands.runPathAndIntake(
-            traj4),
+        ShootingCommands.runPathAndIntake(traj4),
         ShootingCommands.runShooterAndPivot(
             Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
         RedHawkUtil.logShot(),
