@@ -38,9 +38,9 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
   private static final LoggedTunableNumber clutchAuto1Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21.5);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21.6);
   private static final LoggedTunableNumber clutchAuto2Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 21.5);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 21.6);
   private static final LoggedTunableNumber clutchAuto3Degs =
       new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 20);
 

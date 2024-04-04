@@ -23,7 +23,7 @@ public interface VisionIO {
     public static String[][] stringTitles;
 
     static {
-      int size = 40;
+      int size = 1000;
       stringTitles = new String[4][size];
       for (int i = 0; i < size; i++) {
         stringTitles[0][i] = "Targets/" + i + "/tx";
