@@ -391,14 +391,25 @@ public class Robot extends LoggedRobot {
 
     driver
         .y()
-        .onTrue(Commands.sequence(Cmds.setState(FeederState.FEED_SHOT)))
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
+                Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
+                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                new WaitUntilCommand(() -> shooter.isAtTarget()),
+                Cmds.setState(FeederState.FEED_SHOT)))
         .onFalse(
             Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
                 Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(ShooterState.OFF),
-                    () -> shooter.hasGamePiece())));
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
+                Cmds.setState(ShooterPivot.State.INTAKING)));
 
     driver
         .b()
