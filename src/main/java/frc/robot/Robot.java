@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -443,7 +444,7 @@ public class Robot extends LoggedRobot {
     //             new WaitCommand(0.05),
     //             ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
-    // Prep for feeder shot
+    // Force Fender Shot
     operator
         .a()
         .onTrue(
@@ -478,7 +479,8 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(MotionMode.FULL_DRIVE),
                 Cmds.setState(FeederState.FEED_SHOT),
-                new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
+                new ParallelRaceGroup(
+                    new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()), new WaitCommand(3)),
                 new WaitCommand(0.1),
                 Cmds.setState(FeederState.OFF),
                 Cmds.setState(ShooterPivot.State.INTAKING),

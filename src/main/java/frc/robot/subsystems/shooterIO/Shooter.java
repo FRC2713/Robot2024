@@ -18,7 +18,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
 
   private static final LoggedTunableNumber lobShotRPM =
-      new LoggedTunableNumber("Shooter/Lob Shot RPM", 3000);
+      new LoggedTunableNumber("Shooter/Lob Shot RPM", 2750);
 
   private static final LoggedTunableNumber genericFeederVolts =
       new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
