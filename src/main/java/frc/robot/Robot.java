@@ -448,16 +448,22 @@ public class Robot extends LoggedRobot {
         .a()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT)))
+                Cmds.setState(ShooterPivot.State.FENDER_SHOT),
+                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
+                new WaitCommand(1),
+                Cmds.setState(FeederState.FEED_SHOT),
+                Cmds.setState(Intake.State.INTAKE_GP),
+                RedHawkUtil.logShot()))
         .onFalse(
             Commands.sequence(
-                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(Intake.State.OFF),
                 Cmds.setState(ShooterState.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
                     Cmds.setState(FeederState.OFF),
-                    () -> shooter.hasGamePiece())));
+                    () -> shooter.hasGamePiece()),
+                new WaitCommand(0.05),
+                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
     // Lob shot
     operator
