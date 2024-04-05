@@ -92,7 +92,7 @@ public class RotateScore extends SequentialCommandGroup {
           put(2.53, 30.);
 
           // From practice field DCMP
-          put(3., 30.);
+          put(3., 28.);
           put(3.17, 26.);
 
           // From some other source
@@ -100,6 +100,7 @@ public class RotateScore extends SequentialCommandGroup {
 
           // From practice field DCMP
           put(3.825, 26.);
+          put(4.15, 22.5);
           put(4.319, 25.);
           put(4.9, 22.);
 
