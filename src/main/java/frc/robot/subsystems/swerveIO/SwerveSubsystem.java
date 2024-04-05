@@ -623,7 +623,7 @@ public class SwerveSubsystem extends SubsystemBase {
           new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));
     }
 
-        public static Command choreoCommandBuilderWheelOdometry(ChoreoTrajectory traj) {
+    public static Command choreoCommandBuilderWheelOdometry(ChoreoTrajectory traj) {
       var alliance = DriverStation.getAlliance();
       boolean useAllianceColour = false;
       if (alliance.isPresent()) {
