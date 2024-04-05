@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooterIO;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.commands.otf.RotateScore;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -60,6 +62,10 @@ public class Shooter extends SubsystemBase {
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
     DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
     OFF(() -> 0, () -> 0, () -> 0),
+    DYNAMIC_SHOT(
+        () -> RotateScore.getOptimalShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        () -> RotateScore.getOptimalShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        shooterDifferentialRPM),
     LOB_SHOT(lobShotRPM, lobShotRPM, () -> 0);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;
 

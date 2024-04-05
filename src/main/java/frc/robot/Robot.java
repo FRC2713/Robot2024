@@ -296,7 +296,7 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(
                     () -> VehicleState.getInstance().setShouldUpdateCenterTagAlignment(true)),
                 Cmds.setState(ShooterPivot.State.POSE_AIM),
-                Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
+                Cmds.setState(ShooterState.DYNAMIC_SHOT),
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
                 new WaitUntilCommand(
                     () ->
