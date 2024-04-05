@@ -268,34 +268,34 @@ public class Robot extends LoggedRobot {
                       Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
                       VehicleState.getInstance().resetClosestGP();
                     })));
-        // .whileTrue(
-        //     Commands.sequence(
-        //         Cmds.setState(MotionMode.HEADING_CONTROLLER),
-        //         new InstantCommand(
-        //             () ->
-        //                 SwerveHeadingController.getInstance()
-        //                     .setSetpoint(
-        //                         RotateScore.getOptimalAmpAngle(
-        //                             Robot.swerveDrive.getEstimatedPose()))),
-        //         Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
-        //         Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
-        //         new WaitUntilCommand(
-        //             () ->
-        //                 shooter.isAtTarget()
-        //                     && SwerveHeadingController.getInstance().atSetpoint(0.3)),
-        //         Cmds.setState(FeederState.FEED_SHOT),
-        //         Cmds.setState(Intake.State.INTAKE_GP),
-        //         RedHawkUtil.logShot()))
-        // .onFalse(
-        //     Commands.sequence(
-        //         // Cmds.setState(MotionMode.FULL_DRIVE),
-        //         Cmds.setState(Intake.State.OFF),
-        //         Commands.either(
-        //             Cmds.setState(FeederState.HOLDING_GP),
-        //             Cmds.setState(FeederState.OFF),
-        //             () -> shooter.hasGamePiece()),
-        //         new WaitCommand(0.05),
-        //         Cmds.setState(ShooterPivot.State.INTAKING)));
+    // .whileTrue(
+    //     Commands.sequence(
+    //         Cmds.setState(MotionMode.HEADING_CONTROLLER),
+    //         new InstantCommand(
+    //             () ->
+    //                 SwerveHeadingController.getInstance()
+    //                     .setSetpoint(
+    //                         RotateScore.getOptimalAmpAngle(
+    //                             Robot.swerveDrive.getEstimatedPose()))),
+    //         Cmds.setState(ShooterPivot.State.FEEDER_SHOT),
+    //         Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
+    //         new WaitUntilCommand(
+    //             () ->
+    //                 shooter.isAtTarget()
+    //                     && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+    //         Cmds.setState(FeederState.FEED_SHOT),
+    //         Cmds.setState(Intake.State.INTAKE_GP),
+    //         RedHawkUtil.logShot()))
+    // .onFalse(
+    //     Commands.sequence(
+    //         // Cmds.setState(MotionMode.FULL_DRIVE),
+    //         Cmds.setState(Intake.State.OFF),
+    //         Commands.either(
+    //             Cmds.setState(FeederState.HOLDING_GP),
+    //             Cmds.setState(FeederState.OFF),
+    //             () -> shooter.hasGamePiece()),
+    //         new WaitCommand(0.05),
+    //         Cmds.setState(ShooterPivot.State.INTAKING)));
 
     driver
         .rightBumper()
@@ -333,10 +333,10 @@ public class Robot extends LoggedRobot {
                             && SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 Cmds.setState(FeederState.FEED_SHOT),
-                RedHawkUtil.logShot(),
-                new WaitUntilCommand(() -> !shooter.hasGamePiece()),
-                new WaitCommand(0.1),
-                ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)
+                RedHawkUtil.logShot()
+                // new WaitUntilCommand(() -> !shooter.hasGamePiece()),
+                // new WaitCommand(0.1),
+                // ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING))
                 ))
         .onFalse(
             Commands.sequence(
