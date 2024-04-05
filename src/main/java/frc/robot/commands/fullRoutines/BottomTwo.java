@@ -51,6 +51,6 @@ public class BottomTwo extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Clear out
-        ShootingCommands.runPath(traj3));
+        ShootingCommands.runPathAndIntake(traj3));
   }
 }
