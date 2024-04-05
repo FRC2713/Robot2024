@@ -61,6 +61,7 @@ public class ShooterPivot extends SubsystemBase {
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
     POSE_AIM_ELEVATOR_SHOT(
         () -> RotateScore.getElevatorOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
+    // TODO: Get rid of
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     AMP_SHOT(ampShotAngleDegrees),
