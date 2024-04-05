@@ -611,8 +611,8 @@ public class SwerveSubsystem extends SubsystemBase {
               traj,
               Robot.swerveDrive::getEstimatedPose,
               modifiedChoreoSwerveController(
-                  new PIDController(10, 0.0, 0.0),
-                  new PIDController(10, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
                   new PIDController(4, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
@@ -635,8 +635,8 @@ public class SwerveSubsystem extends SubsystemBase {
               traj,
               Robot.swerveDrive::getRegularPose,
               modifiedChoreoSwerveController(
-                  new PIDController(10, 0.0, 0.0),
-                  new PIDController(10, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
                   new PIDController(4, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
