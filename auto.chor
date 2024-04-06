@@ -7972,17 +7972,17 @@
                     "controlIntervalCount": 29
                 },
                 {
-                    "x": 7.179388999938965,
-                    "y": 0.655397355556488,
+                    "x": 7.471750736236572,
+                    "y": 0.5579435229301453,
                     "heading": 0,
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
-                    "controlIntervalCount": 8
+                    "controlIntervalCount": 7
                 },
                 {
-                    "x": 8.231894493103027,
-                    "y": 0.655397355556488,
+                    "x": 8.251384735107422,
+                    "y": 0.5774340629577637,
                     "heading": 0,
                     "isInitialGuess": false,
                     "translationConstrained": true,
