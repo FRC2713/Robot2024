@@ -15,6 +15,7 @@ import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.subsystems.shooterIO.Shooter.FeederState;
 import frc.robot.subsystems.shooterIO.Shooter.ShooterState;
 import frc.robot.subsystems.shooterPivot.ShooterPivot;
+import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.RedHawkUtil;
 
 public class NopeSource extends RHRFullRoutine {
@@ -22,16 +23,15 @@ public class NopeSource extends RHRFullRoutine {
     traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("NopeSource"));
 
     addCommands(
+      SwerveSubsystem.Commands.resetOdometry(traj1),
+      
         // Preload
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
-
         Cmds.setState(Intake.State.INTAKE_GP),
-
         new ParallelCommandGroup(
-             ShootingCommands.runPath(traj1),
-
+            ShootingCommands.runPath(traj1),
             new RepeatCommand(
                 Commands.sequence(
                     new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
@@ -41,7 +41,6 @@ public class NopeSource extends RHRFullRoutine {
                     Cmds.setState(FeederState.FEED_SHOT),
                     new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
                     new WaitCommand(0.1),
-                    Cmds.setState(Intake.State.INTAKE_GP)))
-           ));
+                    Cmds.setState(Intake.State.INTAKE_GP)))));
   }
 }
