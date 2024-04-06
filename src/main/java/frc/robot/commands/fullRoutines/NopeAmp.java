@@ -24,7 +24,7 @@ public class NopeAmp extends RHRFullRoutine {
 
     addCommands(
         SwerveSubsystem.Commands.resetOdometry(traj1),
-        
+
         // Preload
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),

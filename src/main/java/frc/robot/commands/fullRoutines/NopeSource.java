@@ -23,8 +23,8 @@ public class NopeSource extends RHRFullRoutine {
     traj1 = RedHawkUtil.maybeFlip(Choreo.getTrajectory("NopeSource"));
 
     addCommands(
-      SwerveSubsystem.Commands.resetOdometry(traj1),
-      
+        SwerveSubsystem.Commands.resetOdometry(traj1),
+
         // Preload
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
