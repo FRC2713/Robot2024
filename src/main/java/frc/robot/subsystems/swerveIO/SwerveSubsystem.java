@@ -613,7 +613,7 @@ public class SwerveSubsystem extends SubsystemBase {
               modifiedChoreoSwerveController(
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(9.5, 0.0, 0.0),
-                  new PIDController(4, 0.0, 0.0)),
+                  new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },
@@ -637,7 +637,7 @@ public class SwerveSubsystem extends SubsystemBase {
               modifiedChoreoSwerveController(
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(9.5, 0.0, 0.0),
-                  new PIDController(4, 0.0, 0.0)),
+                  new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },
