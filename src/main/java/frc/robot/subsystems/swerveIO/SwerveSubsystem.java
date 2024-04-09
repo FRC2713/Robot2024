@@ -142,8 +142,8 @@ public class SwerveSubsystem extends SubsystemBase {
         });
 
     AutoBuilder.configureHolonomic(
-        this::getRegularPose,
-        this::resetOdometry,
+        this::getEstimatedPose,
+        (a) -> {},
         this::getRobotRelativeSpeeds,
         (cs) -> {
           // this.setDesiredChassisSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(cs,
@@ -611,9 +611,33 @@ public class SwerveSubsystem extends SubsystemBase {
               traj,
               Robot.swerveDrive::getRegularPose,
               modifiedChoreoSwerveController(
-                  new PIDController(10, 0.0, 0.0),
-                  new PIDController(10, 0.0, 0.0),
-                  new PIDController(4, 0.0, 0.0)),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(4.5, 0.0, 0.0)),
+              (ChassisSpeeds speeds) -> {
+                Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
+              },
+              () -> false,
+              Robot.swerveDrive //
+              ),
+          new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));
+    }
+
+    public static Command choreoCommandBuilderWheelOdometry(ChoreoTrajectory traj) {
+      var alliance = DriverStation.getAlliance();
+      boolean useAllianceColour = false;
+      if (alliance.isPresent()) {
+        useAllianceColour = alliance.get() == DriverStation.Alliance.Red;
+      }
+
+      return new SequentialCommandGroup(
+          Choreo.choreoSwerveCommand(
+              traj,
+              Robot.swerveDrive::getRegularPose,
+              modifiedChoreoSwerveController(
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
               },

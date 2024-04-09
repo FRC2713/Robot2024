@@ -47,10 +47,14 @@ public interface VisionIO {
       var targets = results.targetingResults.targets_Fiducials;
       for (int i = 0; i < targets.length; i++) {
         int fiducialID = (int) targets[i].fiducialID;
-        table.put(stringTitles[0][fiducialID], targets[i].tx);
-        table.put(stringTitles[1][fiducialID], targets[i].ty);
-        table.put(stringTitles[2][fiducialID], targets[i].ta);
-        table.put(stringTitles[3][fiducialID], targets[i].ts);
+        try {
+          table.put(stringTitles[0][fiducialID], targets[i].tx);
+          table.put(stringTitles[1][fiducialID], targets[i].ty);
+          table.put(stringTitles[2][fiducialID], targets[i].ta);
+          table.put(stringTitles[3][fiducialID], targets[i].ts);
+        } catch (ArrayIndexOutOfBoundsException err) {
+          System.out.println("Detected a tag over ID 40??? " + fiducialID);
+        }
       }
     }
 

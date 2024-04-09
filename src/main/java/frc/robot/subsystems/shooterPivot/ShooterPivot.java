@@ -26,7 +26,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber ampShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Amp Shot Angle Degrees", 20);
   private static final LoggedTunableNumber directAmpShotAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -30);
+      new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -35);
   private static final LoggedTunableNumber autoShotOneAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
@@ -38,9 +38,9 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/At Goal Threshold Degrees", 1);
 
   private static final LoggedTunableNumber clutchAuto1Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto1Degs", 21.6);
   private static final LoggedTunableNumber clutchAuto2Degs =
-      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 20);
+      new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto2Degs", 21.6);
   private static final LoggedTunableNumber clutchAuto3Degs =
       new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 20);
 
@@ -61,6 +61,7 @@ public class ShooterPivot extends SubsystemBase {
     ELEVATOR_SHOT(elevatorShotAngleDegrees),
     POSE_AIM_ELEVATOR_SHOT(
         () -> RotateScore.getElevatorOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
+    // TODO: Get rid of
     DYNAMIC_AIM(() -> VehicleState.getInstance().getDynamicPivotAngle().getDegrees()),
     POSE_AIM(() -> RotateScore.getOptimalShooterAngle(Robot.swerveDrive.getEstimatedPose())),
     AMP_SHOT(ampShotAngleDegrees),

@@ -40,10 +40,11 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveTrajectoryHeadingController(ChassisSpeeds cs) {
-    return new ChassisSpeeds(
-        cs.vxMetersPerSecond,
-        cs.vyMetersPerSecond,
-        Units.degreesToRadians(SwerveHeadingController.getInstance().update()));
+    Logger.recordOutput("vx", cs.vxMetersPerSecond);
+    Logger.recordOutput("vy", cs.vyMetersPerSecond);
+    var angle = Units.degreesToRadians(SwerveHeadingController.getInstance().update());
+    Logger.recordOutput("omega", angle);
+    return new ChassisSpeeds(cs.vxMetersPerSecond, cs.vyMetersPerSecond, angle);
   }
 
   /**

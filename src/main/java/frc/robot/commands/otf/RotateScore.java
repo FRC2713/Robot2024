@@ -61,6 +61,16 @@ public class RotateScore extends SequentialCommandGroup {
     return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
+  public static double getOptimalShooterSpeed(Pose2d position) {
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+
+    if (distance > 4.5) {
+      return 5000;
+    } else {
+      return 4000;
+    }
+  }
+
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
     Logger.recordOutput("OTF/Speaker Distance", distance);
@@ -72,6 +82,7 @@ public class RotateScore extends SequentialCommandGroup {
       new InterpolatingTreeMap<>() {
         {
           // Dist (metres), Angle (Degrees)
+          // From some other source
           put(1.08, 48.);
           put(1.31, 44.);
           put(1.62, 41.);
@@ -79,14 +90,27 @@ public class RotateScore extends SequentialCommandGroup {
           put(2.27, 32.);
           put(2.5, 30.);
           put(2.53, 30.);
-          put(3.1, 27.);
-          put(4., 20.);
+
+          // From practice field DCMP
+          put(3., 28.);
+          put(3.17, 26.);
+
+          // From some other source
+          // put(3.1, 27.);
+
+          // From practice field DCMP
+          put(3.825, 26.);
+          put(4.15, 22.5);
+          put(4.319, 25.);
+          put(4.9, 22.);
+
+          // put(4., 20.);
           // Extrapolating with exponential regression
-          put(4.5, 20.);
-          put(5.0, 14.76);
-          put(5.5, 12.73);
-          put(6.0, 10.98);
-          put(6.5, 19.47);
+          // put(4.5, 20.);
+          // put(5.0, 14.76);
+          // put(5.5, 12.73);
+          // put(6.0, 10.98);
+          // put(6.5, 19.47);
         }
       };
 

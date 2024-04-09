@@ -73,7 +73,8 @@ public class ShootingCommands {
   public static Command runShooter(ShooterState shooterState) {
     return new SequentialCommandGroup(
         Cmds.setState(shooterState),
-        new WaitUntilCommand(() -> Robot.shooter.isAtTarget()),
+        new ParallelRaceGroup(
+            new WaitUntilCommand(() -> Robot.shooter.isAtTarget()), new WaitCommand(3)),
         Cmds.setState(Intake.State.INTAKE_GP),
         Cmds.setState(FeederState.FEED_SHOT),
         new ParallelRaceGroup(

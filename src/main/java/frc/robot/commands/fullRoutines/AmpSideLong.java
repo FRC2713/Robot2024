@@ -37,31 +37,30 @@ public class AmpSideLong extends RHRFullRoutine {
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.DYNAMIC_AIM),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
 
         // Second Piece
         ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj2, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_1),
+            traj2, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         ShootingCommands.runShooterAndPivot(
-            ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_1),
+            ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         new WaitCommand(0.1),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Third Piece
         ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj3, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_2),
+            traj3, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_2),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Fourth Piece
-        ShootingCommands.runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
-            traj4, Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
+        ShootingCommands.runPathAndIntake(traj4),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.CLUTCH_AUTO_3),
+            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
