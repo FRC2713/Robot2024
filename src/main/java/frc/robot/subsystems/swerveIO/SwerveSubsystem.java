@@ -314,6 +314,10 @@ public class SwerveSubsystem extends SubsystemBase {
       poseEstimator.addVisionMeasurement(
           visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp);
     }
+
+    Logger.recordOutput("Pose estimator input pose", visionInputs.botPoseBlue);
+    Logger.recordOutput("Pose estimator timestamp", visionInputs.botPoseBlueTimestamp);
+    Logger.recordOutput("Pose estimator doRejectUpdate", doRejectUpdate);
   }
 
   public void updatePoseEstimatorWithVisionBotPose(
