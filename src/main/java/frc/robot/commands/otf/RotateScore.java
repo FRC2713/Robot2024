@@ -117,16 +117,17 @@ public class RotateScore extends SequentialCommandGroup {
           // put(6.5, 19.47);
         }
       };
-     
-  private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed = 
-  new InterpolatingTreeMap<>() {
-    {
-      put(1.0, 2000.);
-      put(3.0, 3500.);
-      put(4.5, 4000.);
-      put(5.0, 5000.);
-    }
-  };
+
+  private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed =
+      new InterpolatingTreeMap<>() {
+        {
+          put(1.0, 3000.);
+          put(2.0, 3000.);
+          put(3.0, 3500.);
+          put(4.5, 4000.);
+          put(5.0, 5000.);
+        }
+      };
 
   private static InterpolatingTreeMap<Double, Double> elevatorAngle =
       new InterpolatingTreeMap<>() {
