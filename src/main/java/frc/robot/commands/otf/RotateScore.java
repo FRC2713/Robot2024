@@ -64,11 +64,15 @@ public class RotateScore extends SequentialCommandGroup {
   public static double getOptimalShooterSpeed(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
 
-    if (distance > 4.5) {
-      return 5000;
-    } else {
-      return 4000;
-    }
+    double shooterSpeed = shooterNominalSpeed.get(distance);
+
+    Logger.recordOutput("OTF/Shooter Nominal Speed", shooterSpeed);
+    return shooterSpeed;
+    // if (distance > 4.5) {
+    //   return 5000;
+    // } else {
+    //   return 4000;
+    // }
   }
 
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
@@ -113,6 +117,16 @@ public class RotateScore extends SequentialCommandGroup {
           // put(6.5, 19.47);
         }
       };
+     
+  private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed = 
+  new InterpolatingTreeMap<>() {
+    {
+      put(1.0, 2000.);
+      put(3.0, 3500.);
+      put(4.5, 4000.);
+      put(5.0, 5000.);
+    }
+  };
 
   private static InterpolatingTreeMap<Double, Double> elevatorAngle =
       new InterpolatingTreeMap<>() {
