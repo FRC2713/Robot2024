@@ -633,7 +633,7 @@ public class SwerveSubsystem extends SubsystemBase {
       return new SequentialCommandGroup(
           Choreo.choreoSwerveCommand(
               traj,
-              Robot.swerveDrive::getEstimatedPose,
+              Robot.swerveDrive::getRegularPose,
               modifiedChoreoSwerveController(
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(9.5, 0.0, 0.0),
