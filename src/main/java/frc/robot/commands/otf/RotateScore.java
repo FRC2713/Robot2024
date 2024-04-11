@@ -108,7 +108,7 @@ public class RotateScore extends SequentialCommandGroup {
           put(3.825, 26.);
           put(4.15, 22.5);
           put(4.319, 21.);
-          put(4.9, 19.5.);
+          put(4.9, 19.5);
 
           // put(4., 20.);
           // Extrapolating with exponential regression
