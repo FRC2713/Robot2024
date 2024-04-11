@@ -65,7 +65,7 @@ public class RotateScore extends SequentialCommandGroup {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
 
     double shooterSpeed = shooterNominalSpeed.get(distance);
-    
+
     Logger.recordOutput("OTF/Speaker Distance", distance);
 
     Logger.recordOutput("OTF/Shooter Nominal Speed", shooterSpeed);
@@ -107,8 +107,8 @@ public class RotateScore extends SequentialCommandGroup {
           // From practice field DCMP
           put(3.825, 26.);
           put(4.15, 22.5);
-          put(4.319, 22.);
-          put(4.9, 20.);
+          put(4.319, 21.);
+          put(4.9, 19.5.);
 
           // put(4., 20.);
           // Extrapolating with exponential regression
