@@ -63,6 +63,8 @@ public final class Constants {
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
         new PoseEstimatorErrorStDevs(0.001, Units.degreesToRadians(0.06));
 
+    public static final boolean ENABLE_MEGATAG2 = true;
+
     public static VisionInfo LEFT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-a")

@@ -27,6 +27,7 @@ import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.fullRoutines.AmpSide;
 import frc.robot.commands.fullRoutines.AmpSideLong;
 import frc.robot.commands.fullRoutines.BottomTwo;
+import frc.robot.commands.fullRoutines.BottomTwoOTFPivot;
 import frc.robot.commands.fullRoutines.FourPieceCentre;
 import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
@@ -810,9 +811,17 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Can See Speaker Tag", VehicleState.getInstance().canSeeSpeakerTag);
     RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose());
 
-    swerveDrive.updatePoseEstimatorWithVisionBotPose(visionLeft.getInfo(), visionLeft.getInputs());
-    swerveDrive.updatePoseEstimatorWithVisionBotPose(
-        visionRight.getInfo(), visionRight.getInputs());
+    if (Constants.LimeLightConstants.ENABLE_MEGATAG2) {
+      swerveDrive.updatePoseEstimatorWithVisionBotPoseMegaTag2(
+          visionLeft.getInfo(), visionLeft.getInputs());
+      swerveDrive.updatePoseEstimatorWithVisionBotPoseMegaTag2(
+          visionRight.getInfo(), visionRight.getInputs());
+    } else {
+      swerveDrive.updatePoseEstimatorWithVisionBotPose(
+          visionLeft.getInfo(), visionLeft.getInputs());
+      swerveDrive.updatePoseEstimatorWithVisionBotPose(
+          visionRight.getInfo(), visionRight.getInputs());
+    }
   }
 
   @Override
@@ -885,6 +894,7 @@ public class Robot extends LoggedRobot {
   public void buildAutoChooser() {
     autoChooser.addDefaultOption("NonAmpSide", new NonAmpSide());
     autoChooser.addOption("BottomTwo", new BottomTwo());
+    autoChooser.addOption("BottomTwoOTFPivot", new BottomTwoOTFPivot());
     autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
     autoChooser.addOption("FourPieceL", new FourPieceL());
     autoChooser.addOption("AmpSide", new AmpSide());

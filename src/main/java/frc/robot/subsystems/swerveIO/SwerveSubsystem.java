@@ -37,6 +37,7 @@ import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
 import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.ErrorTracker;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SwerveHeadingController;
@@ -294,6 +295,25 @@ public class SwerveSubsystem extends SubsystemBase {
         + frontRight.getTotalCurrentDraw()
         + backLeft.getTotalCurrentDraw()
         + backRight.getTotalCurrentDraw();
+  }
+
+  public void updatePoseEstimatorWithVisionBotPoseMegaTag2(
+      VisionInfo visionInfo, VisionInputs visionInputs) {
+    LimelightHelpers.SetRobotOrientation(
+        visionInfo.getNtTableName(), inputs.gyroYawPosition, 0, 0, 0, 0, 0);
+
+    var doRejectUpdate = false;
+    if (Math.abs(inputs.gyroYawVelocity)
+        > 720) // if our angular velocity is greater than 720 degrees per second,
+    // ignore vision updates
+    {
+      doRejectUpdate = true;
+    }
+    if (!doRejectUpdate) {
+      poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.6, .6, 9999999));
+      poseEstimator.addVisionMeasurement(
+          visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp);
+    }
   }
 
   public void updatePoseEstimatorWithVisionBotPose(

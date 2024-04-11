@@ -14,6 +14,7 @@ public interface SwerveIO {
     public double previousgyroPitchPosition = 0.0;
     public double gyroRollPosition = 0.0;
     public double gyroCompassHeading = 0.0;
+    public double gyroYawVelocity = 0.0;
   }
 
   /**
