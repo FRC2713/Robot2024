@@ -251,6 +251,7 @@ public final class Constants {
 
   @UtilityClass
   public static final class DriveConstants {
+    public static final boolean MANUAL_CONTROL_GO_TO_GP = true;
 
     public static final double K_JOYSTICK_TURN_DEADZONE = 0.04;
     public static final double WHEEL_DIAMETER = 3.9; // 4.02267; // 3.85;
