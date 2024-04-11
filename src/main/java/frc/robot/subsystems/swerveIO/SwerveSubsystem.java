@@ -304,7 +304,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     var doRejectUpdate = false;
     if (Math.abs(inputs.gyroYawVelocity)
-        > 720) // if our angular velocity is greater than 720 degrees per second,
+        > 360) // if our angular velocity is greater than 360 degrees per second,
     // ignore vision updates
     {
       doRejectUpdate = true;

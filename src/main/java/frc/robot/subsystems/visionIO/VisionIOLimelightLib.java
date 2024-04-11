@@ -16,7 +16,7 @@ public class VisionIOLimelightLib implements VisionIO {
   public void updateInputs(VisionInputs inputs) {
     PoseEstimate x = null;
     if (Constants.LimeLightConstants.ENABLE_MEGATAG2) {
-      x = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.info.getNtTableName());
+      x = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(this.info.getNtTableName());
     } else {
       x = LimelightHelpers.getBotPoseEstimate_wpiBlue(this.info.getNtTableName());
     }
