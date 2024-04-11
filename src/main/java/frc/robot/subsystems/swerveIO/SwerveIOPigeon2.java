@@ -17,7 +17,7 @@ public class SwerveIOPigeon2 implements SwerveIO {
     gyro.getPitch().setUpdateFrequency(100);
     gyro.getRoll().setUpdateFrequency(100);
     // TODO: Double check
-    gyro.getAngularVelocityYWorld().setUpdateFrequency(100);
+    gyro.getAngularVelocityZDevice().setUpdateFrequency(100);
     gyro.optimizeBusUtilization();
 
     // gyro.zeroGyroBiasNow();
