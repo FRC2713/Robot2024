@@ -299,10 +299,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void updatePoseEstimatorWithVisionBotPoseMegaTag2(
       VisionInfo visionInfo, VisionInputs visionInputs) {
-    LimelightHelpers.SetRobotOrientation(
+            LimelightHelpers.SetRobotOrientation(
         visionInfo.getNtTableName(), inputs.gyroYawPosition, 0, 0, 0, 0, 0);
 
-    var doRejectUpdate = false;
+
+            var doRejectUpdate = false;
+
+        if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
+           doRejectUpdate = true;
+        }
+
     if (Math.abs(inputs.gyroYawVelocity)
         > 360) // if our angular velocity is greater than 360 degrees per second,
     // ignore vision updates
