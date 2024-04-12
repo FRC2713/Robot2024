@@ -38,7 +38,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
 
         // First Piece
-        ShootingCommands.runPathAndIntake(traj1),
+        ShootingCommands.runPathAndIntakeWheel(traj1),
         new WaitCommand(0.7),
         Cmds.setState(MotionMode.ALIGN_TO_TAG),
         Cmds.setState(ShooterPivot.State.POSE_AIM),
@@ -50,7 +50,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Second Piece
-        ShootingCommands.runPathAndIntake(traj2),
+        ShootingCommands.runPathAndIntakeWheel(traj2),
         new WaitCommand(0.7),
         Cmds.setState(MotionMode.ALIGN_TO_TAG),
         Cmds.setState(ShooterPivot.State.POSE_AIM),
@@ -62,7 +62,7 @@ public class FourPieceCentre extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Third Piece
-        ShootingCommands.runPathAndIntake(traj3),
+        ShootingCommands.runPathAndIntakeWheel(traj3),
         new WaitCommand(0.7),
         Cmds.setState(MotionMode.ALIGN_TO_TAG),
         Cmds.setState(ShooterPivot.State.POSE_AIM),

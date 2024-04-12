@@ -25,6 +25,10 @@ public class ShootingCommands {
     return SwerveSubsystem.Commands.choreoCommandBuilder(choreoPath);
   }
 
+  public static Command runPathWheel(ChoreoTrajectory choreoPath) {
+    return SwerveSubsystem.Commands.choreoCommandBuilderWheelOdometry(choreoPath);
+  }
+
   public static Command runPathTowardsGP(ChoreoTrajectory choreoPath) {
     return Commands.sequence(
         new InstantCommand(
@@ -37,6 +41,11 @@ public class ShootingCommands {
   public static Command runPathAndIntake(ChoreoTrajectory choreoPath) {
     return new SequentialCommandGroup(
         ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath));
+  }
+
+  public static Command runPathAndIntakeWheel(ChoreoTrajectory choreoPath) {
+    return new SequentialCommandGroup(
+        ShootingCommands.runIntake(), ShootingCommands.runPathWheel(choreoPath));
   }
 
   public static Command runPathAndIntakeTowardsGP(ChoreoTrajectory choreoPath) {
