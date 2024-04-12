@@ -13,6 +13,7 @@ import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
+import frc.robot.util.RedHawkUtil.Reflections;
 import org.littletonrobotics.junction.Logger;
 
 public class MotionHandler {
@@ -40,10 +41,7 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveTrajectoryHeadingController(ChassisSpeeds cs) {
-    Logger.recordOutput("vx", cs.vxMetersPerSecond);
-    Logger.recordOutput("vy", cs.vyMetersPerSecond);
     var angle = Units.degreesToRadians(SwerveHeadingController.getInstance().update());
-    Logger.recordOutput("omega", angle);
     return new ChassisSpeeds(cs.vxMetersPerSecond, cs.vyMetersPerSecond, angle);
   }
 
@@ -162,5 +160,47 @@ public class MotionHandler {
 
   private static LimelightTarget_Detector[] getObjectDetectionResults() {
     return Robot.visionGP.detections;
+  }
+
+  public static ChassisSpeeds driveTrajectoryTowardsGP(ChassisSpeeds cs) {
+    Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
+
+    if (Robot.shooter.hasGamePiece()) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Has GP");
+      return cs;
+    }
+    if (Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX()
+        > (FieldConstants.fieldLength / 2)) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Past midpoint");
+      return cs;
+    }
+
+    if (VehicleState.getInstance().hasGPLock) {
+      return VehicleState.getInstance().goClosestGPTraj(cs);
+    }
+
+    var results = getObjectDetectionResults();
+
+    for (var result : results) {
+      if (result.goodness() > VehicleState.getInstance().closestResult.goodness()) {
+        VehicleState.getInstance().closestResult = result;
+      }
+    }
+
+    Logger.recordOutput(
+        "OTF/DrivingToGP/Goodness", VehicleState.getInstance().closestResult.goodness());
+
+    if (VehicleState.getInstance().closestResult.goodness() < 0.0000000000001) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low!");
+      return cs;
+    }
+
+    VehicleState.getInstance().hasGPLock = true;
+    VehicleState.getInstance().GPyaw = Robot.swerveDrive.getYaw();
+
+    return VehicleState.getInstance().goClosestGPTraj(cs);
   }
 }

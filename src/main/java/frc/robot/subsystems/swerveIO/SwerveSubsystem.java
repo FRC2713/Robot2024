@@ -522,6 +522,9 @@ public class SwerveSubsystem extends SubsystemBase {
       case TRAJECTORY:
         // setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
         break;
+        // case TRAJECTORY_TOWARDS_GP:
+        //   setDesiredChassisSpeeds(MotionHandler.driveTrajectoryTowardsGP());
+        //   break;
       case ALIGN_TO_TAG:
         setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
         break;
@@ -645,6 +648,31 @@ public class SwerveSubsystem extends SubsystemBase {
                   new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
+              },
+              () -> false,
+              Robot.swerveDrive //
+              ),
+          new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));
+    }
+
+    public static Command choreoCommandBuilderTowardsGP(ChoreoTrajectory traj) {
+      var alliance = DriverStation.getAlliance();
+      boolean useAllianceColour = false;
+      if (alliance.isPresent()) {
+        useAllianceColour = alliance.get() == DriverStation.Alliance.Red;
+      }
+
+      return new SequentialCommandGroup(
+          Choreo.choreoSwerveCommand(
+              traj,
+              Robot.swerveDrive::getEstimatedPose,
+              modifiedChoreoSwerveController(
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(4.5, 0.0, 0.0)),
+              (ChassisSpeeds speeds) -> {
+                Robot.swerveDrive.setDesiredChassisSpeeds(
+                    MotionHandler.driveTrajectoryTowardsGP(speeds));
               },
               () -> false,
               Robot.swerveDrive //

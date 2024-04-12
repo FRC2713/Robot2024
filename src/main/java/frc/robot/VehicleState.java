@@ -124,11 +124,12 @@ public class VehicleState {
   public Rotation2d GPyaw = new Rotation2d();
 
   public void resetClosestGP() {
-    hasGPLock = false;
-    closestResult = new LimelightTarget_Detector();
-    closestResult.tx = 0;
-    closestResult.ty = 0;
-    closestResult.ta = 0;
+    getInstance().hasGPLock = false;
+    getInstance().closestResult = new LimelightTarget_Detector();
+    getInstance().closestResult.tx = 0;
+    getInstance().closestResult.ty = 0;
+    getInstance().closestResult.ta = 0;
+    getInstance().GPyaw = new Rotation2d();
   }
 
   public ChassisSpeeds goClosestGP() {
@@ -157,6 +158,23 @@ public class VehicleState {
 
     return ChassisSpeeds.fromRobotRelativeSpeeds(
         xSpeed,
+        0,
+        Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
+        Rotation2d.fromDegrees(0));
+  }
+
+  public ChassisSpeeds goClosestGPTraj(ChassisSpeeds cs) {
+    Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
+    Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
+
+    double angle = (-1 * closestResult.tx);
+
+    Logger.recordOutput("OTF/DrivingToGP/Angle", angle);
+
+    SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
+
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        cs.vxMetersPerSecond,
         0,
         Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
         Rotation2d.fromDegrees(0));
