@@ -116,7 +116,7 @@ public class ShootingCommands {
     return new SequentialCommandGroup(
         Cmds.setState(shooterState),
         new ParallelRaceGroup(
-            new WaitUntilCommand(() -> Robot.shooter.isAtTarget()), new WaitCommand(3)),
+            new WaitUntilCommand(() -> Robot.shooter.isAtTarget()), new WaitCommand(2)),
         Cmds.setState(Intake.State.INTAKE_GP),
         Cmds.setState(FeederState.FEED_SHOT),
         new ParallelRaceGroup(

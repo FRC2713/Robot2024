@@ -76,9 +76,10 @@ public class FourPieceCentre extends RHRFullRoutine {
         // Reset everything for teleop
         Cmds.setState(Shooter.ShooterState.OFF),
         Cmds.setState(Intake.State.OFF),
-        Cmds.setState(ShooterPivot.State.INTAKING),
+        Cmds.setState(ShooterPivot.State.INTAKING)
 
         // Go for 4
-        ShootingCommands.runPathAndIntake(traj4));
+        // ShootingCommands.runPathAndIntake(traj4)
+        );
   }
 }

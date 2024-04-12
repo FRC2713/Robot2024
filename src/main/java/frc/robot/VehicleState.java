@@ -174,7 +174,7 @@ public class VehicleState {
     SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
 
     return ChassisSpeeds.fromRobotRelativeSpeeds(
-        cs.vxMetersPerSecond,
+        1.5,
         0,
         Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
         Rotation2d.fromDegrees(0));
