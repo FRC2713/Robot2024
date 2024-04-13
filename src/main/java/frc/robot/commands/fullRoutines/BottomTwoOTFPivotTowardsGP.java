@@ -44,7 +44,7 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
         ShootingCommands
             .runPathGoTowardsGamePieceIntakeWaitTillHasGamePieceThenPrepShooterPivotAndShooter(
                 traj1, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
-                        new InstantCommand(
+        new InstantCommand(
             () -> {
               VehicleState.getInstance().resetClosestGP();
             }),
@@ -64,7 +64,7 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
         ShootingCommands
             .runPathGoTowardsGamePieceIntakeWaitTillHasGamePieceThenPrepShooterPivotAndShooter(
                 traj2, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
-                        new InstantCommand(
+        new InstantCommand(
             () -> {
               VehicleState.getInstance().resetClosestGP();
             }),
