@@ -137,7 +137,7 @@ public class RotateScore extends SequentialCommandGroup {
       new InterpolatingTreeMap<>() {
         {
           put(5.406, 2200.);
-          put(6., 2300.);
+          put(6.5, 2400.);
           put(7.433, 2500.);
           put(8., 3000.);
         }
