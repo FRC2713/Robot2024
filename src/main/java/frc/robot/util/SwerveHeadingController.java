@@ -82,7 +82,7 @@ public class SwerveHeadingController {
     // }
     // return isWithinTarget;
 
-    return (this.error < acceptableError) && (Units.radiansToDegrees(output));
+    return (this.error < acceptableError) && (Units.radiansToDegrees(output) < 100);
   }
   /**
    * Updates the heading controller PID with the setpoint and calculates output.
