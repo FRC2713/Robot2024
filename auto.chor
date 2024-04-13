@@ -10359,47 +10359,6 @@
             "defaultControlIntervalCount": 40,
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
-        },
-        "New Path": {
-            "waypoints": [
-                {
-                    "x": 2.8868532180786133,
-                    "y": 5.56973123550415,
-                    "heading": 1.57,
-                    "isInitialGuess": false,
-                    "translationConstrained": true,
-                    "headingConstrained": true,
-                    "controlIntervalCount": 40
-                },
-                {
-                    "x": 5.940301895141602,
-                    "y": 0.7725396156311035,
-                    "heading": 0,
-                    "isInitialGuess": false,
-                    "translationConstrained": true,
-                    "headingConstrained": true,
-                    "controlIntervalCount": 40
-                }
-            ],
-            "trajectory": [],
-            "constraints": [
-                {
-                    "scope": [
-                        "first"
-                    ],
-                    "type": "StopPoint"
-                },
-                {
-                    "scope": [
-                        "last"
-                    ],
-                    "type": "StopPoint"
-                }
-            ],
-            "usesControlIntervalGuessing": true,
-            "defaultControlIntervalCount": 40,
-            "usesDefaultFieldObstacles": true,
-            "circleObstacles": []
         }
     },
     "splitTrajectoriesAtStopPoints": true,
