@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -31,7 +32,7 @@ public class RotateScore extends SequentialCommandGroup {
 
   public static void updateAmpLoc() {
     ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2.5, 7.5, 0));
-    Logger.recordOutput("Field/amp_loc", ampLoc);
+    Logger.recordOutput("Field/amp_loc", new Translation2d(ampLoc.getX(), ampLoc.getY()));
   }
 
   public static Rotation2d getOptimalAmpAngle(Pose2d position) {
