@@ -8,6 +8,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -301,14 +303,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public void updatePoseEstimatorWithVisionBotPoseMegaTag2(
       VisionInfo visionInfo, VisionInputs visionInputs) {
     LimelightHelpers.SetRobotOrientation(
-        visionInfo.getNtTableName(),
-        Rotation2d.fromDegrees(inputs.gyroYawPosition).unaryMinus().getDegrees(),
-        // inputs.gyroYawVelocity,
-        0,
-        0,
-        0,
-        0,
-        0);
+        visionInfo.getNtTableName(), inputs.gyroYawPosition, inputs.gyroYawVelocity, 0, 0, 0, 0);
 
     var doRejectUpdate = false;
     double xyStds = .6;
@@ -325,9 +320,14 @@ public class SwerveSubsystem extends SubsystemBase {
       doRejectUpdate = true;
     }
 
+
+    // if (Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) > 5) {
+    //   xyStds
+    // }
+
     // xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
 
-    // xyStds = MathUtil.interpolate(0.1, 0.6, Math.abs(inputs.gyroYawVelocity) / maxGyroYawVelo);
+    xyStds = MathUtil.interpolate(0.1, 5.6, Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) / 5);
 
     xyStds = 0.6;
 
