@@ -8,7 +8,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -307,7 +306,7 @@ public class SwerveSubsystem extends SubsystemBase {
     var doRejectUpdate = false;
     double xyStds = .6;
 
-    final var maxGyroYawVelo = 150;
+    final var maxGyroYawVelo = 70;
     if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
       doRejectUpdate = true;
     }
@@ -323,7 +322,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // xyStds = MathUtil.interpolate(0.1, 0.6, Math.abs(inputs.gyroYawVelocity) / maxGyroYawVelo);
 
-    xyStds = 0.2;
+    xyStds = 0.6;
 
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
