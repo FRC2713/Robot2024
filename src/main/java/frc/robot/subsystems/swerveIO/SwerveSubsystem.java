@@ -312,13 +312,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     if (Math.abs(inputs.gyroYawVelocity)
-        > 360) // if our angular velocity is greater than 360 degrees per second,
+        > 150) // if our angular velocity is greater than 360 degrees per second,
     // ignore vision updates
     {
       doRejectUpdate = true;
     }
 
-    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 3.6);
+    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
 
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));

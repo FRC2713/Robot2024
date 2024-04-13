@@ -104,10 +104,10 @@ public class MotionHandler {
     if (Math.abs(
             SwerveHeadingController.getInstance().getSetpoint().getDegrees()
                 - RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()).getDegrees())
-        > 1) {
+        > 3) {
       SwerveHeadingController.getInstance()
           .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
-          System.out.println("Reset align to pose");
+      System.out.println("Reset align to pose");
     }
 
     Logger.recordOutput("Swerve/AlignPose/Running", VehicleState.getInstance().runningAlignToTag);
