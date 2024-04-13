@@ -17,6 +17,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
   private static Translation3d speakerLoc;
+  private static Translation3d speakerLocPivot;
   private static Translation3d ampLoc;
 
   static {
@@ -28,6 +29,9 @@ public class RotateScore extends SequentialCommandGroup {
     speakerLoc =
         RedHawkUtil.Reflections.reflectIfRed(
             new Translation3d(0.695 - Units.inchesToMeters(18 + 6), 5.552, 2.11));
+    speakerLocPivot =
+        RedHawkUtil.Reflections.reflectIfRed(
+            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
   }
 
   public static void updateAmpLoc() {
@@ -57,14 +61,14 @@ public class RotateScore extends SequentialCommandGroup {
   }
 
   public static double getOptimalShooterAngle(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLocPivot));
     Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
     return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
   public static double getOptimalShooterSpeed(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLocPivot));
     double shooterSpeed = shooterNominalSpeed.get(distance);
     Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Shooter Nominal Speed", shooterSpeed);
