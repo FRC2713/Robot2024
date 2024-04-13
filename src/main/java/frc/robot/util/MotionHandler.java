@@ -14,6 +14,7 @@ import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
 import frc.robot.util.RedHawkUtil.Reflections;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class MotionHandler {
@@ -162,21 +163,22 @@ public class MotionHandler {
     return Robot.visionGP.detections;
   }
 
-  public static ChassisSpeeds driveTrajectoryTowardsGP(ChassisSpeeds cs) {
+  public static Optional<ChassisSpeeds> driveTrajectoryTowardsGP(ChassisSpeeds cs) {
     Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
 
     if (Robot.shooter.hasGamePiece()) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Has GP");
-      return cs;
+      return Optional.empty();
     }
-    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX() + 
-    // Margin of error
-    Units.inchesToMeters(2))
+    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX()
+            +
+            // Margin of error
+            Units.inchesToMeters(2))
         > (FieldConstants.fieldLength / 2)) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Past midpoint");
-      return cs;
+      return Optional.empty();
     }
 
     if (VehicleState.getInstance().hasGPLock) {
@@ -197,7 +199,7 @@ public class MotionHandler {
     if (VehicleState.getInstance().closestResult.goodness() < 0.0000000000001) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low!");
-      return cs;
+      return Optional.of(cs);
     }
 
     VehicleState.getInstance().hasGPLock = true;

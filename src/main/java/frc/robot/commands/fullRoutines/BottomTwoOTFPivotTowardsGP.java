@@ -53,7 +53,7 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
-            new InstantCommand(
+        new InstantCommand(
             () -> {
               VehicleState.getInstance().resetClosestGP();
             }),
@@ -73,7 +73,7 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
-            new InstantCommand(
+        new InstantCommand(
             () -> {
               VehicleState.getInstance().resetClosestGP();
             }),

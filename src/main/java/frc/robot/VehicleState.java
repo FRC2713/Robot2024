@@ -45,6 +45,8 @@ public class VehicleState {
   @Getter Rotation2d dynamicPivotAngle = Rotation2d.fromDegrees(45);
   @Getter Optional<Rotation2d> centerTagError = Optional.empty();
 
+  @Getter @Setter public boolean abortDynamicGPinTraj = false;
+
   @Getter public boolean canSeeSpeakerTag = false;
 
   private VehicleState() {}
@@ -130,6 +132,7 @@ public class VehicleState {
     getInstance().closestResult.ty = 0;
     getInstance().closestResult.ta = 0;
     getInstance().GPyaw = new Rotation2d();
+    getInstance().setAbortDynamicGPinTraj(false);
   }
 
   public ChassisSpeeds goClosestGP() {
@@ -163,7 +166,7 @@ public class VehicleState {
         Rotation2d.fromDegrees(0));
   }
 
-  public ChassisSpeeds goClosestGPTraj(ChassisSpeeds cs) {
+  public Optional<ChassisSpeeds> goClosestGPTraj(ChassisSpeeds cs) {
     Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
     Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
 
@@ -173,11 +176,12 @@ public class VehicleState {
 
     SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
 
-    return ChassisSpeeds.fromRobotRelativeSpeeds(
-        1.5,
-        0,
-        Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
-        Rotation2d.fromDegrees(0));
+    return Optional.of(
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            1.5,
+            0,
+            Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
+            Rotation2d.fromDegrees(0)));
   }
 
   public void updateCanSeeSpeakerTag(VisionInputs left, VisionInputs right) {

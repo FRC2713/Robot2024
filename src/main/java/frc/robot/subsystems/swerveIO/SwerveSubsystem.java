@@ -31,6 +31,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
@@ -671,8 +672,15 @@ public class SwerveSubsystem extends SubsystemBase {
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
-                Robot.swerveDrive.setDesiredChassisSpeeds(
-                    MotionHandler.driveTrajectoryTowardsGP(speeds));
+                var newSpeeds = MotionHandler.driveTrajectoryTowardsGP(speeds);
+                if (newSpeeds.isEmpty() || VehicleState.getInstance().abortDynamicGPinTraj) {
+                  Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
+                  VehicleState.getInstance().setAbortDynamicGPinTraj(true);
+                  Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+                  Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Read empty");
+                } else {
+                  Robot.swerveDrive.setDesiredChassisSpeeds(newSpeeds.get());
+                }
               },
               () -> false,
               Robot.swerveDrive //
