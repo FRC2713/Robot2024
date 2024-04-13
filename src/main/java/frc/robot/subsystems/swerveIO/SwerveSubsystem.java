@@ -8,6 +8,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -316,9 +318,9 @@ public class SwerveSubsystem extends SubsystemBase {
     {
       doRejectUpdate = true;
     }
-    if (Math.abs(inputs.gyroYawVelocity) > 50) {
-      xyStds = 2.4;
-    }
+    
+    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity)/100, .6, 3.6);
+    
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
       poseEstimator.addVisionMeasurement(
