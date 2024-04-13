@@ -10363,8 +10363,8 @@
         "New Path": {
             "waypoints": [
                 {
-                    "x": 2.94338059425354,
-                    "y": 5.561673641204834,
+                    "x": 2.0771212577819824,
+                    "y": 7.326676845550537,
                     "heading": 0,
                     "isInitialGuess": false,
                     "translationConstrained": true,
