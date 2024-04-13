@@ -419,9 +419,8 @@ public class Robot extends LoggedRobot {
                 new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.TRAJECTORY)),
                 Commands.parallel(
                     OTFAmp.getInstance().run(),
-                    Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
-                    Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
-                    Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                    Cmds.setState(Elevator.State.AMP),
+                Cmds.setState(ShooterPivot.State.AMP_SHOT),
                     new WaitUntilCommand(elevator::atTargetHeight),
                     new WaitUntilCommand(shooterPivot::isAtTargetAngle))))
         .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
@@ -430,13 +429,13 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(
             Commands.sequence(
-                Cmds.setState(Elevator.State.DIRECT_AMP_HEIGHT),
-                Cmds.setState(ShooterPivot.State.DIRECT_AMP_SHOT),
-                Cmds.setState(ShooterState.NO_DIFFERENTIAL_SHOT),
+                Cmds.setState(Elevator.State.AMP),
+                Cmds.setState(ShooterPivot.State.AMP_SHOT),
                 new WaitUntilCommand(elevator::atTargetHeight),
                 new WaitUntilCommand(shooterPivot::isAtTargetAngle),
                 new WaitUntilCommand(() -> shooter.isAtTarget()),
-                Cmds.setState(FeederState.FEED_SHOT)))
+                Cmds.setState(FeederState.AMP_SHOT)
+                ))
         .onFalse(
             Commands.sequence(
                 Cmds.setState(Intake.State.OFF),

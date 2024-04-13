@@ -10363,8 +10363,17 @@
         "New Path": {
             "waypoints": [
                 {
-                    "x": 2.0771212577819824,
-                    "y": 7.326676845550537,
+                    "x": 0.9618124961853027,
+                    "y": 6.059772491455078,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
+                },
+                {
+                    "x": 2.0446364879608154,
+                    "y": 8.247076988220215,
                     "heading": 0,
                     "isInitialGuess": false,
                     "translationConstrained": true,
