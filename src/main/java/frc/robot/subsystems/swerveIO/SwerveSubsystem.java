@@ -317,7 +317,7 @@ public class SwerveSubsystem extends SubsystemBase {
       doRejectUpdate = true;
     }
     if (Math.abs(inputs.gyroYawVelocity) > 50) {
-      xyStds = 1.2;
+      xyStds = 2.4;
     }
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
