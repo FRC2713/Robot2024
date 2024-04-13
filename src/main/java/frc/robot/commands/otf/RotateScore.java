@@ -31,7 +31,7 @@ public class RotateScore extends SequentialCommandGroup {
   }
 
   public static void updateAmpLoc() {
-    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2.5, 7.5, 0));
+    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(3, 5.5, 0));
     Logger.recordOutput("Field/amp_loc", new Translation2d(ampLoc.getX(), ampLoc.getY()));
   }
 
