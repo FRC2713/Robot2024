@@ -104,7 +104,7 @@ public class SwerveHeadingController {
             output,
             -Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC),
             Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
-    error = setpoint.getDegrees() - (currentHeading.getDegrees()%360);
+    error = setpoint.getDegrees() - (currentHeading.getDegrees() % 360);
     Logger.recordOutput("Heading Controller/error", error);
 
     var chassisSpeeds = Robot.swerveDrive.getChassisSpeeds();
