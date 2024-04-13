@@ -307,18 +307,22 @@ public class SwerveSubsystem extends SubsystemBase {
     var doRejectUpdate = false;
     double xyStds = .6;
 
+
+    final var maxGyroYawVelo = 150;
     if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
       doRejectUpdate = true;
     }
 
     if (Math.abs(inputs.gyroYawVelocity)
-        > 150) // if our angular velocity is greater than 360 degrees per second,
+        > maxGyroYawVelo) // if our angular velocity is greater than 360 degrees per second,
     // ignore vision updates
     {
       doRejectUpdate = true;
     }
 
-    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
+    // xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
+
+    xyStds = MathUtil.interpolate(0.1, 0.6, Math.abs(inputs.gyroYawVelocity) / maxGyroYawVelo);
 
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
