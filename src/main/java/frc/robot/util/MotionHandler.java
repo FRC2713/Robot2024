@@ -170,7 +170,9 @@ public class MotionHandler {
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Has GP");
       return cs;
     }
-    if (Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX()
+    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX() + 
+    // Margin of error
+    Units.inchesToMeters(2))
         > (FieldConstants.fieldLength / 2)) {
       Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
       Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Past midpoint");

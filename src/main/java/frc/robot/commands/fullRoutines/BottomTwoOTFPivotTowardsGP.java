@@ -3,8 +3,10 @@ package frc.robot.commands.fullRoutines;
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.commands.Cmds;
 import frc.robot.commands.RHRFullRoutine;
 import frc.robot.commands.ShootingCommands;
@@ -51,6 +53,10 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
+            new InstantCommand(
+            () -> {
+              VehicleState.getInstance().resetClosestGP();
+            }),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -67,6 +73,10 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
+            new InstantCommand(
+            () -> {
+              VehicleState.getInstance().resetClosestGP();
+            }),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
