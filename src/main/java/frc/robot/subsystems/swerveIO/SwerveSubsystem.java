@@ -306,7 +306,7 @@ public class SwerveSubsystem extends SubsystemBase {
     var doRejectUpdate = false;
     double xyStds = .6;
 
-    final var maxGyroYawVelo = 70;
+    final var maxGyroYawVelo = 40;
     if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
       doRejectUpdate = true;
     }
