@@ -73,7 +73,11 @@ public class RotateScore extends SequentialCommandGroup {
 
   public static double getOptimalLobShotShooterSpeed(Pose2d position){
     var distance = position.getTranslation().getDistance(Translation3dTo2d(ampLoc));
-    double shooterSpeed = 
+    double shooterSpeed = lobShotShooterNominalSpeed.get(distance);
+    
+    Logger.recordOutput("OTF/Lob Shot Distance", distance);
+    Logger.recordOutput("OTF/Lob Shot Speed", shooterSpeed);
+    return shooterSpeed;
   }
 
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
