@@ -27,7 +27,7 @@ public class RotateScore extends SequentialCommandGroup {
   public static void updateSpeakerLoc() {
     speakerLoc =
         RedHawkUtil.Reflections.reflectIfRed(
-            new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
+            new Translation3d(0.695 - Units.inchesToMeters(18 + 3), 5.552, 2.11));
   }
 
   public static void updateAmpLoc() {
