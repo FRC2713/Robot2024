@@ -8,7 +8,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -320,14 +319,19 @@ public class SwerveSubsystem extends SubsystemBase {
       doRejectUpdate = true;
     }
 
-
-    // if (Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) > 5) {
+    // if (Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) >
+    // 5) {
     //   xyStds
     // }
 
     // xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
 
-    xyStds = MathUtil.interpolate(0.1, 5.6, Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) / 5);
+    xyStds =
+        MathUtil.interpolate(
+            0.1,
+            5.6,
+            Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition)
+                / 5);
 
     xyStds = 0.6;
 
