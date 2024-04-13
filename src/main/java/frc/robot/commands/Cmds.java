@@ -2,7 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.subsystems.elevatorIO.Elevator;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter.FeederState;
@@ -12,6 +14,11 @@ import frc.robot.subsystems.swerveIO.SwerveSubsystem.MotionMode;
 
 public class Cmds {
   public static Command setState(MotionMode state) {
+    if (state == MotionMode.ALIGN_TO_TAG) {
+      return Commands.sequence(
+          new InstantCommand(() -> VehicleState.getInstance().setRunningAlignToTag(false)),
+          Commands.runOnce(() -> Robot.swerveDrive.setMotionMode(state)));
+    }
     return Commands.runOnce(() -> Robot.swerveDrive.setMotionMode(state));
   }
 

@@ -49,6 +49,8 @@ public class VehicleState {
 
   @Getter public boolean canSeeSpeakerTag = false;
 
+  @Getter @Setter public boolean runningAlignToTag = false;
+
   private VehicleState() {}
 
   public static VehicleState getInstance() {

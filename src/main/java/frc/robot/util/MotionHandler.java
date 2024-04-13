@@ -95,9 +95,11 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveAlignToTag() {
-
-    SwerveHeadingController.getInstance()
-        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
+    if (!VehicleState.getInstance().runningAlignToTag) {
+      VehicleState.getInstance().setRunningAlignToTag(true);
+      SwerveHeadingController.getInstance()
+          .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
+    }
 
     return driveHeadingController();
   }
