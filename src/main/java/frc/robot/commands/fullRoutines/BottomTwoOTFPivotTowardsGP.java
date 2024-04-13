@@ -44,6 +44,10 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
         ShootingCommands
             .runPathGoTowardsGamePieceIntakeWaitTillHasGamePieceThenPrepShooterPivotAndShooter(
                 traj1, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+                        new InstantCommand(
+            () -> {
+              VehicleState.getInstance().resetClosestGP();
+            }),
         Commands.either(
             Commands.sequence(
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
@@ -53,10 +57,6 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
-        new InstantCommand(
-            () -> {
-              VehicleState.getInstance().resetClosestGP();
-            }),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -64,6 +64,10 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
         ShootingCommands
             .runPathGoTowardsGamePieceIntakeWaitTillHasGamePieceThenPrepShooterPivotAndShooter(
                 traj2, ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+                        new InstantCommand(
+            () -> {
+              VehicleState.getInstance().resetClosestGP();
+            }),
         Commands.either(
             Commands.sequence(
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
@@ -73,10 +77,6 @@ public class BottomTwoOTFPivotTowardsGP extends RHRFullRoutine {
                 RedHawkUtil.logShot()),
             Commands.none(),
             Robot.shooter::hasGamePiece),
-        new InstantCommand(
-            () -> {
-              VehicleState.getInstance().resetClosestGP();
-            }),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
 

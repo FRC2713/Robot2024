@@ -871,7 +871,11 @@ public class Robot extends LoggedRobot {
             Cmds.setState(ShooterState.OFF),
             Cmds.setState(Intake.State.OFF),
             Cmds.setState(Elevator.State.MIN_HEIGHT),
-            Cmds.setState(ShooterPivot.State.INTAKING))
+            Cmds.setState(ShooterPivot.State.INTAKING),
+            new InstantCommand(
+                () -> {
+                  VehicleState.getInstance().resetClosestGP();
+                }))
         .schedule();
   }
 
