@@ -301,7 +301,7 @@ public final class Constants {
         PIDFFGains.builder()
             .name("Heading Controller")
             .kP(7)
-            .kD(0.05)
+            .kD(0.1)
             .kS(8)
             .build()
             .buildTunables();

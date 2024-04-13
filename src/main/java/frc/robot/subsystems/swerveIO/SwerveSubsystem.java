@@ -8,7 +8,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -318,9 +317,9 @@ public class SwerveSubsystem extends SubsystemBase {
     {
       doRejectUpdate = true;
     }
-    
-    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity)/100, .6, 3.6);
-    
+
+    xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 3.6);
+
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
       poseEstimator.addVisionMeasurement(
