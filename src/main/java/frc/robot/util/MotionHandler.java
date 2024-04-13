@@ -97,9 +97,9 @@ public class MotionHandler {
   public static ChassisSpeeds driveAlignToTag() {
     ChassisSpeeds speeds = Robot.swerveDrive.getChassisSpeeds();
 
-    if (speeds.vxMetersPerSecond > 0.1 && speeds.vyMetersPerSecond > 0.1){
-    SwerveHeadingController.getInstance()
-        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
+    if (speeds.vxMetersPerSecond > 0.01 && speeds.vyMetersPerSecond > 0.01) {
+      SwerveHeadingController.getInstance()
+          .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
     }
 
     return driveHeadingController();
