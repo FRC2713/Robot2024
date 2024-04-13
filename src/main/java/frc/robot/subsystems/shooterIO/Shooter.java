@@ -49,7 +49,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Pre-spin RPM", noDifferentialShotRPM.get() * 0.75);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 210);
+      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 100);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =

@@ -94,12 +94,12 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
     inputs.rightPosDeg = Units.rotationsToDegrees(rightMotor.getEncoder().getPosition());
 
     inputs.leftSpeedRPM = leftMotor.getEncoder().getVelocity();
-    inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();
+    inputs.rightSpeedRPM = rightMotor.getEncoder().getVelocity();    
 
     inputs.feederOutputVolts = RobotController.getBatteryVoltage() * feederMotor.getAppliedOutput();
     inputs.feederStatorCurrentAmps = -1;
     inputs.feederSupplyCurrentAmps = feederMotor.getOutputCurrent();
-    inputs.feederVelocityRPM = feederMotor.getEncoder().getVelocity();
+    inputs.feederVelocityRPM = feederMotor.getEncoder().getVelocity();   
 
     inputs.LSTripped = limitSwitch.isPressed();
   }
@@ -109,7 +109,7 @@ public class ShooterIOVortexVortexLS implements ShooterIO {
     Logger.recordOutput("Flywheel/Left Setpoint", leftRPM);
     Logger.recordOutput("Flywheel/Right Setpoint", rightRPM);
     leftMotor.getPIDController().setReference(leftRPM, ControlType.kVelocity, 0);
-    rightMotor.getPIDController().setReference(rightRPM, ControlType.kVelocity, 0);
+    rightMotor.getPIDController().setReference(rightRPM, ControlType.kVelocity, 0);    
   }
 
   @Override

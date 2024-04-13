@@ -304,6 +304,7 @@ public class SwerveSubsystem extends SubsystemBase {
         visionInfo.getNtTableName(), inputs.gyroYawPosition, 0, 0, 0, 0, 0);
 
     var doRejectUpdate = false;
+    double xyStds = .6;
 
     if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
       doRejectUpdate = true;
@@ -315,8 +316,13 @@ public class SwerveSubsystem extends SubsystemBase {
     {
       doRejectUpdate = true;
     }
+    if (Math.abs(inputs.gyroYawVelocity)
+        > 180)
+      {
+          xyStds = 1.2;
+      }
     if (!doRejectUpdate) {
-      poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.6, .6, 9999999));
+      poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
       poseEstimator.addVisionMeasurement(
           visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp);
     }
