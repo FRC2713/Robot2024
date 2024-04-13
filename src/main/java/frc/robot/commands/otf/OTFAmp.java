@@ -90,14 +90,14 @@ public class OTFAmp {
             new GoalEndState(
                 0.0,
                 Rotation2d.fromDegrees(
-                    -90)) // Goal end state. You can set a holonomic rotation here. If
+                    90)) // Goal end state. You can set a holonomic rotation here. If
             // using a differential drivetrain, the rotation will have no
             // effect.
             );
 
     runningCommand =
         Commands.sequence(
-            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(-90)),
+            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90)),
             AutoBuilder.followPath(path),
             new InstantCommand(
                     () ->
