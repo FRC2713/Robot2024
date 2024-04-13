@@ -333,7 +333,7 @@ public class SwerveSubsystem extends SubsystemBase {
             Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition)
                 / 5);
 
-    xyStds = 0.6;
+    // xyStds = 0.6;
 
     if (!doRejectUpdate) {
       poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
