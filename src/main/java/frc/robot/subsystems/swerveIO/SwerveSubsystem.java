@@ -303,7 +303,8 @@ public class SwerveSubsystem extends SubsystemBase {
     LimelightHelpers.SetRobotOrientation(
         visionInfo.getNtTableName(),
         Rotation2d.fromDegrees(inputs.gyroYawPosition).unaryMinus().getDegrees(),
-        inputs.gyroYawVelocity,
+        // inputs.gyroYawVelocity,
+        0,
         0,
         0,
         0,
