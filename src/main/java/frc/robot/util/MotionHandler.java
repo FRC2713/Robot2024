@@ -95,23 +95,12 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveAlignToTag() {
-    // if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
+    ChassisSpeeds speeds = Robot.swerveDrive.getChassisSpeeds();
 
-    // var error = VehicleState.getInstance().getCenterTagError();
-
-    // if (error.isPresent()) {
-    //   SwerveHeadingController.getInstance()
-    //       .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
-
-    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-    // }
-    // }
-
+    if (speeds.vxMetersPerSecond > 0.1 && speeds.vyMetersPerSecond > 0.1){
     SwerveHeadingController.getInstance()
         .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
-
-    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-    // }
+    }
 
     return driveHeadingController();
   }
