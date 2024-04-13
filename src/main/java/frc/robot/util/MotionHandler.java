@@ -180,6 +180,13 @@ public class MotionHandler {
       return Optional.empty();
     }
 
+    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX())
+        < 6.75) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Not close enough to centre game pieces");
+      return Optional.of(cs);
+    }
+
     if (VehicleState.getInstance().hasGPLock) {
       return VehicleState.getInstance().goClosestGPTraj(cs);
     }
