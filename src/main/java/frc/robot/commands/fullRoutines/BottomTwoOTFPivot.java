@@ -44,7 +44,7 @@ public class BottomTwoOTFPivot extends RHRFullRoutine {
         Commands.either(
             Commands.sequence(
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
-                new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(1.)),
+                new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 ShootingCommands.runShooterAndPivot(
                     ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
                 RedHawkUtil.logShot()),
@@ -59,7 +59,7 @@ public class BottomTwoOTFPivot extends RHRFullRoutine {
         Commands.either(
             Commands.sequence(
                 Cmds.setState(MotionMode.ALIGN_TO_TAG),
-                new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(1.)),
+                new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3)),
                 ShootingCommands.runShooterAndPivot(
                     ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
                 RedHawkUtil.logShot()),
