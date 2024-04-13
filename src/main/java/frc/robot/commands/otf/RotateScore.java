@@ -71,10 +71,10 @@ public class RotateScore extends SequentialCommandGroup {
     return shooterSpeed;
   }
 
-  public static double getOptimalLobShotShooterSpeed(Pose2d position){
+  public static double getOptimalLobShotShooterSpeed(Pose2d position) {
     var distance = position.getTranslation().getDistance(Translation3dTo2d(ampLoc));
     double shooterSpeed = lobShotShooterNominalSpeed.get(distance);
-    
+
     Logger.recordOutput("OTF/Lob Shot Distance", distance);
     Logger.recordOutput("OTF/Lob Shot Speed", shooterSpeed);
     return shooterSpeed;
@@ -124,7 +124,6 @@ public class RotateScore extends SequentialCommandGroup {
         }
       };
 
-
   private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed =
       new InterpolatingTreeMap<>() {
         {
@@ -134,12 +133,11 @@ public class RotateScore extends SequentialCommandGroup {
         }
       };
 
-      
-
   private static InterpolatingTreeMap<Double, Double> lobShotShooterNominalSpeed =
       new InterpolatingTreeMap<>() {
         {
-          put(6., 2000.);
+          put(5.406, 2200.);
+          put(6., 2300.);
           put(7.433, 2500.);
           put(8., 3000.);
         }

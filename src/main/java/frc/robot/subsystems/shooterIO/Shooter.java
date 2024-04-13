@@ -67,9 +67,9 @@ public class Shooter extends SubsystemBase {
         () -> RotateScore.getOptimalShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
         shooterDifferentialRPM),
     LOB_SHOT(
-      () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
-      () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
-      () -> 500);
+        () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        () -> 500);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;
 
     private ShooterState(
