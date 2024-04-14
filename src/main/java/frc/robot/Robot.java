@@ -34,6 +34,7 @@ import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.fullRoutines.NopeAmp;
 import frc.robot.commands.fullRoutines.NopeSource;
+import frc.robot.commands.fullRoutines.NopeSourceIntake;
 import frc.robot.commands.otf.OTFAmp;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.subsystems.candle.NewCandle;
@@ -904,6 +905,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("AmpSide", new AmpSide());
     autoChooser.addOption("AmpSideLong", new AmpSideLong());
     autoChooser.addOption("NopeSource", new NopeSource());
+    autoChooser.addOption("NopeSourceIntake", new NopeSourceIntake());
     autoChooser.addOption("NopeAmp", new NopeAmp());
   }
 

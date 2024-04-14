@@ -58,6 +58,7 @@ public class Shooter extends SubsystemBase {
   public enum ShooterState {
     NO_DIFFERENTIAL_SHOT(noDifferentialShotRPM, noDifferentialShotRPM, () -> 0),
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
+    GO_MY_WAY(() -> 400, () -> -100, () -> 0),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
     DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
@@ -82,6 +83,7 @@ public class Shooter extends SubsystemBase {
 
   public enum FeederState {
     FEED_SHOT(genericFeederVolts, () -> false),
+    FEED_CONTINUOUS(genericFeederVolts, () -> false),
     INTAKE(intakingFeederVolts, () -> true),
     HOLDING_GP(offFeederVolts, () -> false),
     FORCE_ON(intakingFeederVolts, () -> false),
