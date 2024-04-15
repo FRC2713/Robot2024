@@ -723,10 +723,23 @@ public class Robot extends LoggedRobot {
         .onFalse(Cmds.setState(Intake.State.OFF));
 
     // Outake GP
+    // TODO: REMOVE!
     operator
         .back()
-        .onTrue(Cmds.setState(Intake.State.OUTAKE_GP))
-        .onFalse(Cmds.setState(Intake.State.OFF));
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(ShooterState.GO_MY_WAY),
+                Cmds.setState(FeederState.FEED_CONTINUOUS),
+                Cmds.setState(Intake.State.INTAKE_GP)))
+        .onFalse(
+            Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(FeederState.OFF),
+                    () -> shooter.hasGamePiece()),
+                Cmds.setState(ShooterState.OFF)));
 
     // operator
     //     .back()

@@ -19,9 +19,6 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber differentialShotRPM =
       new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
 
-  private static final LoggedTunableNumber lobShotRPM =
-      new LoggedTunableNumber("Shooter/Lob Shot RPM", 2750);
-
   private static final LoggedTunableNumber genericFeederVolts =
       new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
   private static final LoggedTunableNumber intakingFeederVolts =
@@ -33,6 +30,11 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
+
+  private static final LoggedTunableNumber goMyWayLeftRPM =
+      new LoggedTunableNumber("Shooter/Go My Way Left RPM", 400);
+  private static final LoggedTunableNumber goMyWayRightRPM =
+      new LoggedTunableNumber("Shooter/Go My Way Left RPM", -100);
 
   private static final LoggedTunableNumber directAmpShot =
       new LoggedTunableNumber("Shooter/Direct Amp Shot Shooter RPM", 1500);
@@ -58,7 +60,7 @@ public class Shooter extends SubsystemBase {
   public enum ShooterState {
     NO_DIFFERENTIAL_SHOT(noDifferentialShotRPM, noDifferentialShotRPM, () -> 0),
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
-    GO_MY_WAY(() -> 400, () -> -100, () -> 0),
+    GO_MY_WAY(goMyWayLeftRPM, goMyWayRightRPM, () -> 0),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
     DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
