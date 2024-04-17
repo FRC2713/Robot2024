@@ -835,12 +835,6 @@ public class Robot extends LoggedRobot {
       swerveDrive.updatePoseEstimatorWithVisionBotPose(
           visionRight.getInfo(), visionRight.getInputs());
     }
-
-    Logger.recordOutput(
-        "MatchTime",
-        DriverStation.isAutonomous()
-            ? DriverStation.getMatchTime() - 135.
-            : DriverStation.getMatchTime());
   }
 
   @Override
@@ -937,7 +931,11 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putBoolean("Dashboard/Front Right Encoder Good", encoderReadings[1] != 0.0);
     SmartDashboard.putBoolean("Dashboard/Back Left Encoder Good", encoderReadings[2] != 0.0);
     SmartDashboard.putBoolean("Dashboard/Back Right Encoder Good", encoderReadings[3] != 0.0);
-    SmartDashboard.putNumber("Dashboard/Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber(
+        "Dashboard/Match Time",
+        DriverStation.isAutonomous()
+            ? DriverStation.getMatchTime() - 135.
+            : DriverStation.getMatchTime());
     SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
     SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
     SmartDashboard.putString("Dashboard/States/Intake", intake.getState().name());
