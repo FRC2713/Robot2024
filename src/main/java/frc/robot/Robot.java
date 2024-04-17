@@ -836,9 +836,11 @@ public class Robot extends LoggedRobot {
           visionRight.getInfo(), visionRight.getInputs());
     }
 
-    Logger.recordOutput("MatchTime", DriverStation.isAutonomous()
-    ? DriverStation.getMatchTime() - 135.
-    : DriverStation.getMatchTime());
+    Logger.recordOutput(
+        "MatchTime",
+        DriverStation.isAutonomous()
+            ? DriverStation.getMatchTime() - 135.
+            : DriverStation.getMatchTime());
   }
 
   @Override
