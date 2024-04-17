@@ -140,10 +140,10 @@ public class RotateScore extends SequentialCommandGroup {
   private static InterpolatingTreeMap<Double, Double> lobShotShooterNominalSpeed =
       new InterpolatingTreeMap<>() {
         {
-          put(5.406, 2200.);
-          put(6.5, 2400.);
-          put(7.433, 2500.);
-          put(8., 3000.);
+          put(5.406, 2200. - 50);
+          put(6.5, 2400. - 50);
+          put(7.433, 2500. - 50);
+          put(8., 3000. - 50);
         }
       };
 
