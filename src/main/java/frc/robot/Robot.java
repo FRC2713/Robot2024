@@ -835,6 +835,10 @@ public class Robot extends LoggedRobot {
       swerveDrive.updatePoseEstimatorWithVisionBotPose(
           visionRight.getInfo(), visionRight.getInputs());
     }
+
+    Logger.recordOutput("MatchTime", DriverStation.isAutonomous()
+    ? DriverStation.getMatchTime() - 135.
+    : DriverStation.getMatchTime());
   }
 
   @Override
