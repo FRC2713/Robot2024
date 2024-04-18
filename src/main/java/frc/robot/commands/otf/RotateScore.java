@@ -101,26 +101,25 @@ public class RotateScore extends SequentialCommandGroup {
           put(1.62, 41.);
           put(1.955, 36.);
           put(2.27, 32.);
-          put(2.5, 30.);
+          put(2.5, 31.);
           put(2.53, 30.);
-
+          
           // From practice field DCMP
           put(3., 29.);
           // From practice field WCMP
           put(3.08, 29.);
-          // From practice field DCMP
-          put(3.17, 26.);
-
+          put(3.25, 24.);
+          
           // From some other source
           // put(3.1, 27.);
 
+          // From practice field WCMP
+          put(3.9, 22.);
+          put(4.3, 19.5);
           // From practice field DCMP
-          put(3.825, 26.);
-          put(4.15, 22.5);
-          put(4.319, 21.);
           put(4.9, 19.5);
           put(5.9, 18.);
-
+          
           // put(4., 20.);
           // Extrapolating with exponential regression
           // put(4.5, 20.);
@@ -129,10 +128,17 @@ public class RotateScore extends SequentialCommandGroup {
           // put(6.0, 10.98);
           // put(6.5, 19.47);
         }
+        /*
+         * 
+         * 2.5,31
+         * 3.25,24
+         * 3.9,22
+         * 4.3,19.5
+         */
       };
 
   private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed =
-      new InterpolatingTreeMap<>() {
+  new InterpolatingTreeMap<>() {
         {
           put(1.0, 3500.);
           put(4.5, 4000.);
