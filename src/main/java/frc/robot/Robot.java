@@ -834,6 +834,8 @@ public class Robot extends LoggedRobot {
       swerveDrive.updatePoseEstimatorWithVisionBotPose(
           visionRight.getInfo(), visionRight.getInputs());
     }
+
+    Logger.recordOutput("Swerve/Current Chassis Speeds", Robot.swerveDrive.getChassisSpeeds());
   }
 
   @Override

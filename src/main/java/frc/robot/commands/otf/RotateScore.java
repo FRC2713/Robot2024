@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.RedHawkUtil;
 import org.littletonrobotics.junction.Logger;
@@ -80,8 +81,12 @@ public class RotateScore extends SequentialCommandGroup {
     double shooterSpeed = lobShotShooterNominalSpeed.get(distance);
 
     Logger.recordOutput("OTF/Lob Shot Distance", distance);
-    Logger.recordOutput("OTF/Lob Shot Speed", shooterSpeed);
-    return shooterSpeed;
+    Logger.recordOutput("OTF/Lob Shot Speed Raw", shooterSpeed);
+
+    double shooterSpeedVel = shooterSpeed - MathUtil.clamp((Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond / 4) * 100, 0, 100);
+    Logger.recordOutput("OTF/Lob Shot Speed Vel", shooterSpeedVel);
+
+    return shooterSpeedVel;
   }
 
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
@@ -103,13 +108,13 @@ public class RotateScore extends SequentialCommandGroup {
           put(2.27, 32.);
           put(2.5, 31.);
           put(2.53, 30.);
-          
+
           // From practice field DCMP
           put(3., 29.);
           // From practice field WCMP
           put(3.08, 29.);
           put(3.25, 24.);
-          
+
           // From some other source
           // put(3.1, 27.);
 
@@ -119,7 +124,7 @@ public class RotateScore extends SequentialCommandGroup {
           // From practice field DCMP
           put(4.9, 19.5);
           put(5.9, 18.);
-          
+
           // put(4., 20.);
           // Extrapolating with exponential regression
           // put(4.5, 20.);
@@ -129,7 +134,7 @@ public class RotateScore extends SequentialCommandGroup {
           // put(6.5, 19.47);
         }
         /*
-         * 
+         *
          * 2.5,31
          * 3.25,24
          * 3.9,22
@@ -138,7 +143,7 @@ public class RotateScore extends SequentialCommandGroup {
       };
 
   private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed =
-  new InterpolatingTreeMap<>() {
+      new InterpolatingTreeMap<>() {
         {
           put(1.0, 3500.);
           put(4.5, 4000.);
