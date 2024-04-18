@@ -836,6 +836,8 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.recordOutput("Swerve/Current Chassis Speeds", Robot.swerveDrive.getChassisSpeeds());
+    Logger.recordOutput(
+        "HeadingControllerAtSetpoint", SwerveHeadingController.getInstance().atSetpoint(0.7));
   }
 
   @Override

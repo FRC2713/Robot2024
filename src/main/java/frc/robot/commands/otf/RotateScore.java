@@ -122,10 +122,15 @@ public class RotateScore extends SequentialCommandGroup {
           // put(3.1, 27.);
 
           // From practice field WCMP
+          put(3.78, 23.);
           put(3.9, 22.);
-          put(4.3, 19.5);
+          put(4., 22.);
+          put(4.3, 20.);
           // From practice field DCMP
           put(4.9, 19.5);
+          // From practice field WCMP
+          put(5.6, 19.);
+          // From practice field DCMP
           put(5.9, 18.);
 
           // put(4., 20.);
