@@ -646,22 +646,22 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(FeederState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    // operator
-    //     .rightTrigger(0.3)
-    //     .onTrue(
-    //         Commands.sequence(
-    //             Cmds.setState(ShooterPivot.State.INTAKING),
-    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
-    //             new WaitUntilCommand(elevator::atTargetHeight),
-    //             new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-    //             Cmds.setState(ShooterState.OUTTAKE_BACKWARDS),
-    //             Cmds.setState(Intake.State.OUTAKE_GP)))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             Commands.either(
-    //                 Cmds.setState(ShooterState.HOLDING_GP),
-    //                 Cmds.setState(ShooterState.OFF),
-    //                 () -> shooter.hasGamePiece())));
+    operator
+        .rightTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Cmds.setState(Intake.State.OUTAKE_GP),
+                Cmds.setState(FeederState.AMP_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     // operator
     //     .b()
@@ -932,11 +932,7 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putBoolean("Dashboard/Front Right Encoder Good", encoderReadings[1] != 0.0);
     SmartDashboard.putBoolean("Dashboard/Back Left Encoder Good", encoderReadings[2] != 0.0);
     SmartDashboard.putBoolean("Dashboard/Back Right Encoder Good", encoderReadings[3] != 0.0);
-    SmartDashboard.putNumber(
-        "Dashboard/Match Time",
-        DriverStation.isAutonomous()
-            ? DriverStation.getMatchTime() - 135.
-            : DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Dashboard/Match Time", DriverStation.getMatchTime());
     SmartDashboard.putNumber("Dashboard/Gyro Yaw", swerveDrive.getYaw().getDegrees());
     SmartDashboard.putString("Dashboard/States/Elevator", elevator.getState().name());
     SmartDashboard.putString("Dashboard/States/Intake", intake.getState().name());
