@@ -335,7 +335,7 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
-                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+                            && SwerveHeadingController.getInstance().atSetpoint(0.7)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 Cmds.setState(FeederState.FEED_SHOT),
                 RedHawkUtil.logShot()
