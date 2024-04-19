@@ -86,7 +86,7 @@ public class RotateScore extends SequentialCommandGroup {
     double shooterSpeedVel =
         shooterSpeed
             - MathUtil.clamp(
-                (Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond / 4) * 100, 0, 100);
+                (Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond / 4) * 150, 0, 100);
     Logger.recordOutput("OTF/Lob Shot Speed Vel", shooterSpeedVel);
 
     return shooterSpeedVel;
