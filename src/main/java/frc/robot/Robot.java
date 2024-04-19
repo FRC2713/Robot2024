@@ -664,7 +664,7 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.INTAKING),
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new ParallelDeadlineGroup(
+                new ParallelRaceGroup(
                     new WaitCommand(2),
                     Commands.sequence(
                         new WaitUntilCommand(elevator::atTargetHeight),
