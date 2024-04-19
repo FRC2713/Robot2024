@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -663,15 +664,19 @@ public class Robot extends LoggedRobot {
             Commands.sequence(
                 Cmds.setState(ShooterPivot.State.INTAKING),
                 Cmds.setState(Elevator.State.MIN_HEIGHT),
-                new WaitUntilCommand(elevator::atTargetHeight),
-                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                new ParallelDeadlineGroup(
+                    new WaitCommand(2),
+                    Commands.sequence(
+                        new WaitUntilCommand(elevator::atTargetHeight),
+                        new WaitUntilCommand(shooterPivot::isAtTargetAngle))),
                 Cmds.setState(Intake.State.OUTAKE_GP),
-                Cmds.setState(FeederState.AMP_SHOT)))
+                Cmds.setState(FeederState.OUTAKE_GP)))
         .onFalse(
             Commands.sequence(
+                Cmds.setState(Intake.State.OFF),
                 Commands.either(
                     Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(ShooterState.OFF),
+                    Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
     // operator

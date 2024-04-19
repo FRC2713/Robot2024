@@ -90,6 +90,7 @@ public class Shooter extends SubsystemBase {
     HOLDING_GP(offFeederVolts, () -> false),
     FORCE_ON(intakingFeederVolts, () -> false),
     AMP_SHOT(ampShotFeederVolts, () -> false),
+    OUTAKE_GP(() -> -12, () -> false),
     OFF(offFeederVolts, () -> false);
     private final DoubleSupplier feederVolts;
     private final BooleanSupplier limitSwitchEnabled;
