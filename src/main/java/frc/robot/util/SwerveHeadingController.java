@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
@@ -82,7 +83,7 @@ public class SwerveHeadingController {
     // }
     // return isWithinTarget;
 
-    return (this.error < acceptableError) && (Units.radiansToDegrees(output) < 50);
+    return ((this.error < acceptableError) && (Units.radiansToDegrees(output) < 50)) || (Units.radiansToDegrees(output) < 2 && this.error < 2);
   }
   /**
    * Updates the heading controller PID with the setpoint and calculates output.
