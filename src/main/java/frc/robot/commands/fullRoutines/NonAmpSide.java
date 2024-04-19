@@ -33,10 +33,12 @@ public class NonAmpSide extends RHRFullRoutine {
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
 
+        Cmds.setState(Shooter.ShooterState.DYNAMIC_SHOT),
+
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -45,7 +47,7 @@ public class NonAmpSide extends RHRFullRoutine {
         new WaitCommand(0.7),
         // new WaitUntilCommand(Robot.shooter::hasGamePiece),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
