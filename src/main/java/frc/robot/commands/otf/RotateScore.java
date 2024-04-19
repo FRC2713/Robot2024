@@ -153,11 +153,11 @@ public class RotateScore extends SequentialCommandGroup {
          * 3.25,24
          * 3.9,22
          * 4.3,19.5
-         * 
-         * 
-         * 
+         *
+         *
+         *
          * 4.0,24
-         * 
+         *
          */
       };
 
