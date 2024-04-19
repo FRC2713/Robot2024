@@ -302,7 +302,7 @@ public final class Constants {
             .name("Heading Controller")
             .kP(7)
             .kD(0.1)
-            .kS(8.25)
+            .kS(8.1)
             .build()
             .buildTunables();
 
