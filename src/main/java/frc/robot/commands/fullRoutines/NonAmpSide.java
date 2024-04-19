@@ -31,14 +31,11 @@ public class NonAmpSide extends RHRFullRoutine {
         ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
-        Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
-
-        Cmds.setState(Shooter.ShooterState.DYNAMIC_SHOT),
+        Cmds.setState(ShooterState.DYNAMIC_SHOT),
 
         // First Piece
         ShootingCommands.runPathAndIntake(traj1),
-        ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
+        ShootingCommands.runShooterAndPivot(ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
@@ -46,13 +43,12 @@ public class NonAmpSide extends RHRFullRoutine {
         ShootingCommands.runPathAndIntake(traj2),
         new WaitCommand(0.7),
         // new WaitUntilCommand(Robot.shooter::hasGamePiece),
-        ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
+        ShootingCommands.runShooterAndPivot(ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
         // Reset everything for teleop
-        Cmds.setState(Shooter.ShooterState.OFF),
+        Cmds.setState(ShooterState.OFF),
         Cmds.setState(Intake.State.OFF),
         Cmds.setState(ShooterPivot.State.INTAKING),
 
