@@ -30,7 +30,7 @@ public class FourPieceCentreNoAmp extends RHRFullRoutine {
         SwerveSubsystem.Commands.resetOdometry(traj1),
 
         // Preload
-        ShootingCommands.runShooterPivot(ShooterPivot.State.FENDER_SHOT),
+        ShootingCommands.runShooterPivot(ShooterPivot.State.AUTO_SHOT_NonAmpSide_1),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
         Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),

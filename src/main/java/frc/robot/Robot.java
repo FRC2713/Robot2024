@@ -514,26 +514,25 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterPivot.State.LOB_SHOT)))
         .whileFalse(
             // Commands.either(
-                Commands.sequence(
-                    Cmds.setState(MotionMode.FULL_DRIVE),
-                    Cmds.setState(FeederState.FEED_SHOT),
-                    new ParallelRaceGroup(
-                        new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()),
-                        new WaitCommand(3)),
-                    new WaitCommand(0.1),
-                    Cmds.setState(FeederState.OFF),
-                    Cmds.setState(ShooterPivot.State.INTAKING),
-                    Cmds.setState(ShooterState.OFF))
-                // Commands.sequence(
-                //     Cmds.setState(MotionMode.FULL_DRIVE),
-                //     Cmds.setState(ShooterState.OFF),
-                //     Cmds.setState(ShooterPivot.State.INTAKING)),
-                // () -> {
-                //   return !(RedHawkUtil.Reflections.reflectIfRed(swerveDrive.getEstimatedPose())
-                //           .getX()
-                //       < 2.91);
-                // })
-                );
+            Commands.sequence(
+                Cmds.setState(MotionMode.FULL_DRIVE),
+                Cmds.setState(FeederState.FEED_SHOT),
+                new ParallelRaceGroup(
+                    new WaitUntilCommand(() -> !Robot.shooter.hasGamePiece()), new WaitCommand(3)),
+                new WaitCommand(0.1),
+                Cmds.setState(FeederState.OFF),
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(ShooterState.OFF))
+            // Commands.sequence(
+            //     Cmds.setState(MotionMode.FULL_DRIVE),
+            //     Cmds.setState(ShooterState.OFF),
+            //     Cmds.setState(ShooterPivot.State.INTAKING)),
+            // () -> {
+            //   return !(RedHawkUtil.Reflections.reflectIfRed(swerveDrive.getEstimatedPose())
+            //           .getX()
+            //       < 2.91);
+            // })
+            );
 
     // Elevator up
     operator
