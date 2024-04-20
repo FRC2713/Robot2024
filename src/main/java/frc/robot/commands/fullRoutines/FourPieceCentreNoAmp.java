@@ -33,7 +33,8 @@ public class FourPieceCentreNoAmp extends RHRFullRoutine {
         ShootingCommands.runShooterPivot(ShooterPivot.State.AUTO_SHOT_NonAmpSide_1),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
-        Cmds.setState(ShooterState.DIFFERENTIAL_SHOT),
+        
+        Cmds.setState(ShooterState.DYNAMIC_SHOT),
 
         // First Piece
         ShootingCommands.runPathAndIntakeWheel(traj1),
@@ -42,7 +43,7 @@ public class FourPieceCentreNoAmp extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.POSE_AIM),
         // new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3)),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
@@ -54,7 +55,7 @@ public class FourPieceCentreNoAmp extends RHRFullRoutine {
         Cmds.setState(ShooterPivot.State.POSE_AIM),
         new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3)),
         ShootingCommands.runShooterAndPivot(
-            Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
+            Shooter.ShooterState.DYNAMIC_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),
         Cmds.setState(MotionMode.TRAJECTORY),
         Cmds.setState(ShooterPivot.State.INTAKING),
