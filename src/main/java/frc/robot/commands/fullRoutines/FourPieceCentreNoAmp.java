@@ -33,7 +33,6 @@ public class FourPieceCentreNoAmp extends RHRFullRoutine {
         ShootingCommands.runShooterPivot(ShooterPivot.State.AUTO_SHOT_NonAmpSide_1),
         ShootingCommands.runShooter(Shooter.ShooterState.NO_DIFFERENTIAL_SHOT),
         RedHawkUtil.logShot(),
-        
         Cmds.setState(ShooterState.DYNAMIC_SHOT),
 
         // First Piece
