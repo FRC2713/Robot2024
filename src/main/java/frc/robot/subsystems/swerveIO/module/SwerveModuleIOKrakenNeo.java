@@ -54,8 +54,8 @@ public class SwerveModuleIOKrakenNeo implements SwerveModuleIO {
     // config.CurrentLimits.SupplyCurrentLimitEnable = true;
     // config.CurrentLimits.StatorCurrentLimit = 40;
     // config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
-    config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
 
     config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
     config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.02;
