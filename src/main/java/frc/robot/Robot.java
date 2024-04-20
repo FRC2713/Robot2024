@@ -513,7 +513,7 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterState.LOB_SHOT),
                 Cmds.setState(ShooterPivot.State.LOB_SHOT)))
         .whileFalse(
-            Commands.either(
+            // Commands.either(
                 Commands.sequence(
                     Cmds.setState(MotionMode.FULL_DRIVE),
                     Cmds.setState(FeederState.FEED_SHOT),
@@ -523,16 +523,17 @@ public class Robot extends LoggedRobot {
                     new WaitCommand(0.1),
                     Cmds.setState(FeederState.OFF),
                     Cmds.setState(ShooterPivot.State.INTAKING),
-                    Cmds.setState(ShooterState.OFF)),
-                Commands.sequence(
-                    Cmds.setState(MotionMode.FULL_DRIVE),
-                    Cmds.setState(ShooterState.OFF),
-                    Cmds.setState(ShooterPivot.State.INTAKING)),
-                () -> {
-                  return !(RedHawkUtil.Reflections.reflectIfRed(swerveDrive.getEstimatedPose())
-                          .getX()
-                      < 2.91);
-                }));
+                    Cmds.setState(ShooterState.OFF))
+                // Commands.sequence(
+                //     Cmds.setState(MotionMode.FULL_DRIVE),
+                //     Cmds.setState(ShooterState.OFF),
+                //     Cmds.setState(ShooterPivot.State.INTAKING)),
+                // () -> {
+                //   return !(RedHawkUtil.Reflections.reflectIfRed(swerveDrive.getEstimatedPose())
+                //           .getX()
+                //       < 2.91);
+                // })
+                );
 
     // Elevator up
     operator
