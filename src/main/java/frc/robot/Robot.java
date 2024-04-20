@@ -30,6 +30,7 @@ import frc.robot.commands.fullRoutines.BottomTwo;
 import frc.robot.commands.fullRoutines.BottomTwoOTFPivot;
 import frc.robot.commands.fullRoutines.BottomTwoOTFPivotTowardsGP;
 import frc.robot.commands.fullRoutines.FourPieceCentre;
+import frc.robot.commands.fullRoutines.FourPieceCentreNoAmp;
 import frc.robot.commands.fullRoutines.FourPieceL;
 import frc.robot.commands.fullRoutines.NonAmpSide;
 import frc.robot.commands.fullRoutines.NonAmpSideGP;
@@ -934,6 +935,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("BottomTwoOTFPivot", new BottomTwoOTFPivot());
     autoChooser.addOption("BottomTwoOTFPivotGP", new BottomTwoOTFPivotTowardsGP());
     autoChooser.addOption("FourPieceCentre", new FourPieceCentre());
+    autoChooser.addOption("FourPieceCentreNoAmp", new FourPieceCentreNoAmp());
     autoChooser.addOption("FourPieceL", new FourPieceL());
     autoChooser.addOption("AmpSide", new AmpSide());
     autoChooser.addOption("AmpSideLong", new AmpSideLong());
