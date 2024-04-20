@@ -812,8 +812,7 @@ public class Robot extends LoggedRobot {
     updatePreMatchDashboardValues();
 
     if (Math.abs(driver.getRightX()) > 0.25
-        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP
-        && swerveDrive.getMotionMode() != MotionMode.LOB_SHOT_ALIGN) {
+        && swerveDrive.getMotionMode() != MotionMode.DRIVE_TOWARDS_GP) {
       swerveDrive.setMotionMode(MotionMode.FULL_DRIVE);
     }
 
