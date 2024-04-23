@@ -13,7 +13,7 @@ def extract_comments(text):
 
 
 def open_file():
-    java_file_path = '../src/main/java/frc/robot/Robot.java'
+    java_file_path = 'src/main/java/frc/robot/Robot.java'
     with open(java_file_path, 'r') as file:
         java_code = file.read()
 
