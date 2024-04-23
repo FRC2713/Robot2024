@@ -2,6 +2,7 @@ package frc.robot.commands.fullRoutines;
 
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.Cmds;
@@ -66,7 +67,9 @@ public class FourPieceCentre extends RHRFullRoutine {
         new WaitCommand(0.7),
         Cmds.setState(MotionMode.ALIGN_TO_TAG),
         Cmds.setState(ShooterPivot.State.POSE_AIM),
-        new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3)),
+        new ParallelDeadlineGroup(
+            new WaitCommand(1.5),
+            new WaitUntilCommand(() -> SwerveHeadingController.getInstance().atSetpoint(0.3))),
         ShootingCommands.runShooterAndPivot(
             Shooter.ShooterState.DIFFERENTIAL_SHOT, ShooterPivot.State.POSE_AIM),
         RedHawkUtil.logShot(),

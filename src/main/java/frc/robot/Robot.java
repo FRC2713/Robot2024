@@ -360,7 +360,7 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(
                     () ->
                         shooter.isAtTarget()
-                            && SwerveHeadingController.getInstance().atSetpoint(0.3)),
+                            && SwerveHeadingController.getInstance().atSetpoint(0.7)),
                 Cmds.setState(Intake.State.INTAKE_GP),
                 Cmds.setState(FeederState.FEED_SHOT),
                 RedHawkUtil.logShot()
@@ -741,22 +741,22 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(FeederState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    // operator
-    //     .rightTrigger(0.3)
-    //     .onTrue(
-    //         Commands.sequence(
-    //             Cmds.setState(ShooterPivot.State.INTAKING),
-    //             Cmds.setState(Elevator.State.MIN_HEIGHT),
-    //             new WaitUntilCommand(elevator::atTargetHeight),
-    //             new WaitUntilCommand(shooterPivot::isAtTargetAngle),
-    //             Cmds.setState(ShooterState.OUTTAKE_BACKWARDS),
-    //             Cmds.setState(Intake.State.OUTAKE_GP)))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             Commands.either(
-    //                 Cmds.setState(ShooterState.HOLDING_GP),
-    //                 Cmds.setState(ShooterState.OFF),
-    //                 () -> shooter.hasGamePiece())));
+    operator
+        .rightTrigger(0.3)
+        .onTrue(
+            Commands.sequence(
+                Cmds.setState(ShooterPivot.State.INTAKING),
+                Cmds.setState(Elevator.State.MIN_HEIGHT),
+                new WaitUntilCommand(elevator::atTargetHeight),
+                new WaitUntilCommand(shooterPivot::isAtTargetAngle),
+                Cmds.setState(Intake.State.OUTAKE_GP),
+                Cmds.setState(FeederState.AMP_SHOT)))
+        .onFalse(
+            Commands.sequence(
+                Commands.either(
+                    Cmds.setState(FeederState.HOLDING_GP),
+                    Cmds.setState(ShooterState.OFF),
+                    () -> shooter.hasGamePiece())));
 
     // operator
     //     .b()
@@ -826,23 +826,22 @@ public class Robot extends LoggedRobot {
         .onFalse(Cmds.setState(Intake.State.OFF));
 
     // Outake GP
-    // TODO: REMOVE!
-    operator
-        .back()
-        .onTrue(
-            Commands.sequence(
-                Cmds.setState(ShooterPivot.State.INTAKING),
-                Cmds.setState(ShooterState.GO_MY_WAY),
-                Cmds.setState(FeederState.FEED_CONTINUOUS),
-                Cmds.setState(Intake.State.INTAKE_GP)))
-        .onFalse(
-            Commands.sequence(
-                Cmds.setState(Intake.State.OFF),
-                Commands.either(
-                    Cmds.setState(FeederState.HOLDING_GP),
-                    Cmds.setState(FeederState.OFF),
-                    () -> shooter.hasGamePiece()),
-                Cmds.setState(ShooterState.OFF)));
+    // operator
+    //     .back()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Cmds.setState(ShooterPivot.State.INTAKING),
+    //             Cmds.setState(ShooterState.GO_MY_WAY),
+    //             Cmds.setState(FeederState.FEED_CONTINUOUS),
+    //             Cmds.setState(Intake.State.INTAKE_GP)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             Cmds.setState(Intake.State.OFF),
+    //             Commands.either(
+    //                 Cmds.setState(FeederState.HOLDING_GP),
+    //                 Cmds.setState(FeederState.OFF),
+    //                 () -> shooter.hasGamePiece()),
+    //             Cmds.setState(ShooterState.OFF)));
 
     // operator
     //     .back()
@@ -938,6 +937,10 @@ public class Robot extends LoggedRobot {
       swerveDrive.updatePoseEstimatorWithVisionBotPose(
           visionRight.getInfo(), visionRight.getInputs());
     }
+
+    Logger.recordOutput("Swerve/Current Chassis Speeds", Robot.swerveDrive.getChassisSpeeds());
+    Logger.recordOutput(
+        "HeadingControllerAtSetpoint", SwerveHeadingController.getInstance().atSetpoint(0.7));
   }
 
   @Override

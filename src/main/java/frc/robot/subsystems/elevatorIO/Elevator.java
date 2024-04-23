@@ -28,7 +28,7 @@ public class Elevator extends SubsystemBase {
           Units.metersToInches(Constants.ElevatorConstants.MAX_HEIGHT_METERS));
 
   private static final LoggedTunableNumber chainApproachHeight =
-      new LoggedTunableNumber("Elevator/Chain Approach Height", 10.);
+      new LoggedTunableNumber("Elevator/Chain Approach Height", 11.);
 
   private static final LoggedTunableNumber onChainHeight =
       new LoggedTunableNumber("Elevator/On chain height", 0.);

@@ -32,9 +32,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
 
   private static final LoggedTunableNumber goMyWayLeftRPM =
-      new LoggedTunableNumber("Shooter/Go My Way Left RPM", 400);
+      new LoggedTunableNumber("Shooter/Go My Way Left RPM", 3000);
   private static final LoggedTunableNumber goMyWayRightRPM =
-      new LoggedTunableNumber("Shooter/Go My Way Left RPM", -100);
+      new LoggedTunableNumber("Shooter/Go My Way Right RPM", -1500);
 
   private static final LoggedTunableNumber directAmpShot =
       new LoggedTunableNumber("Shooter/Direct Amp Shot Shooter RPM", 1500);

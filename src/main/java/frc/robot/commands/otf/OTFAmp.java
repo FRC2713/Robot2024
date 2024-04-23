@@ -39,7 +39,8 @@ public class OTFAmp {
 
   public Timer timer = new Timer();
   public double ttl = 3;
-  private Pose2d ampPose = new Pose2d(1.8, 7.8, Rotation2d.fromDegrees(90));
+  private Pose2d ampPose =
+      new Pose2d(1.8, 7.8 - Units.inchesToMeters(1), Rotation2d.fromDegrees(90));
   private Pose2d preAmpPose =
       new Pose2d(1.8, 7.67 - Units.inchesToMeters(2), Rotation2d.fromDegrees(90));
 
