@@ -9,7 +9,6 @@ name: Generate Controls PDF
 
 on:
   push:
-    branches:
 
 permissions:
   contents: read
