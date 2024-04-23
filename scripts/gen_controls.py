@@ -72,7 +72,7 @@ def to_pdf(btns, type_id):
     reportlab_pil_img = ImageReader(controller_image)
 
     # Create a PDF canvas
-    c = canvas.Canvas(str(type_id) + "_buttons.pdf", pagesize=(1110, 753))
+    c = canvas.Canvas(file_path + str(type_id) + "_buttons.pdf", pagesize=(1110, 753))
     c.drawImage(reportlab_pil_img, 0, 0, width=1110, height=753)
 
     for btn in btns:
