@@ -1,0 +1,43 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Generate Controls PDF
+
+on:
+  push:
+    branches:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+    - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+    - name: Generate Controls PDF
+        run: |
+          python scripts/gen_controls.py
+    - name: Upload Controls PDF 1
+        uses: actions/upload-artifact@v2
+        with:
+          name: 1_buttons-pdf
+          path: scripts/1_buttons.pdf
+    - name: Upload Controls PDF 2
+        uses: actions/upload-artifact@v2
+        with:
+          name: 2_buttons-pdf
+          path: scripts/2_buttons.pdf

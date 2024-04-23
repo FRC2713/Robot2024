@@ -184,3 +184,5 @@ logs/
 
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
+scripts/1_buttons.pdf
+scripts/2_buttons.pdf
