@@ -1,8 +1,11 @@
+import os
 import re
 import json
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 from PIL import Image
+
+file_path = os.path.split(os.path.realpath(__file__))[0] + '/'
 
 
 def extract_comments(text):
@@ -13,7 +16,7 @@ def extract_comments(text):
 
 
 def open_file():
-    java_file_path = 'src/main/java/frc/robot/Robot.java'
+    java_file_path = file_path + '../src/main/java/frc/robot/Robot.java'
     with open(java_file_path, 'r') as file:
         java_code = file.read()
 
@@ -64,7 +67,7 @@ def draw_text(c, btn, text):
 
 
 def to_pdf(btns, type_id):
-    controller_image = Image.open("xbox" + str(type_id) + ".png")
+    controller_image = Image.open(file_path + "xbox" + str(type_id) + ".png")
 
     reportlab_pil_img = ImageReader(controller_image)
 
