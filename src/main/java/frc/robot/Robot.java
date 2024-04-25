@@ -68,11 +68,15 @@ import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Optional;
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
@@ -114,6 +118,18 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter());
+    } else {
+      Logger.addDataReceiver(
+          new WPILOGWriter(
+              "sim-logs/"
+                  + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())
+                  + ".wpilog"));
+      if (System.getenv("AKIT_LOG_PATH") != null) {
+        String logPath =
+            LogFileUtil
+                .findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      }
     }
 
     Logger.start();

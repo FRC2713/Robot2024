@@ -5,6 +5,9 @@ simgui-ds.json
 .glass/glass.json
 .Glass/glass.json
 
+/sim-logs/*
+!/sim-logs/.gitkeep
+
 
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
