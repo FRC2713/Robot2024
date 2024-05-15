@@ -70,11 +70,15 @@ import frc.robot.util.MechanismManager;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Optional;
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
@@ -116,6 +120,18 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("BuildDate", GVersion.BUILD_DATE);
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter());
+    } else {
+      Logger.addDataReceiver(
+          new WPILOGWriter(
+              "sim-logs/"
+                  + new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime())
+                  + ".wpilog"));
+      if (System.getenv("AKIT_LOG_PATH") != null) {
+        String logPath =
+            LogFileUtil
+                .findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      }
     }
 
     Logger.start();
@@ -186,6 +202,11 @@ public class Robot extends LoggedRobot {
   }
 
   public void createDriverBindings() {
+    /*RHRXBox
+     *Type:1
+     *Btn:5
+     *Desc:Intake
+     */
     driver
         .leftBumper()
         .whileTrue(
@@ -212,6 +233,11 @@ public class Robot extends LoggedRobot {
                     Cmds.setState(FeederState.OFF),
                     () -> shooter.hasGamePiece())));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:1
+     *Desc:Drive towards GP
+     */
     driver
         .a()
         .whileTrue(
@@ -244,6 +270,11 @@ public class Robot extends LoggedRobot {
                       VehicleState.getInstance().resetClosestGP();
                     })));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:9
+     *Desc:Drive towards GP
+     */
     driver
         .leftTrigger(0.3)
         .whileTrue(
@@ -304,6 +335,11 @@ public class Robot extends LoggedRobot {
     //         new WaitCommand(0.05),
     //         Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:6
+     *Desc:Fender shot
+     */
     driver
         .rightBumper()
         .onTrue(
@@ -325,6 +361,11 @@ public class Robot extends LoggedRobot {
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:10
+     *Desc:Dynamic shot
+     */
     driver
         .rightTrigger(0.3)
         .whileTrue(
@@ -356,6 +397,11 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:8
+     *Desc:Reset Gyro
+     */
     driver
         .start()
         .onTrue(
@@ -363,6 +409,11 @@ public class Robot extends LoggedRobot {
                 () -> {
                   swerveDrive.resetGyro(Rotation2d.fromDegrees(180));
                 }));
+    /*RHRXBox
+     *Type:1
+     *Btn:7
+     *Desc:Reset Gyro
+     */
     driver
         .back()
         .onTrue(
@@ -404,6 +455,11 @@ public class Robot extends LoggedRobot {
                             ? 270
                             : 90))));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:23
+     *Desc:Heading controller
+     */
     driver
         .povDown()
         .onTrue(
@@ -415,6 +471,11 @@ public class Robot extends LoggedRobot {
                             ? 180
                             : 0))));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:3
+     *Desc:OTF Amp
+     */
     driver
         .x()
         .whileTrue(
@@ -428,6 +489,11 @@ public class Robot extends LoggedRobot {
                     new WaitUntilCommand(shooterPivot::isAtTargetAngle))))
         .onFalse(new InstantCommand(() -> Robot.swerveDrive.setMotionMode(MotionMode.FULL_DRIVE)));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:4
+     *Desc:Amp
+     */
     driver
         .y()
         .onTrue(
@@ -449,6 +515,11 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    /*RHRXBox
+     *Type:1
+     *Btn:2
+     *Desc:Force Intake
+     */
     driver
         .b()
         .onTrue(
@@ -459,6 +530,17 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(ShooterState.OFF)))
         .onFalse(
             Commands.sequence(Cmds.setState(Intake.State.OFF), Cmds.setState(ShooterState.OFF)));
+
+    /*RHRXBox
+     *Type:1
+     *Btn:31
+     *Desc:Translation
+     */
+    /*RHRXBox
+     *Type:1
+     *Btn:32
+     *Desc:Rotation
+     */
   }
 
   public void createOperatorBindings() {
@@ -481,7 +563,11 @@ public class Robot extends LoggedRobot {
     //             new WaitCommand(0.05),
     //             ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
-    // Force Fender Shot
+    /*RHRXBox
+     *Type:2
+     *Btn:1
+     *Desc:Force fender shot
+     */
     operator
         .a()
         .onTrue(
@@ -503,7 +589,11 @@ public class Robot extends LoggedRobot {
                 new WaitCommand(0.05),
                 ShooterPivot.Commands.setModeAndWait(ShooterPivot.State.INTAKING)));
 
-    // Lob shot
+    /*RHRXBox
+     *Type:2
+     *Btn:2
+     *Desc:Lob shot
+     */
     operator
         .b()
         .whileTrue(
@@ -534,7 +624,11 @@ public class Robot extends LoggedRobot {
             // })
             );
 
-    // Elevator up
+    /*RHRXBox
+     *Type:2
+     *Btn:21
+     *Desc:Elevator up
+     */
     operator
         .povUp()
         .onTrue(
@@ -542,7 +636,11 @@ public class Robot extends LoggedRobot {
                 Cmds.setState(Elevator.State.CHAIN_APPROACH_HEIGHT),
                 Cmds.setState(ShooterPivot.State.PREP_FOR_CLIMB)));
 
-    // Elevator down
+    /*RHRXBox
+     *Type:2
+     *Btn:23
+     *Desc:Elevator down
+     */
     operator
         .povDown()
         .onTrue(
@@ -561,7 +659,11 @@ public class Robot extends LoggedRobot {
                 new WaitUntilCommand(() -> elevator.atTargetHeight()),
                 Cmds.setState(ShooterPivot.State.ON_CHAIN_ANGLE)));
 
-    // Elevator manual control
+    /*RHRXBox
+     *Type:2
+     *Btn:3
+     *Desc:Elevator manual control
+     */
     operator
         .x()
         .onTrue(Cmds.setState(Elevator.State.MANUAL_CONTROL))
@@ -587,7 +689,11 @@ public class Robot extends LoggedRobot {
     //             new WaitCommand(0.05),
     //             Cmds.setState(ShooterPivot.State.INTAKING)));
 
-    // Amp Shot
+    /*RHRXBox
+     *Type:2
+     *Btn:6
+     *Desc:Amp
+     */
     operator
         .rightBumper()
         .onTrue(
@@ -609,6 +715,11 @@ public class Robot extends LoggedRobot {
                     () -> shooter.hasGamePiece()),
                 Cmds.setState(ShooterPivot.State.INTAKING)));
 
+    /*RHRXBox
+     *Type:2
+     *Btn:5
+     *Desc:Shoot into amp
+     */
     operator
         .leftBumper()
         .whileTrue(
@@ -690,7 +801,11 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    // Elevator shot
+    /*RHRXBox
+     *Type:2
+     *Btn:4
+     *Desc:Elevator shot
+     */
     operator
         .y()
         .onTrue(
@@ -733,7 +848,11 @@ public class Robot extends LoggedRobot {
     //                 Cmds.setState(ShooterState.OFF),
     //                 () -> shooter.hasGamePiece())));
 
-    // Note in chassis
+    /*RHRXBox
+     *Type:2
+     *Btn:8
+     *Desc:Note in chassis
+     */
     operator
         .start()
         .onTrue(Cmds.setState(Intake.State.NOTE_IN_CHASSIS))
