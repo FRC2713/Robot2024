@@ -998,7 +998,6 @@ public class Robot extends LoggedRobot {
     }
     swerveDrive.seed();
     swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
-    
   }
 
   @Override
