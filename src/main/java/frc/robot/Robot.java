@@ -106,7 +106,7 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<RHRFullRoutine> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
   private final LoggedDashboardChooser<RobotMode> modeChooser =
-    new LoggedDashboardChooser<>("Robot Mode");
+      new LoggedDashboardChooser<>("Robot Mode");
 
   private ChangeDetector<Optional<Alliance>> allianceChangeDetector;
   private ChangeDetector<RHRFullRoutine> autoChangeDetector;
@@ -1080,9 +1080,8 @@ public class Robot extends LoggedRobot {
   }
 
   public void buildModeChooser() {
-    modeChooser.addDefaultOption(modeManager.getMode().toString(), Robot.modeManager.getMode());
+    modeChooser.addDefaultOption("Competition", RobotMode.COMPETITION);
     modeChooser.addOption("Demo", RobotMode.DEMO);
-    modeChooser.addOption("Competition", RobotMode.COMPETITION);
   }
 
   public void updatePreMatchDashboardValues() {

@@ -53,7 +53,7 @@ public class MotionHandler {
    * @return The desired array of desaturated swerveModuleStates.
    */
   public static ChassisSpeeds driveFullControl() {
-    double speedFactor = Robot.modeManager.getMode() == RobotMode.DEMO ? 0.5 : 1; 
+    double speedFactor = Robot.modeManager.getMode() == RobotMode.DEMO ? 0.5 : 1;
 
     double xSpeed =
         MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
