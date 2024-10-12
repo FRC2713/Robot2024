@@ -998,6 +998,7 @@ public class Robot extends LoggedRobot {
     }
     swerveDrive.seed();
     swerveDrive.setMotionMode(MotionMode.LOCKDOWN);
+    
   }
 
   @Override
@@ -1130,6 +1131,7 @@ public class Robot extends LoggedRobot {
   public void driverStationConnected() {
 
     buildAutoChooser();
+    buildModeChooser();
     if (autoChooser.get() != null) {
       gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
     }
