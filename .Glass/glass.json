@@ -1,9 +1,34 @@
 {
+  "NetworkTables": {
+    "retained": {
+      "AdvantageKit": {
+        "DashboardInputs": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Autonomous Routine": "String Chooser",
+      "/SmartDashboard/Mech2d": "Mechanism2d",
+      "/SmartDashboard/Robot Mode": "String Chooser"
+    }
+  },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "127.0.0.1"
+    "serverTeam": "10.27.13.1"
   }
 }
