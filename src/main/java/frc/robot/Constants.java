@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Robot.RobotMode;
 import frc.robot.subsystems.swerveIO.module.ModuleInfo;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleName;
 import frc.robot.subsystems.visionIO.VisionInfo;
@@ -208,7 +209,7 @@ public final class Constants {
     public static final double MAX_HEIGHT_METERS = Units.inchesToMeters(17);
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
-    public static final int ELEVATOR_CURRENT_LIMIT = 30;
+    public static final int ELEVATOR_CURRENT_LIMIT = Robot.modeManager.getMode() == RobotMode.DEMO ? 15 : 30;
     public static final double FLOOR_TO_ELEVATOR_BASE_METRES = Units.inchesToMeters(31.25);
   }
 
