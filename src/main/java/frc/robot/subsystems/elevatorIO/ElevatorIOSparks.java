@@ -8,6 +8,8 @@ import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.Robot.RobotMode;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSparks implements ElevatorIO {
@@ -22,9 +24,7 @@ public class ElevatorIOSparks implements ElevatorIO {
 
     left.setIdleMode(IdleMode.kBrake);
     right.setIdleMode(IdleMode.kBrake);
-
-    left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
-    right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+    this.setCurrentLimits();
 
     left.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
     right.getEncoder().setPositionConversionFactor(1 / 20.0 * Math.PI * 1.7567);
@@ -94,5 +94,17 @@ public class ElevatorIOSparks implements ElevatorIO {
             0,
             ElevatorConstants.ELEVATOR_GAINS.getKG(),
             ArbFFUnits.kVoltage);
+  }
+
+  @Override
+  public void setCurrentLimits() {
+    if (Robot.modeManager.getMode() == RobotMode.DEMO){
+      left.setSmartCurrentLimit(Constants.ElevatorConstants.DEMO_ELAVATOR_CURRENT_LIMIT);
+      right.setSmartCurrentLimit(Constants.ElevatorConstants.DEMO_ELAVATOR_CURRENT_LIMIT);
+    }
+    else{
+      left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+      right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
+    }
   }
 }

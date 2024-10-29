@@ -3,7 +3,9 @@ package frc.robot.subsystems.shooterIO;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotMode;
 import frc.robot.commands.otf.RotateScore;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -159,9 +161,21 @@ public class Shooter extends SubsystemBase {
    * @param differentialRpm
    */
   private void setShooterRpms(double leftRPM, double rightRPM, double differentialRpm) {
-    IO.setMotorSetPoint(
-        shooterState.leftRpm.getAsDouble() + differentialRpm,
-        shooterState.rightRpm.getAsDouble() - differentialRpm);
+    double final_value_left = shooterState.leftRpm.getAsDouble() + differentialRpm;
+    double final_value_right = shooterState.rightRpm.getAsDouble() - differentialRpm;
+
+  
+    if(Robot.modeManager.getMode() == RobotMode.DEMO){
+      final_value_left = Math.min(final_value_left,Constants.ShooterConstants.MAX_DEMO_RPM);// sas its a max of 100
+      final_value_right = Math.min(final_value_right,Constants.ShooterConstants.MAX_DEMO_RPM);
+      final_value_left = Math.max(final_value_left,-Constants.ShooterConstants.MAX_DEMO_RPM);// says min of -100
+      final_value_right = Math.max(final_value_right,-Constants.ShooterConstants.MAX_DEMO_RPM);
+
+      
+
+    }
+
+    IO.setMotorSetPoint(final_value_left,final_value_right);
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")

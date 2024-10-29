@@ -214,7 +214,9 @@ public class Robot extends LoggedRobot {
         new ChangeDetector<>(
             (mode) -> {
               modeManager.setMode(mode);
+              elevator.getIO().setCurrentLimits();
             });
+
   }
 
   public void createDriverBindings() {

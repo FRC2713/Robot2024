@@ -27,4 +27,6 @@ public interface ElevatorIO {
   public void setVoltage(double volts);
 
   public void setTargetHeight(double heightInches);
+
+  public void setCurrentLimits();
 }
