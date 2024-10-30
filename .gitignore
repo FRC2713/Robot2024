@@ -5,6 +5,9 @@ simgui-ds.json
 .glass/glass.json
 .Glass/glass.json
 
+/sim-logs/*
+!/sim-logs/.gitkeep
+
 
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
@@ -184,3 +187,5 @@ logs/
 
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
+scripts/1_buttons.pdf
+scripts/2_buttons.pdf

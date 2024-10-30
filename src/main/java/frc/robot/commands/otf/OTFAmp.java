@@ -39,7 +39,8 @@ public class OTFAmp {
 
   public Timer timer = new Timer();
   public double ttl = 3;
-  private Pose2d ampPose = new Pose2d(1.8, 7.67, Rotation2d.fromDegrees(90));
+  private Pose2d ampPose =
+      new Pose2d(1.8, 7.8 - Units.inchesToMeters(2.5), Rotation2d.fromDegrees(90));
   private Pose2d preAmpPose =
       new Pose2d(1.8, 7.67 - Units.inchesToMeters(2), Rotation2d.fromDegrees(90));
 
@@ -90,14 +91,14 @@ public class OTFAmp {
             new GoalEndState(
                 0.0,
                 Rotation2d.fromDegrees(
-                    -90)) // Goal end state. You can set a holonomic rotation here. If
+                    90)) // Goal end state. You can set a holonomic rotation here. If
             // using a differential drivetrain, the rotation will have no
             // effect.
             );
 
     runningCommand =
         Commands.sequence(
-            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(-90)),
+            SwerveSubsystem.Commands.setHeading(Rotation2d.fromDegrees(90)),
             AutoBuilder.followPath(path),
             new InstantCommand(
                     () ->

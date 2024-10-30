@@ -28,7 +28,7 @@ public class ShooterPivot extends SubsystemBase {
   private static final LoggedTunableNumber directAmpShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Direct Amp Shot Angle Degrees", -35);
   private static final LoggedTunableNumber autoShotOneAngleDegrees =
-      new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 20);
+      new LoggedTunableNumber("ShooterPivot/Auto Shot 1 Angle Degrees", 50);
   private static final LoggedTunableNumber elevatorShotAngleDegrees =
       new LoggedTunableNumber("ShooterPivot/Elevator Angle Degrees", 20);
   private static final LoggedTunableNumber feederShotAngleDegrees =
@@ -45,7 +45,7 @@ public class ShooterPivot extends SubsystemBase {
       new LoggedTunableNumber("ShooterPivot/Autos/clutchAuto3Degs", 20);
 
   private static final LoggedTunableNumber lobShotDegs =
-      new LoggedTunableNumber("ShooterPivot/Lob Shot Degs", intakingAngleDegrees.get());
+      new LoggedTunableNumber("ShooterPivot/Lob Shot Degs", fenderShotAngleDegrees.get());
 
   private static final LoggedTunableNumber prepClimbAngle =
       new LoggedTunableNumber("ShooterPivot/Prep Climb Degrees", 0);

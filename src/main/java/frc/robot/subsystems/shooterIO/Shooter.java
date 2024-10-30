@@ -3,7 +3,9 @@ package frc.robot.subsystems.shooterIO;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotMode;
 import frc.robot.commands.otf.RotateScore;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -19,9 +21,6 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber differentialShotRPM =
       new LoggedTunableNumber("Shooter/Fender Shot RPM", 4000);
 
-  private static final LoggedTunableNumber lobShotRPM =
-      new LoggedTunableNumber("Shooter/Lob Shot RPM", 2750);
-
   private static final LoggedTunableNumber genericFeederVolts =
       new LoggedTunableNumber("Shooter/Fender Shot Feeder Volts", 12);
   private static final LoggedTunableNumber intakingFeederVolts =
@@ -33,6 +32,11 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Amp Shot Feeder Volts", -10);
   private static final LoggedTunableNumber ampShotShooterRPM =
       new LoggedTunableNumber("Shooter/Amp Shot Shooter RPM", -1000);
+
+  private static final LoggedTunableNumber goMyWayLeftRPM =
+      new LoggedTunableNumber("Shooter/Go My Way Left RPM", 3000);
+  private static final LoggedTunableNumber goMyWayRightRPM =
+      new LoggedTunableNumber("Shooter/Go My Way Right RPM", -1500);
 
   private static final LoggedTunableNumber directAmpShot =
       new LoggedTunableNumber("Shooter/Direct Amp Shot Shooter RPM", 1500);
@@ -49,7 +53,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Pre-spin RPM", noDifferentialShotRPM.get() * 0.75);
 
   private static final LoggedTunableNumber atGoalThresholdRPM =
-      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 210);
+      new LoggedTunableNumber("Shooter/At Goal Threshold RPM", 100);
 
   private static final double WAIT_TIME_AFTER_SHOT_TO_TRANSITION_STATE = 0.1;
   private final Debouncer debouncer =
@@ -58,6 +62,7 @@ public class Shooter extends SubsystemBase {
   public enum ShooterState {
     NO_DIFFERENTIAL_SHOT(noDifferentialShotRPM, noDifferentialShotRPM, () -> 0),
     DIFFERENTIAL_SHOT(differentialShotRPM, differentialShotRPM, shooterDifferentialRPM),
+    GO_MY_WAY(goMyWayLeftRPM, goMyWayRightRPM, () -> 0),
     PRE_SPIN(preSpinRPM, preSpinRPM, () -> 0),
     AMP_SHOT(ampShotShooterRPM, ampShotShooterRPM, () -> 0),
     DIRECT_AMP_SHOT(directAmpShot, directAmpShot, () -> 0),
@@ -66,7 +71,10 @@ public class Shooter extends SubsystemBase {
         () -> RotateScore.getOptimalShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
         () -> RotateScore.getOptimalShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
         shooterDifferentialRPM),
-    LOB_SHOT(lobShotRPM, lobShotRPM, () -> 0);
+    LOB_SHOT(
+        () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        () -> RotateScore.getOptimalLobShotShooterSpeed(Robot.swerveDrive.getEstimatedPose()),
+        () -> -500);
     private final DoubleSupplier leftRpm, rightRpm, differentialRpm;
 
     private ShooterState(
@@ -79,10 +87,12 @@ public class Shooter extends SubsystemBase {
 
   public enum FeederState {
     FEED_SHOT(genericFeederVolts, () -> false),
+    FEED_CONTINUOUS(genericFeederVolts, () -> false),
     INTAKE(intakingFeederVolts, () -> true),
     HOLDING_GP(offFeederVolts, () -> false),
     FORCE_ON(intakingFeederVolts, () -> false),
     AMP_SHOT(ampShotFeederVolts, () -> false),
+    OUTAKE_GP(() -> -12, () -> false),
     OFF(offFeederVolts, () -> false);
     private final DoubleSupplier feederVolts;
     private final BooleanSupplier limitSwitchEnabled;
@@ -151,9 +161,20 @@ public class Shooter extends SubsystemBase {
    * @param differentialRpm
    */
   private void setShooterRpms(double leftRPM, double rightRPM, double differentialRpm) {
-    IO.setMotorSetPoint(
-        shooterState.leftRpm.getAsDouble() + differentialRpm,
-        shooterState.rightRpm.getAsDouble() - differentialRpm);
+    double final_value_left = shooterState.leftRpm.getAsDouble() + differentialRpm;
+    double final_value_right = shooterState.rightRpm.getAsDouble() - differentialRpm;
+
+    if (Robot.modeManager.getMode() == RobotMode.DEMO) {
+      final_value_left =
+          Math.min(
+              final_value_left, Constants.ShooterConstants.MAX_DEMO_RPM); // sas its a max of 100
+      final_value_right = Math.min(final_value_right, Constants.ShooterConstants.MAX_DEMO_RPM);
+      final_value_left =
+          Math.max(final_value_left, -Constants.ShooterConstants.MAX_DEMO_RPM); // says min of -100
+      final_value_right = Math.max(final_value_right, -Constants.ShooterConstants.MAX_DEMO_RPM);
+    }
+
+    IO.setMotorSetPoint(final_value_left, final_value_right);
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")

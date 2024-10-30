@@ -8,11 +8,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotMode;
 import frc.robot.VehicleState;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
 import frc.robot.subsystems.swerveIO.SwerveSubsystem;
 import frc.robot.util.LimelightHelpers.LimelightTarget_Detector;
+import frc.robot.util.RedHawkUtil.Reflections;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class MotionHandler {
@@ -40,10 +43,7 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveTrajectoryHeadingController(ChassisSpeeds cs) {
-    Logger.recordOutput("vx", cs.vxMetersPerSecond);
-    Logger.recordOutput("vy", cs.vyMetersPerSecond);
     var angle = Units.degreesToRadians(SwerveHeadingController.getInstance().update());
-    Logger.recordOutput("omega", angle);
     return new ChassisSpeeds(cs.vxMetersPerSecond, cs.vyMetersPerSecond, angle);
   }
 
@@ -53,7 +53,7 @@ public class MotionHandler {
    * @return The desired array of desaturated swerveModuleStates.
    */
   public static ChassisSpeeds driveFullControl() {
-    double speedFactor = 1; // Robot.driver.rightBumper().getAsBoolean() ? 0.33 : 1.0;
+    double speedFactor = Robot.modeManager.getMode() == RobotMode.DEMO ? 0.2 : 1;
 
     double xSpeed =
         MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)
@@ -96,23 +96,22 @@ public class MotionHandler {
   }
 
   public static ChassisSpeeds driveAlignToTag() {
-    // if (VehicleState.getInstance().isShouldUpdateCenterTagAlignment()) {
 
-    // var error = VehicleState.getInstance().getCenterTagError();
+    if (!VehicleState.getInstance().runningAlignToTag) {
+      VehicleState.getInstance().setRunningAlignToTag(true);
+      SwerveHeadingController.getInstance()
+          .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
+    }
+    if (Math.abs(
+            SwerveHeadingController.getInstance().getSetpoint().getDegrees()
+                - RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()).getDegrees())
+        > 3) {
+      SwerveHeadingController.getInstance()
+          .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
+      System.out.println("Reset align to pose");
+    }
 
-    // if (error.isPresent()) {
-    //   SwerveHeadingController.getInstance()
-    //       .setSetpoint(Robot.swerveDrive.getYaw().minus(error.get()));
-
-    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-    // }
-    // }
-
-    SwerveHeadingController.getInstance()
-        .setSetpoint(RotateScore.getOptimalAngle(Robot.swerveDrive.getEstimatedPose()));
-
-    //   VehicleState.getInstance().setShouldUpdateCenterTagAlignment(false);
-    // }
+    Logger.recordOutput("Swerve/AlignPose/Running", VehicleState.getInstance().runningAlignToTag);
 
     return driveHeadingController();
   }
@@ -162,5 +161,57 @@ public class MotionHandler {
 
   private static LimelightTarget_Detector[] getObjectDetectionResults() {
     return Robot.visionGP.detections;
+  }
+
+  public static Optional<ChassisSpeeds> driveTrajectoryTowardsGP(ChassisSpeeds cs) {
+    Logger.recordOutput("OTF/DrivingToGP/HasGPLock", VehicleState.getInstance().hasGPLock);
+
+    if (Robot.shooter.hasGamePiece()) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Has GP");
+      return Optional.empty();
+    }
+    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX()
+            +
+            // Margin of error
+            Units.inchesToMeters(2))
+        > (FieldConstants.fieldLength / 2)) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Past midpoint");
+      return Optional.empty();
+    }
+
+    if ((Reflections.reflectIfRed(Robot.swerveDrive.getEstimatedPose().getTranslation()).getX())
+        < 5.9) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Not close enough to centre game pieces");
+      return Optional.of(cs);
+    }
+
+    if (VehicleState.getInstance().hasGPLock) {
+      return VehicleState.getInstance().goClosestGPTraj(cs);
+    }
+
+    var results = getObjectDetectionResults();
+
+    for (var result : results) {
+      if (result.goodness() > VehicleState.getInstance().closestResult.goodness()) {
+        VehicleState.getInstance().closestResult = result;
+      }
+    }
+
+    Logger.recordOutput(
+        "OTF/DrivingToGP/Goodness", VehicleState.getInstance().closestResult.goodness());
+
+    if (VehicleState.getInstance().closestResult.goodness() < 0.0000000000001) {
+      Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+      Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Goodness too low!");
+      return Optional.of(cs);
+    }
+
+    VehicleState.getInstance().hasGPLock = true;
+    VehicleState.getInstance().GPyaw = Robot.swerveDrive.getYaw();
+
+    return VehicleState.getInstance().goClosestGPTraj(cs);
   }
 }

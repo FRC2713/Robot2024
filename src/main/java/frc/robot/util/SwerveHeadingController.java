@@ -20,6 +20,7 @@ public class SwerveHeadingController {
   private Debouncer debouncer;
   private boolean isWithinTarget;
   private double acceptableError = 0.1;
+  private double output = 0;
 
   private SwerveHeadingController() {
     controller = DriveConstants.K_HEADING_CONTROLLER_GAINS.createRHRController();
@@ -81,7 +82,8 @@ public class SwerveHeadingController {
     // }
     // return isWithinTarget;
 
-    return this.error < acceptableError;
+    return ((this.error < acceptableError) && (Units.radiansToDegrees(output) < 50))
+        || (Units.radiansToDegrees(output) < 2 && this.error < 2);
   }
   /**
    * Updates the heading controller PID with the setpoint and calculates output.
@@ -95,7 +97,7 @@ public class SwerveHeadingController {
     controller.setSetpoint(setpoint.getDegrees());
     Logger.recordOutput("Heading Controller/setpoint", setpoint.getDegrees());
 
-    double output = 0;
+    output = 0;
 
     Rotation2d currentHeading = Robot.swerveDrive.getYaw();
     output = controller.calculate(currentHeading.getDegrees(), setpoint.getDegrees());
@@ -104,7 +106,7 @@ public class SwerveHeadingController {
             output,
             -Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC),
             Units.radiansToDegrees(DriveConstants.MAX_ROTATIONAL_SPEED_RAD_PER_SEC));
-    error = setpoint.getDegrees() - currentHeading.getDegrees();
+    error = controller.getPositionError();
     Logger.recordOutput("Heading Controller/error", error);
 
     var chassisSpeeds = Robot.swerveDrive.getChassisSpeeds();

@@ -45,7 +45,11 @@ public class VehicleState {
   @Getter Rotation2d dynamicPivotAngle = Rotation2d.fromDegrees(45);
   @Getter Optional<Rotation2d> centerTagError = Optional.empty();
 
+  @Getter @Setter public boolean abortDynamicGPinTraj = false;
+
   @Getter public boolean canSeeSpeakerTag = false;
+
+  @Getter @Setter public boolean runningAlignToTag = false;
 
   private VehicleState() {}
 
@@ -124,11 +128,13 @@ public class VehicleState {
   public Rotation2d GPyaw = new Rotation2d();
 
   public void resetClosestGP() {
-    hasGPLock = false;
-    closestResult = new LimelightTarget_Detector();
-    closestResult.tx = 0;
-    closestResult.ty = 0;
-    closestResult.ta = 0;
+    getInstance().hasGPLock = false;
+    getInstance().closestResult = new LimelightTarget_Detector();
+    getInstance().closestResult.tx = 0;
+    getInstance().closestResult.ty = 0;
+    getInstance().closestResult.ta = 0;
+    getInstance().GPyaw = new Rotation2d();
+    getInstance().setAbortDynamicGPinTraj(false);
   }
 
   public ChassisSpeeds goClosestGP() {
@@ -141,20 +147,43 @@ public class VehicleState {
 
     SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
 
-    double xSpeed =
-        (Math.abs(
-                    MathUtil.applyDeadband(
-                        -Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE))
-                + Math.abs(
-                    MathUtil.applyDeadband(
-                        -Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)))
-            * 2;
+    double xSpeed = 0;
+    if (Constants.DriveConstants.MANUAL_CONTROL_GO_TO_GP) {
+      xSpeed =
+          (Math.abs(
+                      MathUtil.applyDeadband(
+                          -Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE))
+                  + Math.abs(
+                      MathUtil.applyDeadband(
+                          -Robot.driver.getLeftX(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)))
+              * 2;
+    } else {
+      xSpeed = 0.4;
+    }
 
     return ChassisSpeeds.fromRobotRelativeSpeeds(
         xSpeed,
         0,
         Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
         Rotation2d.fromDegrees(0));
+  }
+
+  public Optional<ChassisSpeeds> goClosestGPTraj(ChassisSpeeds cs) {
+    Logger.recordOutput("OTF/DrivingToGP/Doing it", true);
+    Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Everything good");
+
+    double angle = (-1 * closestResult.tx);
+
+    Logger.recordOutput("OTF/DrivingToGP/Angle", angle);
+
+    SwerveHeadingController.getInstance().setSetpoint(Rotation2d.fromDegrees(angle).plus(GPyaw));
+
+    return Optional.of(
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            1.5,
+            0,
+            Units.degreesToRadians(SwerveHeadingController.getInstance().update()),
+            Rotation2d.fromDegrees(0)));
   }
 
   public void updateCanSeeSpeakerTag(VisionInputs left, VisionInputs right) {

@@ -7,15 +7,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.RedHawkUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateScore extends SequentialCommandGroup {
   private static Translation3d speakerLoc;
+  private static Translation3d speakerLocPivot;
   private static Translation3d ampLoc;
 
   static {
@@ -26,11 +29,15 @@ public class RotateScore extends SequentialCommandGroup {
   public static void updateSpeakerLoc() {
     speakerLoc =
         RedHawkUtil.Reflections.reflectIfRed(
+            new Translation3d(0.695 - Units.inchesToMeters(18 + 6), 5.552, 2.11));
+    speakerLocPivot =
+        RedHawkUtil.Reflections.reflectIfRed(
             new Translation3d(0.695 - Units.inchesToMeters(18), 5.552, 2.11));
   }
 
   public static void updateAmpLoc() {
-    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2.5, 7.5, 0));
+    ampLoc = RedHawkUtil.Reflections.reflectIfRed(new Translation3d(2, 6, 0));
+    Logger.recordOutput("Field/amp_loc", new Translation2d(ampLoc.getX(), ampLoc.getY()));
   }
 
   public static Rotation2d getOptimalAmpAngle(Pose2d position) {
@@ -55,20 +62,34 @@ public class RotateScore extends SequentialCommandGroup {
   }
 
   public static double getOptimalShooterAngle(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLocPivot));
     Logger.recordOutput("OTF/Speaker Distance", distance);
     Logger.recordOutput("OTF/Optimal Pivot Angle", Angle.get(distance));
     return MathUtil.clamp(Angle.get(distance), 0, 54);
   }
 
   public static double getOptimalShooterSpeed(Pose2d position) {
-    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLoc));
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(speakerLocPivot));
+    double shooterSpeed = shooterNominalSpeed.get(distance);
+    Logger.recordOutput("OTF/Speaker Distance", distance);
+    Logger.recordOutput("OTF/Shooter Nominal Speed", shooterSpeed);
+    return shooterSpeed;
+  }
 
-    if (distance > 4.5) {
-      return 5000;
-    } else {
-      return 4000;
-    }
+  public static double getOptimalLobShotShooterSpeed(Pose2d position) {
+    var distance = position.getTranslation().getDistance(Translation3dTo2d(ampLoc));
+    double shooterSpeed = lobShotShooterNominalSpeed.get(distance);
+
+    Logger.recordOutput("OTF/Lob Shot Distance", distance);
+    Logger.recordOutput("OTF/Lob Shot Speed Raw", shooterSpeed);
+
+    double shooterSpeedVel =
+        shooterSpeed
+            - MathUtil.clamp(
+                (Robot.swerveDrive.getChassisSpeeds().vxMetersPerSecond / 4) * 200, 0, 100);
+    Logger.recordOutput("OTF/Lob Shot Speed Vel", shooterSpeedVel);
+
+    return shooterSpeedVel;
   }
 
   public static double getElevatorOptimalShooterAngle(Pose2d position) {
@@ -87,22 +108,36 @@ public class RotateScore extends SequentialCommandGroup {
           put(1.31, 44.);
           put(1.62, 41.);
           put(1.955, 36.);
+          // From match WCMP
+          put(2.11, 35.);
+          // From some other source
           put(2.27, 32.);
-          put(2.5, 30.);
+          put(2.5, 32.);
           put(2.53, 30.);
 
+          // From match WCMP
+          put(2.9, 29.5);
+
           // From practice field DCMP
-          put(3., 28.);
-          put(3.17, 26.);
+          put(3., 29.);
+          // From practice field WCMP
+          put(3.08, 29.);
+          put(3.25, 24.);
 
           // From some other source
           // put(3.1, 27.);
 
+          // From practice field WCMP
+          put(3.78, 23.);
+          put(3.9, 22.);
+          put(4., 22.);
+          put(4.3, 20.);
           // From practice field DCMP
-          put(3.825, 26.);
-          put(4.15, 22.5);
-          put(4.319, 25.);
-          put(4.9, 22.);
+          put(4.9, 19.5);
+          // From practice field WCMP
+          put(5.6, 19.);
+          // From practice field DCMP
+          put(5.9, 18.);
 
           // put(4., 20.);
           // Extrapolating with exponential regression
@@ -111,6 +146,38 @@ public class RotateScore extends SequentialCommandGroup {
           // put(5.5, 12.73);
           // put(6.0, 10.98);
           // put(6.5, 19.47);
+        }
+        /*
+         *
+         * 2.5,31
+         * 3.25,24
+         * 3.9,22
+         * 4.3,19.5
+         *
+         *
+         *
+         * 4.0,24
+         *
+         */
+      };
+
+  private static InterpolatingTreeMap<Double, Double> shooterNominalSpeed =
+      new InterpolatingTreeMap<>() {
+        {
+          put(1.0, 3500.);
+          put(4.5, 4000.);
+          put(5.0, 5000.);
+          put(6.0, 5500.);
+        }
+      };
+
+  private static InterpolatingTreeMap<Double, Double> lobShotShooterNominalSpeed =
+      new InterpolatingTreeMap<>() {
+        {
+          put(5.406, 2200. - 50);
+          put(6.5, 2400. - 50);
+          put(7.433, 2500. - 50);
+          put(8., 3000. - 50);
         }
       };
 

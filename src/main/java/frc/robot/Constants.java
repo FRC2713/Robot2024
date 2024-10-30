@@ -63,6 +63,8 @@ public final class Constants {
     public static PoseEstimatorErrorStDevs POSE_ESTIMATOR_VISION_MULTI_TAG_STDEVS =
         new PoseEstimatorErrorStDevs(0.001, Units.degreesToRadians(0.06));
 
+    public static final boolean ENABLE_MEGATAG2 = true;
+
     public static VisionInfo LEFT_LIMELIGHT_INFO =
         VisionInfo.builder()
             .ntTableName("limelight-a")
@@ -207,6 +209,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
+    public static final int DEMO_ELAVATOR_CURRENT_LIMIT = 20;
     public static final double FLOOR_TO_ELEVATOR_BASE_METRES = Units.inchesToMeters(31.25);
   }
 
@@ -240,15 +243,17 @@ public final class Constants {
 
   public static final class ShooterConstants {
     public static final double GEARING = 1;
+    public static final double MAX_DEMO_RPM = 1000;
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.0001;
     public static final PIDFFGains SHOOTER_GAINS =
-        PIDFFGains.builder().name("Shooter Controller").kP(0.0).kV(0.000158).build();
+        PIDFFGains.builder().name("Shooter Controller").kP(0.0005).kV(0.000153).build();
   }
 
   @UtilityClass
   public static final class DriveConstants {
+    public static final boolean MANUAL_CONTROL_GO_TO_GP = true;
 
     public static final double K_JOYSTICK_TURN_DEADZONE = 0.04;
     public static final double WHEEL_DIAMETER = 3.9; // 4.02267; // 3.85;
@@ -295,7 +300,13 @@ public final class Constants {
     public static final PIDFFGains K_HEADING_CONTROLLER_GAINS =
         // PIDFFGains.builder().name("Heading
         // Controller").kP(8).kD(0).kS(2).build().buildTunables();
-        PIDFFGains.builder().name("Heading Controller").kP(7).kD(0.1).kS(8).build().buildTunables();
+        PIDFFGains.builder()
+            .name("Heading Controller")
+            .kP(7)
+            .kD(0.1)
+            .kS(8.1)
+            .build()
+            .buildTunables();
 
     public static final ModuleInfo FRONT_LEFT =
         ModuleInfo.builder()

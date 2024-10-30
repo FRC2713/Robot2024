@@ -16,6 +16,8 @@ public class SwerveIOPigeon2 implements SwerveIO {
     gyro.getYaw().setUpdateFrequency(100);
     gyro.getPitch().setUpdateFrequency(100);
     gyro.getRoll().setUpdateFrequency(100);
+    // TODO: Double check
+    gyro.getAngularVelocityZDevice().setUpdateFrequency(100);
     gyro.optimizeBusUtilization();
 
     // gyro.zeroGyroBiasNow();
@@ -32,6 +34,7 @@ public class SwerveIOPigeon2 implements SwerveIO {
     inputs.gyroPitchPosition = gyro.getPitch().getValue();
     inputs.gyroRollPosition = gyro.getRoll().getValue();
     inputs.gyroYawPosition = gyro.getYaw().getValue(); // gyro faces forwards on the robot
+    inputs.gyroYawVelocity = gyro.getAngularVelocityZDevice().getValue();
   }
 
   @Override

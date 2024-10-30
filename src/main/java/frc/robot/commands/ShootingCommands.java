@@ -3,6 +3,7 @@ package frc.robot.commands;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.subsystems.intakeIO.Intake;
 import frc.robot.subsystems.shooterIO.Shooter;
 import frc.robot.subsystems.shooterIO.Shooter.FeederState;
@@ -23,9 +25,32 @@ public class ShootingCommands {
     return SwerveSubsystem.Commands.choreoCommandBuilder(choreoPath);
   }
 
+  public static Command runPathWheel(ChoreoTrajectory choreoPath) {
+    return SwerveSubsystem.Commands.choreoCommandBuilderWheelOdometry(choreoPath);
+  }
+
+  public static Command runPathTowardsGP(ChoreoTrajectory choreoPath) {
+    return Commands.sequence(
+        new InstantCommand(
+            () -> {
+              VehicleState.getInstance().resetClosestGP();
+            }),
+        SwerveSubsystem.Commands.choreoCommandBuilderTowardsGP(choreoPath));
+  }
+
   public static Command runPathAndIntake(ChoreoTrajectory choreoPath) {
     return new SequentialCommandGroup(
         ShootingCommands.runIntake(), ShootingCommands.runPath(choreoPath));
+  }
+
+  public static Command runPathAndIntakeWheel(ChoreoTrajectory choreoPath) {
+    return new SequentialCommandGroup(
+        ShootingCommands.runIntake(), ShootingCommands.runPathWheel(choreoPath));
+  }
+
+  public static Command runPathAndIntakeTowardsGP(ChoreoTrajectory choreoPath) {
+    return new SequentialCommandGroup(
+        ShootingCommands.runIntake(), ShootingCommands.runPathTowardsGP(choreoPath));
   }
 
   public static Command runPathIntakeWaitTillHasGPThenPrepShooterPivotAndShooter(
@@ -34,6 +59,23 @@ public class ShootingCommands {
       ShooterPivot.State shooterPivotState) {
     return new ParallelDeadlineGroup(
         ShootingCommands.runPathAndIntake(choreoPath),
+        Commands.either(
+            new PrintCommand("Already have GP"),
+            Commands.sequence(
+                new WaitUntilCommand(() -> Robot.shooter.hasGamePiece()),
+                Cmds.setState(Intake.State.OFF),
+                Cmds.setState(shooterState),
+                ShootingCommands.runShooterPivot(shooterPivotState)),
+            () -> Robot.shooter.hasGamePiece()));
+  }
+
+  public static Command
+      runPathGoTowardsGamePieceIntakeWaitTillHasGamePieceThenPrepShooterPivotAndShooter(
+          ChoreoTrajectory choreoPath,
+          Shooter.ShooterState shooterState,
+          ShooterPivot.State shooterPivotState) {
+    return new ParallelDeadlineGroup(
+        ShootingCommands.runPathAndIntakeTowardsGP(choreoPath),
         Commands.either(
             new PrintCommand("Already have GP"),
             Commands.sequence(
@@ -74,7 +116,7 @@ public class ShootingCommands {
     return new SequentialCommandGroup(
         Cmds.setState(shooterState),
         new ParallelRaceGroup(
-            new WaitUntilCommand(() -> Robot.shooter.isAtTarget()), new WaitCommand(3)),
+            new WaitUntilCommand(() -> Robot.shooter.isAtTarget()), new WaitCommand(2)),
         Cmds.setState(Intake.State.INTAKE_GP),
         Cmds.setState(FeederState.FEED_SHOT),
         new ParallelRaceGroup(

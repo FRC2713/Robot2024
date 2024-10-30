@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -31,12 +32,14 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.LimeLightConstants;
 import frc.robot.Robot;
+import frc.robot.VehicleState;
 import frc.robot.rhr.auto.RHRPathPlannerAuto;
 import frc.robot.subsystems.swerveIO.module.SwerveModule;
 import frc.robot.subsystems.swerveIO.module.SwerveModuleIO;
 import frc.robot.subsystems.visionIO.VisionIO.VisionInputs;
 import frc.robot.subsystems.visionIO.VisionInfo;
 import frc.robot.util.ErrorTracker;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.MotionHandler;
 import frc.robot.util.PIDFFGains;
 import frc.robot.util.SwerveHeadingController;
@@ -296,6 +299,53 @@ public class SwerveSubsystem extends SubsystemBase {
         + backRight.getTotalCurrentDraw();
   }
 
+  public void updatePoseEstimatorWithVisionBotPoseMegaTag2(
+      VisionInfo visionInfo, VisionInputs visionInputs) {
+    LimelightHelpers.SetRobotOrientation(
+        visionInfo.getNtTableName(), inputs.gyroYawPosition, inputs.gyroYawVelocity, 0, 0, 0, 0);
+
+    var doRejectUpdate = false;
+    double xyStds = .6;
+
+    final var maxGyroYawVelo = 40;
+    if (visionInputs.botPoseBlue.getTranslation().getX() == 0) {
+      doRejectUpdate = true;
+    }
+
+    if (Math.abs(inputs.gyroYawVelocity)
+        > maxGyroYawVelo) // if our angular velocity is greater than 360 degrees per second,
+    // ignore vision updates
+    {
+      doRejectUpdate = true;
+    }
+
+    // if (Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition) >
+    // 5) {
+    //   xyStds
+    // }
+
+    // xyStds = MathUtil.clamp(Math.abs(inputs.gyroYawVelocity) / 100, .6, 1.5);
+
+    xyStds =
+        MathUtil.interpolate(
+            0.1,
+            5.6,
+            Math.abs(visionInputs.botPoseBlue.getRotation().getDegrees() - inputs.gyroYawPosition)
+                / 5);
+
+    // xyStds = 0.6;
+
+    if (!doRejectUpdate) {
+      poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStds, xyStds, 9999999));
+      poseEstimator.addVisionMeasurement(
+          visionInputs.botPoseBlue, visionInputs.botPoseBlueTimestamp);
+    }
+
+    Logger.recordOutput("Pose estimator input pose", visionInputs.botPoseBlue);
+    Logger.recordOutput("Pose estimator timestamp", visionInputs.botPoseBlueTimestamp);
+    Logger.recordOutput("Pose estimator doRejectUpdate", doRejectUpdate);
+  }
+
   public void updatePoseEstimatorWithVisionBotPose(
       VisionInfo visionInfo, VisionInputs visionInputs) {
     // PoseLatency visionBotPose = m_visionSystem.getPoseLatency();
@@ -493,6 +543,9 @@ public class SwerveSubsystem extends SubsystemBase {
       case TRAJECTORY:
         // setDesiredChassisSpeeds(MotionHandler.driveTrajectory(getUsablePose()));
         break;
+        // case TRAJECTORY_TOWARDS_GP:
+        //   setDesiredChassisSpeeds(MotionHandler.driveTrajectoryTowardsGP());
+        //   break;
       case ALIGN_TO_TAG:
         setDesiredChassisSpeeds(MotionHandler.driveAlignToTag());
         break;
@@ -609,13 +662,45 @@ public class SwerveSubsystem extends SubsystemBase {
       return new SequentialCommandGroup(
           Choreo.choreoSwerveCommand(
               traj,
-              Robot.swerveDrive::getRegularPose,
+              Robot.swerveDrive::getEstimatedPose,
               modifiedChoreoSwerveController(
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(9.5, 0.0, 0.0),
                   new PIDController(4.5, 0.0, 0.0)),
               (ChassisSpeeds speeds) -> {
                 Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
+              },
+              () -> false,
+              Robot.swerveDrive //
+              ),
+          new InstantCommand(() -> Robot.swerveDrive.setDesiredChassisSpeeds(new ChassisSpeeds())));
+    }
+
+    public static Command choreoCommandBuilderTowardsGP(ChoreoTrajectory traj) {
+      var alliance = DriverStation.getAlliance();
+      boolean useAllianceColour = false;
+      if (alliance.isPresent()) {
+        useAllianceColour = alliance.get() == DriverStation.Alliance.Red;
+      }
+
+      return new SequentialCommandGroup(
+          Choreo.choreoSwerveCommand(
+              traj,
+              Robot.swerveDrive::getEstimatedPose,
+              modifiedChoreoSwerveController(
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(9.5, 0.0, 0.0),
+                  new PIDController(4.5, 0.0, 0.0)),
+              (ChassisSpeeds speeds) -> {
+                var newSpeeds = MotionHandler.driveTrajectoryTowardsGP(speeds);
+                if (newSpeeds.isEmpty() || VehicleState.getInstance().abortDynamicGPinTraj) {
+                  Robot.swerveDrive.setDesiredChassisSpeeds(speeds);
+                  VehicleState.getInstance().setAbortDynamicGPinTraj(true);
+                  Logger.recordOutput("OTF/DrivingToGP/Doing it", false);
+                  Logger.recordOutput("OTF/DrivingToGP/Reasoning", "Read empty");
+                } else {
+                  Robot.swerveDrive.setDesiredChassisSpeeds(newSpeeds.get());
+                }
               },
               () -> false,
               Robot.swerveDrive //

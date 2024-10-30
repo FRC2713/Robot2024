@@ -1,6 +1,8 @@
 package frc.robot.subsystems.visionIO;
 
+import frc.robot.Constants;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.LimelightHelpers.PoseEstimate;
 
 public class VisionIOLimelightLib implements VisionIO {
 
@@ -12,7 +14,12 @@ public class VisionIOLimelightLib implements VisionIO {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    var x = LimelightHelpers.getBotPoseEstimate_wpiBlue(this.info.getNtTableName());
+    PoseEstimate x = null;
+    if (Constants.LimeLightConstants.ENABLE_MEGATAG2) {
+      x = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.info.getNtTableName());
+    } else {
+      x = LimelightHelpers.getBotPoseEstimate_wpiBlue(this.info.getNtTableName());
+    }
     inputs.botPoseBlue = x.pose;
     inputs.botPoseBlueTimestamp = x.timestampSeconds;
     inputs.hasTarget = x.tagCount > 0;
