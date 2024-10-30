@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotMode;
 import frc.robot.VehicleState;
 import frc.robot.commands.otf.RotateScore;
 import frc.robot.rhr.auto.RHRTrajectoryController;
@@ -52,7 +53,7 @@ public class MotionHandler {
    * @return The desired array of desaturated swerveModuleStates.
    */
   public static ChassisSpeeds driveFullControl() {
-    double speedFactor = 1; // Robot.driver.rightBumper().getAsBoolean() ? 0.33 : 1.0;
+    double speedFactor = Robot.modeManager.getMode() == RobotMode.DEMO ? 0.2 : 1;
 
     double xSpeed =
         MathUtil.applyDeadband(-Robot.driver.getLeftY(), DriveConstants.K_JOYSTICK_TURN_DEADZONE)

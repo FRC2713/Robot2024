@@ -209,6 +209,7 @@ public final class Constants {
     public static final double STARTING_HEIGHT_METERS = Units.inchesToMeters(2);
     public static final boolean SIMULATE_GRAVITY = true;
     public static final int ELEVATOR_CURRENT_LIMIT = 30;
+    public static final int DEMO_ELAVATOR_CURRENT_LIMIT = 20;
     public static final double FLOOR_TO_ELEVATOR_BASE_METRES = Units.inchesToMeters(31.25);
   }
 
@@ -242,6 +243,7 @@ public final class Constants {
 
   public static final class ShooterConstants {
     public static final double GEARING = 1;
+    public static final double MAX_DEMO_RPM = 1000;
     public static final double RADIUS_METERS = Units.inchesToMeters(2);
     public static final double MASS_KG = 0.83461;
     public static final double MOI = 0.0001;

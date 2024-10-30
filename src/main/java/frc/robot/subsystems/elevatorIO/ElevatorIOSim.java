@@ -68,4 +68,10 @@ public class ElevatorIOSim implements ElevatorIO {
   public void setTargetHeight(double heightInches) {
     heightControllerRight.setSetpoint(heightInches);
   }
+
+  @Override
+  public void setCurrentLimits() {
+    // TODO
+    return;
+  }
 }

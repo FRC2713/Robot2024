@@ -67,6 +67,7 @@ import frc.robot.subsystems.visionIO.VisionIOLimelightLib;
 import frc.robot.subsystems.visionIO.VisionIOSim;
 import frc.robot.util.ChangeDetector;
 import frc.robot.util.MechanismManager;
+import frc.robot.util.ModeManager;
 import frc.robot.util.RedHawkUtil;
 import frc.robot.util.RumbleManager;
 import frc.robot.util.SwerveHeadingController;
@@ -104,10 +105,19 @@ public class Robot extends LoggedRobot {
   private Command autoCommand;
   private final LoggedDashboardChooser<RHRFullRoutine> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Routine");
+  private final LoggedDashboardChooser<RobotMode> modeChooser =
+      new LoggedDashboardChooser<>("Robot Mode");
 
   private ChangeDetector<Optional<Alliance>> allianceChangeDetector;
   private ChangeDetector<RHRFullRoutine> autoChangeDetector;
+  private ChangeDetector<RobotMode> modeChangeDetector;
   private Rotation2d gyroInitial = Rotation2d.fromRadians(0);
+  public static final ModeManager modeManager = new ModeManager(RobotMode.DEMO);
+
+  public enum RobotMode {
+    DEMO,
+    COMPETITION
+  }
 
   @Override
   public void robotInit() {
@@ -198,6 +208,13 @@ public class Robot extends LoggedRobot {
             (auto) -> {
               gyroInitial = auto.traj1.getInitialPose().getRotation();
               seedGyroBasedOnAlliance();
+            });
+
+    modeChangeDetector =
+        new ChangeDetector<>(
+            (mode) -> {
+              modeManager.setMode(mode);
+              elevator.getIO().setCurrentLimits();
             });
   }
 
@@ -989,6 +1006,7 @@ public class Robot extends LoggedRobot {
     swerveDrive.seed();
     allianceChangeDetector.feed(DriverStation.getAlliance());
     autoChangeDetector.feed(autoChooser.get());
+    modeChangeDetector.feed(modeChooser.get());
   }
 
   @Override
@@ -1062,6 +1080,11 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("NopeAmp", new NopeAmp());
   }
 
+  public void buildModeChooser() {
+    modeChooser.addDefaultOption("Competition", RobotMode.COMPETITION);
+    modeChooser.addOption("Demo", RobotMode.DEMO);
+  }
+
   public void updatePreMatchDashboardValues() {
     var encoderReadings = swerveDrive.getAbsoluteEncoderAngles();
     SmartDashboard.putNumber("Dashboard/Battery Voltage", RobotController.getBatteryVoltage());
@@ -1108,6 +1131,7 @@ public class Robot extends LoggedRobot {
   public void driverStationConnected() {
 
     buildAutoChooser();
+    buildModeChooser();
     if (autoChooser.get() != null) {
       gyroInitial = autoChooser.get().traj1.getInitialPose().getRotation();
     }
