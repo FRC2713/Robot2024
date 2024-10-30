@@ -216,7 +216,6 @@ public class Robot extends LoggedRobot {
               modeManager.setMode(mode);
               elevator.getIO().setCurrentLimits();
             });
-
   }
 
   public void createDriverBindings() {

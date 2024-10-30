@@ -8,9 +8,9 @@ import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotMode;
-import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOSparks implements ElevatorIO {
   private CANSparkMax left, right;
@@ -98,11 +98,10 @@ public class ElevatorIOSparks implements ElevatorIO {
 
   @Override
   public void setCurrentLimits() {
-    if (Robot.modeManager.getMode() == RobotMode.DEMO){
+    if (Robot.modeManager.getMode() == RobotMode.DEMO) {
       left.setSmartCurrentLimit(Constants.ElevatorConstants.DEMO_ELAVATOR_CURRENT_LIMIT);
       right.setSmartCurrentLimit(Constants.ElevatorConstants.DEMO_ELAVATOR_CURRENT_LIMIT);
-    }
-    else{
+    } else {
       left.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
       right.setSmartCurrentLimit(Constants.ElevatorConstants.ELEVATOR_CURRENT_LIMIT);
     }

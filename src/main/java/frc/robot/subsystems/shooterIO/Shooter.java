@@ -164,18 +164,17 @@ public class Shooter extends SubsystemBase {
     double final_value_left = shooterState.leftRpm.getAsDouble() + differentialRpm;
     double final_value_right = shooterState.rightRpm.getAsDouble() - differentialRpm;
 
-  
-    if(Robot.modeManager.getMode() == RobotMode.DEMO){
-      final_value_left = Math.min(final_value_left,Constants.ShooterConstants.MAX_DEMO_RPM);// sas its a max of 100
-      final_value_right = Math.min(final_value_right,Constants.ShooterConstants.MAX_DEMO_RPM);
-      final_value_left = Math.max(final_value_left,-Constants.ShooterConstants.MAX_DEMO_RPM);// says min of -100
-      final_value_right = Math.max(final_value_right,-Constants.ShooterConstants.MAX_DEMO_RPM);
-
-      
-
+    if (Robot.modeManager.getMode() == RobotMode.DEMO) {
+      final_value_left =
+          Math.min(
+              final_value_left, Constants.ShooterConstants.MAX_DEMO_RPM); // sas its a max of 100
+      final_value_right = Math.min(final_value_right, Constants.ShooterConstants.MAX_DEMO_RPM);
+      final_value_left =
+          Math.max(final_value_left, -Constants.ShooterConstants.MAX_DEMO_RPM); // says min of -100
+      final_value_right = Math.max(final_value_right, -Constants.ShooterConstants.MAX_DEMO_RPM);
     }
 
-    IO.setMotorSetPoint(final_value_left,final_value_right);
+    IO.setMotorSetPoint(final_value_left, final_value_right);
   }
 
   @AutoLogOutput(key = "Shooter/isAtTarget")

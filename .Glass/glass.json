@@ -1,4 +1,18 @@
 {
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "Transitory Values": {
+      "open": false
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Autonomous Routine": "String Chooser",
+      "/SmartDashboard/Mech2d": "Mechanism2d",
+      "/SmartDashboard/Robot Mode": "String Chooser"
+    }
+  },
   "NetworkTables Info": {
     "visible": true
   },
