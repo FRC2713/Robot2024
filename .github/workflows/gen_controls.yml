@@ -31,12 +31,12 @@ jobs:
         run: |
           python scripts/gen_controls.py
       - name: Upload Controls PDF 1
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: 1_buttons-pdf
           path: scripts/1_buttons.pdf
       - name: Upload Controls PDF 2
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: 2_buttons-pdf
           path: scripts/2_buttons.pdf
